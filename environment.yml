@@ -1,0 +1,39 @@
+name: cwd-detect
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.10
+  # Core scientific computing
+  - numpy>=1.24
+  - scipy
+  - pandas
+  
+  # Geospatial libraries
+  - geopandas>=0.14
+  - rasterio>=1.3
+  - shapely>=2.0
+  - pyproj
+  - gdal
+  
+  # LiDAR processing (for LAZ to CHM conversion)
+  - pdal
+  - laspy
+  - laszip
+  
+  # Computer vision & ML
+  - opencv
+  - scikit-learn
+  - scikit-image
+  
+  # Utilities
+  - tqdm>=4.65
+  - pyyaml
+  - matplotlib
+  - seaborn
+  
+  # Install via pip (not available or better from pip)
+  - pip
+  - pip:
+    - ultralytics>=8.0  # YOLO models
+    - opencv-python>=4.8  # Ensure latest OpenCV

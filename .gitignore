@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Project outputs (not for git)
+runs/
+cwd_output/
+visuals/
+yolo_dataset*/
+
+# Data files (too large for git)
+*.tif
+*.tiff
+*.laz
+*.las
+*.gpkg
+*.geojson
+!configs/*.yaml
+
+# But include specific small examples in examples/data/
+!examples/data/sample_chm_tile.tif
+!examples/data/lamapuit_labels.gpkg
+!examples/data/README.md
+
+
+# Model weights (too large - use GitHub Releases)
+*.pt
+*.pth
+*.onnx
+
+# But include model registry and metadata
+!models/MODEL_REGISTRY.md
+!models/releases/*.yaml
+!models/releases/*.md
+
+# Logs and temp files
+*.log
+*.txt
+!README*.md
+!requirements.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary/experimental scripts at root
+# Keep only src/ package
+/*.py
+!/setup.py
+
+# Documentation artifacts
+*.pdf
+*.pptx
+*.docx
+
+# Images (except for docs)
+*.png
+*.jpg
+!docs/*.png

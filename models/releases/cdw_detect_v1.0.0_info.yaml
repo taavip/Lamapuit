@@ -1,0 +1,58 @@
+version: "1.0.0"
+timestamp: "2026-01-25T13:01:00"
+training_run: "cdw_lamapuit_robust"
+
+architecture:
+  model: "YOLO11n-seg"
+  parameters: 2800000
+  input_size: 640
+  device: "CPU"
+
+dataset:
+  name: "yolo_dataset_lamapuit_robust"
+  training_images: 448
+  validation_images: 112
+  nodata_augmentation: 0.3
+  buffer_width_m: 0.5
+  resolution_m: 0.2
+
+training:
+  epochs: 50
+  batch_size: 4
+  optimizer: "SGD"
+  learning_rate: 0.01
+  learning_rate_final: 0.0001
+  momentum: 0.937
+  weight_decay: 0.0005
+  warmup_epochs: 3
+  patience: 15
+  amp_enabled: false  # Disabled for CPU
+  cache: "disk"
+
+performance:
+  box_map50: 0.1135
+  mask_map50: 0.0889
+  box_map50_95: null  # Not recorded
+  mask_map50_95: null  # Not recorded
+  training_time_hours: 8-10
+  detection_speed_sec_per_tile: 2-3
+
+files:
+  model_file: "cdw_detect_v1.0.0.pt"
+  size_mb: 5.72
+  format: "PyTorch"
+
+notes: |
+  Initial release of CDW detection model trained on Lamapuit forest LiDAR data.
+  Model trained on CPU with disk caching and nodata augmentation for robustness.
+  Optimized for 0.2m resolution CHM rasters.
+
+limitations:
+  - Moderate precision on small/obscured CDW
+  - Sensitive to nodata edges (mitigated by augmentation)
+  - CPU-only training (no GPU optimization)
+
+use_cases:
+  - Forest inventory CDW detection
+  - LiDAR-derived CHM analysis
+  - Research and development baseline

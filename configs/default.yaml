@@ -1,0 +1,39 @@
+# CDW-Detect Default Configuration
+# Override these values via CLI arguments or environment variables
+
+# Data Preparation
+prepare:
+  tile_size: 640          # pixels (640x640 for YOLO)
+  buffer_width: 0.5       # meters (total CDW width = 2x buffer = 1m)
+  overlap: 0.2            # 20% tile overlap
+  min_log_pixels: 50      # minimum pixels per CDW instance
+  val_split: 0.2          # validation fraction
+
+# Training
+train:
+  model: yolo11n-seg.pt   # base model
+  epochs: 50
+  batch: 4
+  imgsz: 640
+  patience: 15            # early stopping
+  device: cpu             # or '0' for GPU
+  workers: 0              # dataloader workers (0 for Windows)
+  cache: disk             # cache images to disk
+
+# Detection
+detect:
+  tile_size: 640
+  stride: 480             # 75% overlap for better coverage
+  confidence: 0.15        # detection threshold
+  iou_threshold: 0.5      # NMS threshold
+  min_area_m2: 0.5        # minimum CDW area
+  nms_iou: 0.4            # cross-tile NMS threshold
+
+# Augmentation
+augment:
+  nodata_fraction: 0.3    # fraction of images with nodata patterns
+  patterns:               # nodata pattern types
+    - edge
+    - corner
+    - strip
+    - random

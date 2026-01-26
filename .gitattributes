@@ -1,0 +1,7 @@
+# Git LFS - Track large training data files
+# CHM rasters needed for creating training datasets
+examples/data/*.tif filter=lfs diff=lfs merge=lfs -text
+visuals/chm_max_hag/*_tava_*.tif filter=lfs diff=lfs merge=lfs -text
+
+# Model weights (use GitHub Releases instead)
+# *.pt filter=lfs diff=lfs merge=lfs -text
