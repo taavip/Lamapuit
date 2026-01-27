@@ -1,0 +1,15 @@
+name: cdw-detect
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - geopandas
+  - rasterio
+  - numpy
+  - opencv
+  - matplotlib
+  - shapely
+  - rtree
+  - pip
+  - pip:
+      - scikit-image
