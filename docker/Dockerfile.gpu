@@ -1,0 +1,52 @@
+# syntax=docker/dockerfile:1.6
+FROM pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    CONDA_DIR=/opt/conda \
+    PATH=/opt/conda/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+SHELL ["/bin/bash", "-lc"]
+
+# System deps for geospatial and image stacks.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git curl ca-certificates \
+    gdal-bin libgdal-dev libspatialindex-dev libproj-dev libgeos-dev \
+    libgl1 libglib2.0-0 libsm6 libxrender1 libxext6 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY docker/environment.gpu.yml /tmp/environment.gpu.yml
+COPY docker/requirements.gpu.txt /tmp/requirements.gpu.txt
+
+# Keep conda solve focused on compiled libs; pip packages are installed afterwards.
+RUN --mount=type=cache,target=/opt/conda/pkgs \
+    printf "channels:\n  - pytorch\n  - nvidia\n  - conda-forge\nchannel_priority: flexible\nsolver: libmamba\n" > /tmp/condarc-gpu.yml && \
+    CONDARC=/tmp/condarc-gpu.yml conda env create -n cwd-detect -f /tmp/environment.gpu.yml \
+    || (sed -i '/^solver:/d' /tmp/condarc-gpu.yml && CONDARC=/tmp/condarc-gpu.yml conda env create -n cwd-detect -f /tmp/environment.gpu.yml) && \
+    conda clean -afy
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    conda run -n cwd-detect python -m pip install --upgrade pip && \
+    conda run -n cwd-detect python -m pip install -r /tmp/requirements.gpu.txt
+
+# Verify CUDA build at image-build time.
+RUN conda run -n cwd-detect python - <<'PY'
+import torch
+import numpy as np
+import cupy as cp
+print('torch_version=', torch.__version__)
+print('torch_cuda_build=', torch.version.cuda)
+print('numpy_version=', np.__version__)
+print('cupy_version=', cp.__version__)
+print('cupy_device_count=', cp.cuda.runtime.getDeviceCount())
+if torch.version.cuda is None:
+    raise SystemExit('CPU-only torch build detected; expected CUDA-enabled torch.')
+if int(np.__version__.split('.', 1)[0]) >= 2:
+    raise SystemExit('NumPy >=2 detected; use NumPy <2 for torch module compatibility in this stack.')
+if int(cp.cuda.runtime.getDeviceCount()) < 1:
+    raise SystemExit('CuPy installed but no CUDA device visible during build validation.')
+PY
+
+WORKDIR /workspace
+CMD ["/bin/bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect && python -c \"import torch; print('cuda_available=', torch.cuda.is_available()); print('device_count=', torch.cuda.device_count()); print('torch_version=', torch.__version__); print('torch_cuda_build=', torch.version.cuda)\" && exec /bin/bash"]

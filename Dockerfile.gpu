@@ -1,0 +1,49 @@
+# GPU-enabled Dockerfile for Lamapuit
+# Based on official PyTorch CUDA runtime image to ensure matching CUDA/PyTorch
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
+
+# Install system dependencies needed for geospatial and Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget ca-certificates bzip2 build-essential gcc g++ git curl \
+    libgdal-dev gdal-bin libproj-dev libspatialindex-dev libgeos-dev python3-dev && rm -rf /var/lib/apt/lists/*
+
+# Install Miniconda
+ENV CONDA_DIR=/opt/conda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
+    && bash /tmp/miniconda.sh -b -p $CONDA_DIR \
+    && rm /tmp/miniconda.sh \
+    && $CONDA_DIR/bin/conda init bash
+
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Copy project environment file and create a GPU-enabled variant
+COPY environment.yml /tmp/environment.yml
+
+# Build a modified environment.yml that requests CUDA-enabled PyTorch
+RUN python - <<'PY'
+from pathlib import Path
+p = Path('/tmp/environment.yml').read_text()
+# Prepend channels for GPU PyTorch
+hdr = 'channels:\n  - pytorch\n  - nvidia\n  - conda-forge\n  - defaults\n'
+# Replace 'pytorch' spec to pin a version and request pytorch-cuda 11.8
+p = p.replace('- pytorch>=2.0', '- pytorch=2.5.1\n  - pytorch-cuda=11.8')
+# Ensure torchvision remains
+p = p
+Path('/tmp/environment_gpu.yml').write_text(hdr + p.split('channels:')[-1])
+print('wrote /tmp/environment_gpu.yml')
+PY
+
+# Install mamba and create the conda env
+# Accept Anaconda channel Terms of Service so automated builds succeed
+RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main || true && \
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r || true && \
+    conda install -y -n base mamba -c conda-forge && \
+    mamba env create -f /tmp/environment_gpu.yml -n cwd-detect || (cat /tmp/environment_gpu.yml && false)
+
+SHELL ["/bin/bash", "-lc"]
+RUN echo "source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect" >> ~/.bashrc
+
+WORKDIR /workspace
+
+# Default: show CUDA availability then keep shell open
+CMD ["/bin/bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect && python -c \"import torch; print('cuda_available=', torch.cuda.is_available()); print('torch_version=', torch.__version__); print('cuda_version=', torch.version.cuda)\"; /bin/bash"]

@@ -1,0 +1,72 @@
+services:
+  label-studio:
+    image: heartexlabs/label-studio:latest
+    container_name: lamapuit-label-studio
+    user: "0:0"
+    ports:
+      - "8080:8080"
+    environment:
+      LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED: "true"
+      LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT: /workspace
+      LABEL_STUDIO_HOST: 0.0.0.0
+      LABEL_STUDIO_PORT: 8080
+    volumes:
+      - ./:/workspace:rw
+      - ./output/labelstudio_pipeline/labelstudio_data:/label-studio/data:rw
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      ml-backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  ml-backend:
+    build:
+      context: ./docker/labelstudio/ml_backend
+      dockerfile: Dockerfile
+    container_name: lamapuit-ml-backend
+    ports:
+      - "9090:9090"
+    environment:
+      WORKSPACE_ROOT: /workspace
+      TASK_IMAGE_KEY: image
+      YOLO_MODEL_CANDIDATES: /models/yolo26s-seg.pt,/models/yolo11s-seg.pt,/models/yolo11n-seg.pt
+      SAM_MODEL_CANDIDATES: /models/sam2_b.pt,/models/mobile_sam.pt
+      YOLO_CONFIDENCE: "0.25"
+      YOLO_IMGSZ: "640"
+      RETURN_TOPK: "6"
+      ENABLE_SAM_REFINEMENT: "true"
+      DEVICE: cuda
+      LABEL_STUDIO_URL: http://label-studio:8080
+      LABEL_STUDIO_API_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6ODA4MTkxNjE4OSwiaWF0IjoxNzc0NzE2MTg5LCJqdGkiOiI2YjgxNzBhOTgyYTc0YjhmOTIwOTIxZWEwNmIwMjQ1MCIsInVzZXJfaWQiOiIxIn0.SNvdYAM2i27B9bDV_y557tk-GM8SReude1P7xr5zpvw"
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ./:/workspace:rw
+      - ./output/labelstudio_pipeline/models:/models:rw
+      - ./output/labelstudio_pipeline/cache:/cache:rw
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  retrain-worker:
+    image: nvidia/cuda:13.1.1-runtime-ubuntu22.04
+    container_name: lamapuit-retrain-worker
+    command: ["bash", "-lc", "echo 'Retrain worker placeholder. Use docs/LABEL_STUDIO_SETUP.md for daily retrain command.' && tail -f /dev/null"]
+    profiles: ["worker"]
+    volumes:
+      - ./:/workspace:rw
+      - ./output/labelstudio_pipeline:/output/labelstudio_pipeline:rw
+    restart: unless-stopped
