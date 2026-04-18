@@ -1,0 +1,9 @@
+<View>
+  <Header value="Label coins and pencils" />
+  <Text name="instructions" value="Draw a tight bounding box around each coin or pencil in the image. Use the 'coin' label for coin-like circular objects and 'pencil' for pencil-like elongated objects. If unsure, prefer 'coin' for small round items."/>
+  <Image name="image" value="$image"/>
+  <RectangleLabels name="label" toName="image">
+    <Label value="coin" background="#ffcc00"/>
+    <Label value="pencil" background="#00aaff"/>
+  </RectangleLabels>
+</View>
