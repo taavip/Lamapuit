@@ -1,0 +1,41 @@
+
+\input{english/config.tex}
+
+% Metadata
+\title{Thesis Title}
+\author{Author's Name}
+\date{2024}
+\supervisor{Supervisor's Name\degree{degree} \and Co-Supervisor's name\degree{degree}}
+\curriculum{Computer Science Curriculum}
+\thesis{Bachelor's Thesis (9 ECTS)}
+\keywords{Layout, formatting, template}
+
+
+% Here begins the document
+
+\begin{document}
+
+\maketitle
+
+\linespread{1.45} \selectfont
+
+\input{english/sections/0-info}
+\input{english/sections/0-visualAbstract}
+
+\tableofcontents
+
+\input{english/sections/1-introduction}
+\input{english/sections/2-formatting}
+\input{english/sections/3-textCreation}
+\input{english/sections/4-conclusion}
+
+\clearpage
+\printbibliography[heading=bibintoc]
+
+\input{english/sections/10-appendices}
+\input{english/sections/11-license}
+
+\end{document}
+
+
+

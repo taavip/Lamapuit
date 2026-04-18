@@ -1,0 +1,26 @@
+% !TEX root = thesis.tex
+
+
+% Teretulemast Tartu Ülikooli arvutiteaduse instituudi bakalaureuse- ja magistriõppe lõputööde malli.
+% Welcome to the University of Tartu's Institute of Computer Science's Bachelor's and Master's Thesis template.
+
+% Vali siin, kas su lõputöö on eesti või inglise keeles
+% Choose here if your thesis is in Estonian or English
+
+\newcommand{\templateLanguage}{Estonian} % Eesti keeles
+%\newcommand{\templateLanguage}{English} % In English
+
+
+% We load the correct things based on your choice
+
+\RequirePackage{ifthen}
+\ifthenelse{\equal{\templateLanguage}{Estonian}}
+    {% True case
+        \documentclass[english,estonian]{unitartucs/thesis}
+        \input{estonian/põhi.tex}
+    }
+    {% false case
+        \documentclass[estonian,english]{unitartucs/thesis}
+        \input{english/main.tex}
+    }
+
