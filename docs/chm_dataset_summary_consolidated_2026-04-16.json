@@ -1,0 +1,79 @@
+{
+  "generated_at_utc": "2026-04-16T05:50:11Z",
+  "scope": "all_laz_dataset_completion",
+  "source_output_dir": "output/chm_dataset_harmonized_0p8m_raw_gauss",
+  "final_status": "complete",
+  "smoothing_backend_selected": "cuda-cupy",
+  "counts": {
+    "input_laz": 119,
+    "raw_chm_tif": 119,
+    "gauss_chm_tif": 119,
+    "label_csv": 100
+  },
+  "coverage": {
+    "missing_from_raw": 0,
+    "extra_in_raw": 0,
+    "raw_matches_input_stems": true
+  },
+  "run_timeline": [
+    {
+      "run_id": 1,
+      "start": "2026-04-16 01:28:45",
+      "tiles_selected": 29,
+      "processed_tile_year_pairs": null,
+      "failed_count": null,
+      "status": "interrupted_before_summary",
+      "evidence": {
+        "run_log_discovery_line": 1,
+        "run_log_tiles_selected_line": 2,
+        "next_run_starts_line": 114
+      }
+    },
+    {
+      "run_id": 2,
+      "start": "2026-04-16 03:46:55",
+      "tiles_selected": 13,
+      "processed_tile_year_pairs": 79,
+      "failed_count": 1,
+      "status": "completed_with_single_failure",
+      "failure_tile": "579543",
+      "evidence": {
+        "run_log_discovery_line": 114,
+        "run_log_tiles_selected_line": 115,
+        "run_log_processed_line": 311,
+        "run_log_failed_line": 312
+      }
+    },
+    {
+      "run_id": 3,
+      "start": "2026-04-16 05:25:02",
+      "tiles_selected": 1,
+      "processed_tile_year_pairs": 7,
+      "failed_count": 0,
+      "status": "completed_successfully",
+      "target_tile": "579543",
+      "evidence": {
+        "run_log_discovery_line": 326,
+        "run_log_tiles_selected_line": 327,
+        "run_log_processed_line": 347,
+        "run_log_failed_line": 348
+      }
+    }
+  ],
+  "code_fixes_applied": [
+    {
+      "file": "experiments/laz_to_chm_harmonized_0p8m/build_dataset.py",
+      "area": "_sanitize_laz_for_pdal",
+      "summary": "Sanitized fallback path writes LAS 1.2/PF3 with guarded dimension copy and PF3 scan_angle_rank handling."
+    },
+    {
+      "file": "experiments/laz_to_chm_harmonized_0p8m/build_dataset.py",
+      "area": "_pdal_csf_reclassify writers.las",
+      "summary": "CSF writer output pinned to LAS 1.4/PF6 (minor_version=4, dataformat_id=6) to avoid overlap-warning flood and improve compatibility."
+    }
+  ],
+  "notes": [
+    "The existing output reports/dataset_summary.json remains tile-run scoped and is not modified here.",
+    "This file is the writable-source copy under docs/ and is mirrored to output/chm_dataset_harmonized_0p8m_raw_gauss/reports/dataset_summary_consolidated.json."
+  ]
+}

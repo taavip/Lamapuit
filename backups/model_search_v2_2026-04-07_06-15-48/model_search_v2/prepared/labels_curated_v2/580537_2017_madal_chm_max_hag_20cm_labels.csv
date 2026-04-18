@@ -1,0 +1,12 @@
+raster,row_off,col_off,chunk_size,label,source,annotator,model_name,model_prob,timestamp
+580537_2017_madal_chm_max_hag_20cm.tif,576,3840,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9997,2026-03-23T20:23:50
+580537_2017_madal_chm_max_hag_20cm.tif,1792,0,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9996,2026-03-23T20:24:00
+580537_2017_madal_chm_max_hag_20cm.tif,1920,4224,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9996,2026-03-23T20:24:02
+580537_2017_madal_chm_max_hag_20cm.tif,1920,4288,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9995,2026-03-23T20:24:02
+580537_2017_madal_chm_max_hag_20cm.tif,2048,2112,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9996,2026-03-23T20:24:03
+580537_2017_madal_chm_max_hag_20cm.tif,2240,192,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9997,2026-03-23T20:24:04
+580537_2017_madal_chm_max_hag_20cm.tif,2304,192,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9996,2026-03-23T20:24:04
+580537_2017_madal_chm_max_hag_20cm.tif,3712,4096,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0662,2026-03-23T20:24:16
+580537_2017_madal_chm_max_hag_20cm.tif,4288,4160,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0689,2026-03-23T20:24:20
+580537_2017_madal_chm_max_hag_20cm.tif,4416,4160,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0668,2026-03-23T20:24:21
+580537_2017_madal_chm_max_hag_20cm.tif,4544,4416,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0695,2026-03-23T20:24:22

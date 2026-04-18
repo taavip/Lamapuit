@@ -1,0 +1,21 @@
+year,method,path,bytes,mtime
+2018,idw_k6,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2018/2018_idw_k6_chm.tif,26599892,2026-04-14 18:00:00.834903912 +0300
+2018,natural_neighbor_bilateral,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2018/2018_natural_neighbor_bilateral_chm.tif,26044346,2026-04-14 18:00:03.239261816 +0300
+2018,natural_neighbor_linear,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2018/2018_natural_neighbor_linear_chm.tif,26357497,2026-04-14 18:00:02.043083758 +0300
+2018,tin_linear_bilateral,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2018/2018_tin_linear_bilateral_chm.tif,26044340,2026-04-14 18:00:02.643173084 +0300
+2018,tin_linear,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2018/2018_tin_linear_chm.tif,26357484,2026-04-14 18:00:01.438993835 +0300
+2020,idw_k6,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2020/2020_idw_k6_chm.tif,21838502,2026-04-14 18:00:10.044273582 +0300
+2020,natural_neighbor_bilateral,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2020/2020_natural_neighbor_bilateral_chm.tif,22187562,2026-04-14 18:00:12.236599315 +0300
+2020,natural_neighbor_linear,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2020/2020_natural_neighbor_linear_chm.tif,21613287,2026-04-14 18:00:11.136435856 +0300
+2020,tin_linear_bilateral,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2020/2020_tin_linear_bilateral_chm.tif,22187556,2026-04-14 18:00:11.688517884 +0300
+2020,tin_linear,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2020/2020_tin_linear_chm.tif,21613274,2026-04-14 18:00:10.592355016 +0300
+2022,idw_k6,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2022/2022_idw_k6_chm.tif,31759644,2026-04-14 18:00:22.778220915 +0300
+2022,natural_neighbor_bilateral,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2022/2022_natural_neighbor_bilateral_chm.tif,31502148,2026-04-14 18:00:25.386611389 +0300
+2022,natural_neighbor_linear,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2022/2022_natural_neighbor_linear_chm.tif,31451809,2026-04-14 18:00:24.082416152 +0300
+2022,tin_linear_bilateral,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2022/2022_tin_linear_bilateral_chm.tif,31502142,2026-04-14 18:00:24.730513171 +0300
+2022,tin_linear,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2022/2022_tin_linear_chm.tif,31451796,2026-04-14 18:00:23.430318533 +0300
+2024,idw_k6,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2024/2024_idw_k6_chm.tif,36604976,2026-04-14 18:00:33.215812158 +0300
+2024,natural_neighbor_bilateral,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2024/2024_natural_neighbor_bilateral_chm.tif,36088578,2026-04-14 18:00:35.952244424 +0300
+2024,natural_neighbor_linear,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2024/2024_natural_neighbor_linear_chm.tif,36354379,2026-04-14 18:00:34.596030186 +0300
+2024,tin_linear_bilateral,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2024/2024_tin_linear_bilateral_chm.tif,36088572,2026-04-14 18:00:35.272136990 +0300
+2024,tin_linear,experiments/dtm_hag_436646_sota_2026-04-14/results/chm/2024/2024_tin_linear_chm.tif,36354366,2026-04-14 18:00:33.907921489 +0300

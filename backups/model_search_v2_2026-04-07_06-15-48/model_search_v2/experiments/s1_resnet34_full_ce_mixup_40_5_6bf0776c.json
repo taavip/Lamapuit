@@ -1,0 +1,95 @@
+{
+  "config": {
+    "experiment_id": "s1_resnet34_full_ce_mixup_40_5_6bf0776c",
+    "model_name": "resnet34",
+    "data_strategy": "full",
+    "loss_name": "ce",
+    "regularization": "mixup",
+    "epochs": 40,
+    "batch_size": 32,
+    "lr_head": 0.0005,
+    "lr_backbone": 5e-05,
+    "label_smoothing": 0.05,
+    "patience": 10,
+    "seed": 2037,
+    "use_tta": false
+  },
+  "summary": {
+    "experiment_id": "s1_resnet34_full_ce_mixup_40_5_6bf0776c",
+    "model_name": "resnet34",
+    "data_strategy": "full",
+    "loss_name": "ce",
+    "regularization": "mixup",
+    "epochs": 40,
+    "batch_size": 32,
+    "lr_head": 0.0005,
+    "lr_backbone": 5e-05,
+    "label_smoothing": 0.05,
+    "patience": 10,
+    "seed": 2037,
+    "use_tta": false,
+    "n_samples": 33146,
+    "mean_cv_auc": 0.9842507169368659,
+    "std_cv_auc": 0.0011773078184425859,
+    "mean_cv_f1": 0.8946354286527118,
+    "std_cv_f1": 0.004410641311530665,
+    "mean_cv_precision": 0.8981163295225988,
+    "mean_cv_recall": 0.8912645480934996,
+    "best_fold_f1": 0.9010538641686182,
+    "worst_fold_f1": 0.8873949579831932,
+    "mean_threshold": 0.7,
+    "training_time_s": 5345.90356980302
+  },
+  "folds": [
+    {
+      "experiment_id": "s1_resnet34_full_ce_mixup_40_5_6bf0776c",
+      "fold": 1,
+      "auc": 0.9832029296009701,
+      "f1": 0.8873949579831932,
+      "precision": 0.8964346349745331,
+      "recall": 0.8785357737104825,
+      "threshold": 0.7899999999999999,
+      "best_epoch": 19
+    },
+    {
+      "experiment_id": "s1_resnet34_full_ce_mixup_40_5_6bf0776c",
+      "fold": 2,
+      "auc": 0.9864065413484018,
+      "f1": 0.9010538641686182,
+      "precision": 0.9074292452830188,
+      "recall": 0.8947674418604651,
+      "threshold": 0.74,
+      "best_epoch": 36
+    },
+    {
+      "experiment_id": "s1_resnet34_full_ce_mixup_40_5_6bf0776c",
+      "fold": 3,
+      "auc": 0.9845999518210008,
+      "f1": 0.8958333333333334,
+      "precision": 0.8943226531759415,
+      "recall": 0.8973491257755217,
+      "threshold": 0.6499999999999999,
+      "best_epoch": 29
+    },
+    {
+      "experiment_id": "s1_resnet34_full_ce_mixup_40_5_6bf0776c",
+      "fold": 4,
+      "auc": 0.9835449448534384,
+      "f1": 0.8954824913124833,
+      "precision": 0.8895379713223579,
+      "recall": 0.9015069967707212,
+      "threshold": 0.63,
+      "best_epoch": 39
+    },
+    {
+      "experiment_id": "s1_resnet34_full_ce_mixup_40_5_6bf0776c",
+      "fold": 5,
+      "auc": 0.9834992170605185,
+      "f1": 0.8934124964659316,
+      "precision": 0.9028571428571428,
+      "recall": 0.8841634023503078,
+      "threshold": 0.69,
+      "best_epoch": 26
+    }
+  ]
+}

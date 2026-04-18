@@ -1,0 +1,4 @@
+cairosvg
+gdown
+Pillow
+svglib

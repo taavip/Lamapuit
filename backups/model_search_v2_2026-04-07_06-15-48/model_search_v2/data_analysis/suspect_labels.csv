@@ -1,0 +1,14 @@
+raster,row_off,col_off,chunk_size,label,source,weight,model_prob,reason
+401677_2022_madal_chm_max_hag_20cm.tif,192,1664,128,0,manual,1.0,0.979,label_no_cdw_prob_very_high
+401677_2022_madal_chm_max_hag_20cm.tif,192,3008,128,0,manual,1.0,0.99,label_no_cdw_prob_very_high
+436646_2020_madal_chm_max_hag_20cm.tif,960,4352,128,0,manual,1.0,0.9636,label_no_cdw_prob_very_high
+436646_2022_madal_chm_max_hag_20cm.tif,2944,1152,128,0,manual,1.0,0.989,label_no_cdw_prob_very_high
+436647_2020_madal_chm_max_hag_20cm.tif,640,4032,128,0,manual,1.0,0.9929,label_no_cdw_prob_very_high
+436647_2020_madal_chm_max_hag_20cm.tif,1600,3648,128,0,manual,1.0,0.9956,label_no_cdw_prob_very_high
+436647_2020_madal_chm_max_hag_20cm.tif,1856,2624,128,0,manual,1.0,0.9739,label_no_cdw_prob_very_high
+436647_2020_madal_chm_max_hag_20cm.tif,2560,2880,128,0,manual,1.0,0.9637,label_no_cdw_prob_very_high
+436647_2022_madal_chm_max_hag_20cm.tif,1728,2752,128,0,manual,1.0,0.9994,label_no_cdw_prob_very_high
+436647_2022_madal_chm_max_hag_20cm.tif,2112,3584,128,0,manual,1.0,0.9871,label_no_cdw_prob_very_high
+436647_2024_madal_chm_max_hag_20cm.tif,1472,576,128,0,manual,1.0,0.9791,label_no_cdw_prob_very_high
+436647_2024_madal_chm_max_hag_20cm.tif,1536,2240,128,0,manual,1.0,0.969,label_no_cdw_prob_very_high
+437646_2020_madal_chm_max_hag_20cm.tif,1472,3520,128,0,manual,1.0,0.9533,label_no_cdw_prob_very_high

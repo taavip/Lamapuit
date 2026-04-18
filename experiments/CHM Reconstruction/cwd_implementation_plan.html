@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CWD Detection — Implementation Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,500;1,6..72,300&display=swap');
+
+  :root {
+    --ink: #1a1a18;
+    --ink2: #4a4a45;
+    --ink3: #7a7a72;
+    --paper: #f8f6f0;
+    --paper2: #ede9e0;
+    --paper3: #e0dbd0;
+    --accent: #2d5a3d;
+    --accent2: #4a7c5a;
+    --warn: #8b4513;
+    --info: #1a3a5c;
+    --border: rgba(0,0,0,0.12);
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Newsreader', Georgia, serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+  .cover-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 16px;
+  }
+  .cover h1 {
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .cover h1 em { font-style: italic; color: var(--accent); }
+  .cover-sub {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink2);
+    margin-top: 20px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .cover-sub span::before { content: '▸ '; color: var(--accent); }
+
+  /* ── SECTIONS ── */
+  .phase {
+    margin-bottom: 56px;
+    position: relative;
+  }
+  .phase-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .phase-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .phase-header h2 {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── STEP ── */
+  .step {
+    margin-bottom: 32px;
+    padding-left: 20px;
+    border-left: 2px solid var(--paper3);
+  }
+  .step h3 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .step p { color: var(--ink2); margin-bottom: 8px; }
+
+  /* ── CODE ── */
+  pre {
+    background: #1e1e1a;
+    color: #d4d0c4;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.6;
+    padding: 16px 20px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 10px 0 14px;
+  }
+  pre .c { color: #6a8a6a; }
+  pre .k { color: #82aacc; }
+  pre .s { color: #c3a87a; }
+  pre .n { color: #8fccaa; }
+  pre .h { color: #cc8866; font-weight: 500; }
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--paper2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-left: 3px solid;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+  }
+  .callout.warn { border-color: var(--warn); background: #fdf5ee; color: #5a2e08; }
+  .callout.info { border-color: var(--info); background: #eef3f8; color: #0e2840; }
+  .callout.ok   { border-color: var(--accent); background: #edf5ef; color: #1a3d26; }
+  .callout strong { font-weight: 500; }
+
+  /* ── CITE BLOCK ── */
+  .cite-block {
+    background: var(--paper2);
+    border: 1px solid var(--paper3);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .cite-block .ref { font-family: var(--mono); font-size: 11px; color: var(--ink3); margin-bottom: 4px; }
+  .cite-block p { color: var(--ink2); }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0 20px;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink3);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    color: var(--ink2);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { color: var(--ink); font-weight: 500; }
+
+  /* ── ARCH DIAGRAM ── */
+  .arch {
+    background: #1a1e18;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 16px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #c0c8b8;
+    line-height: 1.9;
+    overflow-x: auto;
+  }
+  .arch .layer { color: #8fccaa; }
+  .arch .arrow { color: #6a8a6a; }
+  .arch .label { color: #cc8866; }
+  .arch .head  { color: #82aacc; }
+
+  /* ── METRIC PILLS ── */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 16px; }
+  .pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .pill.g { background: #edf5ef; color: #1a3d26; border-color: #b0d4bc; }
+  .pill.b { background: #eef3f8; color: #0e2840; border-color: #a8c4dc; }
+  .pill.y { background: #fdf5ee; color: #5a2e08; border-color: #ddc0a0; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--paper2);
+    border: 1px solid var(--paper3);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+  }
+  .toc-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink3);
+    margin-bottom: 12px;
+  }
+  .toc ol { padding-left: 18px; }
+  .toc li { font-size: 14px; padding: 2px 0; color: var(--ink2); }
+  .toc li strong { color: var(--ink); font-weight: 500; }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+  }
+  .badge.sota { background: #2d5a3d; color: #d4edda; }
+  .badge.new  { background: #1a3a5c; color: #cde0f0; }
+  .badge.base { background: #4a4a45; color: #e8e4d8; }
+
+  @media print {
+    body { padding: 24px; }
+    pre { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-label">Academic Implementation Plan · Version 1.0</div>
+  <h1>Sparse CHM Reconstruction<br>& <em>Coarse Woody Debris Detection</em><br>via Multi-Task Deep Learning</h1>
+  <div class="cover-sub">
+    <span>ALS / LiDAR Data</span>
+    <span>20 cm CHM Resolution</span>
+    <span>Docker + Conda Environment</span>
+    <span>PyTorch · GDAL · PDAL</span>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-title">Contents</div>
+  <ol>
+    <li><strong>Environment Setup</strong> — Docker, Conda, dependencies</li>
+    <li><strong>Data Audit & Preprocessing</strong> — LAZ → CHM validation, ground density</li>
+    <li><strong>Tile Strategy & Dataset Assembly</strong> — splits, augmentation, mask simulation</li>
+    <li><strong>Model Architecture</strong> — Multi-task Partial Conv U-Net, two heads</li>
+    <li><strong>Loss Function Design</strong> — L1, Sobel edge, Dice, Focal, joint weighting</li>
+    <li><strong>Training Protocol</strong> — curriculum, regularisation, MC Dropout</li>
+    <li><strong>Inference Pipeline</strong> — overlapping tiles, uncertainty maps, CWD filter</li>
+    <li><strong>Evaluation & Validation</strong> — metrics, baselines, ablation study</li>
+    <li><strong>Academic Framing</strong> — citations, figures, thesis structure</li>
+  </ol>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 1 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 01</span>
+    <h2>Environment Setup</h2>
+  </div>
+
+  <div class="step">
+    <h3>Dockerfile — base image</h3>
+    <p>Use NVIDIA CUDA base to support GPU training. PDAL and GDAL are installed system-level to handle binary dependencies cleanly before Python packages.</p>
+<pre><span class="c"># Dockerfile</span>
+<span class="k">FROM</span> <span class="s">nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04</span>
+
+<span class="k">ENV</span> DEBIAN_FRONTEND=noninteractive
+<span class="k">RUN</span> apt-get update && apt-get install -y \
+    wget git curl build-essential \
+    libgdal-dev gdal-bin pdal \
+    libspatialindex-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+<span class="c"># Miniconda</span>
+<span class="k">RUN</span> wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/mc.sh \
+    && bash /tmp/mc.sh -b -p /opt/conda \
+    && rm /tmp/mc.sh
+<span class="k">ENV</span> PATH /opt/conda/bin:$PATH
+
+<span class="k">WORKDIR</span> /workspace
+<span class="k">COPY</span> environment.yml .
+<span class="k">RUN</span> conda env create -f environment.yml
+
+<span class="k">SHELL</span> ["conda", "run", "-n", "cwd", "/bin/bash", "-c"]
+<span class="k">CMD</span> ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root"]</pre>
+  </div>
+
+  <div class="step">
+    <h3>Conda environment — <code>environment.yml</code></h3>
+<pre><span class="n">name:</span> cwd
+<span class="n">channels:</span> [pytorch, nvidia, conda-forge, defaults]
+<span class="n">dependencies:</span>
+  <span class="c"># Core ML</span>
+  - python=3.11
+  - pytorch=2.2
+  - torchvision
+  - pytorch-cuda=12.1
+  - einops          <span class="c"># tensor ops</span>
+  - timm            <span class="c"># pretrained encoders</span>
+
+  <span class="c"># Geo/LiDAR</span>
+  - gdal
+  - rasterio
+  - geopandas
+  - shapely
+  - pyproj          <span class="c"># EPSG:3301 enforcement</span>
+  - laspy            <span class="c"># LAZ reading</span>
+
+  <span class="c"># Scientific</span>
+  - numpy
+  - scipy
+  - scikit-image    <span class="c"># Frangi, morphology</span>
+  - scikit-learn
+  - opencv-python
+
+  <span class="c"># Training utilities</span>
+  - pytorch-lightning=2.2
+  - albumentations   <span class="c"># augmentation</span>
+  - segmentation-models-pytorch  <span class="c"># baseline encoders</span>
+  - wandb            <span class="c"># experiment tracking</span>
+  - matplotlib
+  - jupyter</pre>
+  </div>
+
+  <div class="step">
+    <h3>docker-compose.yml</h3>
+<pre>services:
+  cwd:
+    build: .
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ./data:/workspace/data
+      - ./src:/workspace/src
+      - ./outputs:/workspace/outputs
+    ports:
+      - "8888:8888"
+    shm_size: '16gb'</pre>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 2 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 02</span>
+    <h2>Data Audit & Preprocessing</h2>
+  </div>
+
+  <div class="callout warn">
+    <strong>Critical first step.</strong> Before writing any model code, you must know your actual ground return density. If it is &lt; 0.5 pts/m², the 99% NoData is a physical data quality problem that cannot be resolved by AI. This measurement determines the entire scope of your methodology claims.
+  </div>
+
+  <div class="step">
+    <h3>Step 2.1 — Ground return density audit (LAZ)</h3>
+<pre><span class="k">import</span> laspy, numpy <span class="k">as</span> np
+
+<span class="k">def</span> <span class="n">audit_ground_density</span>(laz_path: str, tile_area_m2: float = 676) -> dict:
+    <span class="s">"""Compute ground return density for a LAZ tile.
+    Tile area: 26m × 26m = 676 m²
+    """</span>
+    las = laspy.read(laz_path)
+    ground_mask = las.classification == 2  <span class="c"># ASPRS class 2 = ground</span>
+    n_ground = ground_mask.sum()
+    density = n_ground / tile_area_m2
+
+    <span class="c"># Height percentiles of surviving low returns (0.1–2.0m)</span>
+    z = las.z[~ground_mask]
+    z_norm = z - las.z[ground_mask].mean() <span class="k">if</span> ground_mask.any() <span class="k">else</span> z
+    low_returns = z_norm[(z_norm > 0.05) & (z_norm < 2.5)]
+
+    <span class="k">return</span> {
+        <span class="s">"ground_density_pts_m2"</span>: round(density, 3),
+        <span class="s">"total_returns"</span>: len(las.x),
+        <span class="s">"ground_returns"</span>: int(n_ground),
+        <span class="s">"cwd_candidate_returns"</span>: len(low_returns),  <span class="c"># 5cm–2.5m above ground</span>
+        <span class="s">"viable_for_ai"</span>: density > 0.5
+    }
+
+<span class="c"># Run across all tiles, flag low-density tiles early</span>
+results = [audit_ground_density(p) <span class="k">for</span> p <span class="k">in</span> laz_paths]</pre>
+    <div class="callout info">Report this density number in your thesis methods section. It is your primary data characterisation statistic and directly determines the ecological detection limit of your pipeline.</div>
+  </div>
+
+  <div class="step">
+    <h3>Step 2.2 — CHM tile validation</h3>
+    <p>For tiles you already have, compute and record valid pixel fraction, height distribution, and CRS. All tiles must be EPSG:3301 (L-EST97).</p>
+<pre><span class="k">import</span> rasterio, numpy <span class="k">as</span> np
+<span class="k">from</span> pathlib <span class="k">import</span> Path
+
+<span class="k">def</span> <span class="n">validate_chm_tile</span>(tif_path: str) -> dict:
+    <span class="k">with</span> rasterio.open(tif_path) <span class="k">as</span> src:
+        assert src.crs.to_epsg() == 3301, <span class="s">f"CRS is {src.crs}, expected EPSG:3301"</span>
+        assert abs(src.res[0] - 0.20) < 0.001, <span class="s">"Expected 20cm resolution"</span>
+
+        chm = src.read(1)
+        nodata_val = src.nodata
+        valid_mask = chm != nodata_val <span class="k">if</span> nodata_val <span class="k">is not</span> None \
+                     <span class="k">else</span> ~np.isnan(chm)
+
+        valid_px = valid_mask.sum()
+        total_px = chm.size
+        valid_frac = valid_px / total_px
+
+        <span class="k">return</span> {
+            <span class="s">"path"</span>: str(tif_path),
+            <span class="s">"shape"</span>: chm.shape,
+            <span class="s">"valid_fraction"</span>: round(valid_frac, 4),
+            <span class="s">"nodata_fraction"</span>: round(1 - valid_frac, 4),
+            <span class="s">"height_p50"</span>: float(np.median(chm[valid_mask])),
+            <span class="s">"height_p95"</span>: float(np.percentile(chm[valid_mask], 95)),
+            <span class="s">"height_p99"</span>: float(np.percentile(chm[valid_mask], 99)),
+            <span class="s">"usable_for_training"</span>: valid_frac > 0.30  <span class="c"># threshold for good tiles</span>
+        }</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 2.3 — Integrate your existing tile classifier</h3>
+    <p>Your existing FI=0.91 tile-level CWD classifier is a strategic asset. Use its predictions to create a stratified dataset split: high-confidence positive tiles become your primary training data, negative tiles become your negative examples, and uncertain tiles (probability 0.4–0.6) go into a held-out test set.</p>
+<pre><span class="c"># Assume classifier outputs probability p_cwd per tile</span>
+<span class="k">def</span> <span class="n">stratify_by_classifier</span>(tile_records: list) -> dict:
+    positives    = [t <span class="k">for</span> t <span class="k">in</span> tile_records <span class="k">if</span> t[<span class="s">"p_cwd"</span>] > 0.70]
+    negatives    = [t <span class="k">for</span> t <span class="k">in</span> tile_records <span class="k">if</span> t[<span class="s">"p_cwd"</span>] < 0.30]
+    uncertain    = [t <span class="k">for</span> t <span class="k">in</span> tile_records <span class="k">if</span> 0.30 <= t[<span class="s">"p_cwd"</span>] <= 0.70]
+
+    <span class="k">return</span> {
+        <span class="s">"train_pos"</span>: positives[:int(len(positives)*0.8)],
+        <span class="s">"train_neg"</span>: negatives[:int(len(negatives)*0.8)],
+        <span class="s">"val"</span>:       positives[int(len(positives)*0.8):],
+        <span class="s">"test"</span>:      uncertain   <span class="c"># hardest cases for final benchmark</span>
+    }</pre>
+    <div class="callout ok"><strong>Academic note.</strong> Using your existing tile classifier as a data stratification mechanism — not as a competing method — is methodologically sound and avoids data leakage. Describe this explicitly in your methods section.</div>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 3 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 03</span>
+    <h2>Tile Strategy & Mask Simulation</h2>
+  </div>
+
+  <div class="step">
+    <h3>Step 3.1 — Tile size and overlap strategy</h3>
+    <p>Raw 26m tiles (130×130 px) are small. Use a larger contextual window at training time with 50% stride overlap to handle boundary logs and increase effective dataset size.</p>
+<pre><span class="k">def</span> <span class="n">extract_patches</span>(chm: np.ndarray, mask: np.ndarray,
+                    patch_size=256, stride=128) -> list:
+    <span class="s">"""Extract overlapping patches. Padding ensures boundary coverage."""</span>
+    H, W = chm.shape
+    pad = patch_size // 2
+    chm_p  = np.pad(chm,  pad, mode=<span class="s">'reflect'</span>)
+    mask_p = np.pad(mask, pad, mode=<span class="s">'constant'</span>, constant_values=0)
+
+    patches = []
+    <span class="k">for</span> y <span class="k">in</span> range(0, H, stride):
+        <span class="k">for</span> x <span class="k">in</span> range(0, W, stride):
+            chm_patch  = chm_p [y:y+patch_size, x:x+patch_size]
+            mask_patch = mask_p[y:y+patch_size, x:x+patch_size]
+            <span class="k">if</span> mask_patch.mean() > 0.05:  <span class="c"># skip fully empty patches</span>
+                patches.append({<span class="s">"chm"</span>: chm_patch, <span class="s">"valid_mask"</span>: mask_patch,
+                                 <span class="s">"origin"</span>: (y, x)})
+    <span class="k">return</span> patches</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 3.2 — Realistic ALS mask simulation <span class="badge sota">SOTA</span></h3>
+    <p>This is your primary methodological contribution in data preparation. Masks must statistically resemble real ALS gap patterns, not random dropout. Three gap types are combined: clustered canopy occlusion, flight-line stripe gaps, and fine random loss.</p>
+<pre><span class="k">import</span> cv2
+<span class="k">from</span> scipy.ndimage <span class="k">import</span> binary_dilation
+
+<span class="k">def</span> <span class="n">simulate_als_mask</span>(shape: tuple, target_nodata: float = 0.97,
+                      seed: int = None) -> np.ndarray:
+    <span class="s">"""Generate a realistic ALS NoData mask.
+
+    Returns binary mask: 1 = valid data, 0 = NoData.
+    target_nodata: fraction of pixels to mark as NoData.
+    Mirrors three physical sources of LiDAR data loss.
+    """</span>
+    rng = np.random.default_rng(seed)
+    H, W = shape
+    mask = np.ones(shape, dtype=np.float32)
+
+    <span class="c"># --- 1. Canopy occlusion: clustered elliptical holes ---</span>
+    n_clusters = rng.integers(80, 200)
+    <span class="k">for</span> _ <span class="k">in</span> range(n_clusters):
+        cy, cx = rng.integers(0, H), rng.integers(0, W)
+        ry = rng.integers(3, 18)
+        rx = rng.integers(3, 25)
+        angle = rng.uniform(0, 180)
+        ellipse_mask = np.zeros(shape, dtype=np.uint8)
+        cv2.ellipse(ellipse_mask, (cx, cy), (rx, ry), angle, 0, 360, 1, -1)
+        mask[ellipse_mask == 1] = 0
+
+    <span class="c"># --- 2. Flight-line stripes (occasional linear gaps) ---</span>
+    n_stripes = rng.integers(0, 4)
+    <span class="k">for</span> _ <span class="k">in</span> range(n_stripes):
+        x_start = rng.integers(0, W)
+        width   = rng.integers(1, 5)
+        mask[:, x_start:x_start+width] = 0
+
+    <span class="c"># --- 3. Fine random dropout (sensor noise) ---</span>
+    dropout_frac = rng.uniform(0.05, 0.20)
+    mask[rng.random(shape) < dropout_frac] = 0
+
+    <span class="c"># --- Calibrate to target sparsity by dilating existing holes ---</span>
+    current_nodata = 1.0 - mask.mean()
+    <span class="k">while</span> current_nodata < target_nodata - 0.01:
+        mask = 1.0 - binary_dilation(1 - mask).astype(np.float32)
+        current_nodata = 1.0 - mask.mean()
+
+    <span class="k">return</span> mask</pre>
+
+    <div class="callout info">
+      <strong>Citation:</strong> Justify this approach with reference to ALS gap characterisation literature: Morsdorf et al. (2006) on canopy gap fraction, and Leiterer et al. (2015) on sub-canopy point density. Your specific gap statistics (cluster size distribution, stripe frequency) should be derived from your own data in a calibration step — measure gap morphology on real tiles and parameterise the simulator accordingly.
+    </div>
+  </div>
+
+  <div class="step">
+    <h3>Step 3.3 — Augmentation pipeline</h3>
+    <p>Albumentations handles geometry augmentation. Importantly, the same geometric transform must be applied identically to CHM, valid mask, and the CWD label mask.</p>
+<pre><span class="k">import</span> albumentations <span class="k">as</span> A
+
+transform = A.Compose([
+    A.RandomRotate90(p=0.5),
+    A.Flip(p=0.5),
+    A.Transpose(p=0.3),
+    <span class="c"># Height-value augmentation: simulate varying canopy height</span>
+    A.RandomBrightnessContrast(
+        brightness_limit=0.15,   <span class="c"># ±15% height scaling</span>
+        contrast_limit=0.10,
+        p=0.4
+    ),
+    <span class="c"># Elastic deform: simulates terrain undulation</span>
+    A.ElasticTransform(alpha=15, sigma=4, p=0.3),
+    <span class="c"># Gaussian noise on valid pixels only (applied in forward pass)</span>
+], additional_targets={
+    <span class="s">"valid_mask"</span>: <span class="s">"mask"</span>,
+    <span class="s">"cwd_label"</span>: <span class="s">"mask"</span>
+})</pre>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 4 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 04</span>
+    <h2>Model Architecture</h2>
+  </div>
+
+  <div class="arch">
+    <div style="color:#8fccaa;font-weight:500;margin-bottom:8px;">MULTI-TASK PARTIAL CONV U-NET — DATA FLOW</div>
+    <div>
+      <span class="label">Input [B, 2, H, W]</span>
+      <span style="color:#666">  ← CHM (1 band) + valid_mask (1 band)</span>
+    </div>
+    <div class="arrow">        │</div>
+    <div><span class="layer">┌── Partial Conv Encoder ───────────────────────┐</span></div>
+    <div><span class="layer">│  PConv2d(2→64)  → BN → ReLU  → Pool    [64, H/2]  │</span></div>
+    <div><span class="layer">│  PConv2d(64→128) → BN → ReLU → Pool    [128,H/4]  │</span></div>
+    <div><span class="layer">│  PConv2d(128→256)→ BN → ReLU → Pool    [256,H/8]  │</span></div>
+    <div><span class="layer">│  PConv2d(256→512)→ BN → ReLU → Pool    [512,H/16] │</span></div>
+    <div><span class="layer">│  Bottleneck: CBAM Attention             [512,H/16] │</span></div>
+    <div><span class="layer">└───────────────────────────────────────────────────┘</span></div>
+    <div class="arrow">        │  (skip connections at each scale)</div>
+    <div class="arrow">        ├──────────────────────────────────────┐</div>
+    <div class="arrow">        │                                      │</div>
+    <div><span class="head">┌── RECONSTRUCTION HEAD ─┐   ┌── SEGMENTATION HEAD ──┐</span></div>
+    <div><span class="head">│  Upsample + PConv      │   │  Upsample + Conv       │</span></div>
+    <div><span class="head">│  ×4 decoder blocks     │   │  ×4 decoder blocks     │</span></div>
+    <div><span class="head">│  Conv(1) → sigmoid×10  │   │  Conv(1) → sigmoid     │</span></div>
+    <div><span class="head">│  [B, 1, H, W] CHM_hat  │   │  [B, 1, H, W] CWD_prob │</span></div>
+    <div><span class="head">└────────────────────────┘   └────────────────────────┘</span></div>
+    <div class="arrow">        │                                      │</div>
+    <div><span class="label">L_recon (L1+Sobel)          L_seg (Dice+Focal)</span></div>
+    <div class="arrow">        └──────────────┬───────────────────┘</div>
+    <div><span class="label">                   L_total = α·L_recon + β·L_seg</span></div>
+  </div>
+
+  <div class="step">
+    <h3>Step 4.1 — Partial Convolution layer <span class="badge sota">Liu et al. 2018</span></h3>
+    <p>The core building block. The mask is updated through each layer (valid regions grow as context is established), preventing NoData pixels from corrupting features.</p>
+<pre><span class="k">import</span> torch, torch.nn <span class="k">as</span> nn, torch.nn.functional <span class="k">as</span> F
+
+<span class="k">class</span> <span class="n">PartialConv2d</span>(nn.Module):
+    <span class="k">def</span> __init__(self, in_ch, out_ch, kernel_size=3, stride=1, padding=1):
+        super().__init__()
+        self.conv = nn.Conv2d(in_ch, out_ch, kernel_size, stride, padding, bias=False)
+        self.mask_conv = nn.Conv2d(1, 1, kernel_size, stride, padding, bias=False)
+        nn.init.constant_(self.mask_conv.weight, 1.0)
+        <span class="k">for</span> p <span class="k">in</span> self.mask_conv.parameters():
+            p.requires_grad = False
+        self.bn = nn.BatchNorm2d(out_ch)
+
+    <span class="k">def</span> <span class="n">forward</span>(self, x, mask):
+        <span class="c"># mask: 1 = valid, 0 = NoData. Must be same spatial size as x.</span>
+        <span class="k">with</span> torch.no_grad():
+            mask_sum = self.mask_conv(mask)
+            kernel_sum = self.mask_conv.weight.sum()
+            update_mask = (mask_sum > 0).float()
+
+        <span class="c"># Apply mask to input before convolution</span>
+        x_masked = x * mask
+        out = self.conv(x_masked)
+
+        <span class="c"># Normalise by number of valid pixels in each kernel window</span>
+        out = torch.where(
+            update_mask.bool(),
+            out * (kernel_sum / (mask_sum + 1e-8)),
+            torch.zeros_like(out)
+        )
+        out = self.bn(F.relu(out))
+        <span class="c"># Update mask: any window with ≥1 valid pixel → valid after this layer</span>
+        <span class="k">return</span> out, update_mask</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 4.2 — CBAM Attention bottleneck <span class="badge sota">Woo et al. 2018</span></h3>
+    <p>Applied at the bottleneck only. Channel attention re-weights feature maps by importance; spatial attention focuses computation on informative spatial locations (i.e. the sparse valid pixels).</p>
+<pre><span class="k">class</span> <span class="n">CBAM</span>(nn.Module):
+    <span class="k">def</span> __init__(self, channels, reduction=16, kernel_size=7):
+        super().__init__()
+        <span class="c"># Channel attention</span>
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.max_pool = nn.AdaptiveMaxPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channels, channels // reduction, bias=False),
+            nn.ReLU(),
+            nn.Linear(channels // reduction, channels, bias=False)
+        )
+        <span class="c"># Spatial attention</span>
+        self.spatial = nn.Conv2d(2, 1, kernel_size, padding=kernel_size//2, bias=False)
+
+    <span class="k">def</span> <span class="n">forward</span>(self, x):
+        B, C, H, W = x.shape
+        <span class="c"># Channel</span>
+        avg = self.fc(self.avg_pool(x).view(B, C))
+        mx  = self.fc(self.max_pool(x).view(B, C))
+        ch_att = torch.sigmoid(avg + mx).view(B, C, 1, 1)
+        x = x * ch_att
+        <span class="c"># Spatial</span>
+        sp_in = torch.cat([x.mean(dim=1, keepdim=True),
+                           x.max(dim=1, keepdim=True).values], dim=1)
+        sp_att = torch.sigmoid(self.spatial(sp_in))
+        <span class="k">return</span> x * sp_att</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 4.3 — MC Dropout for uncertainty quantification <span class="badge sota">Gal & Ghahramani 2016</span></h3>
+    <p>Dropout is kept active at inference time. Running N forward passes and computing variance across them gives a pixel-wise uncertainty map. High-uncertainty CWD predictions are flagged in the output.</p>
+<pre><span class="k">def</span> <span class="n">predict_with_uncertainty</span>(model, x, mask, n_passes=30):
+    <span class="s">"""Run N stochastic forward passes with dropout active.
+    Returns mean prediction and epistemic uncertainty per pixel."""</span>
+    model.train()  <span class="c"># keeps dropout ON</span>
+    preds = []
+    <span class="k">with</span> torch.no_grad():
+        <span class="k">for</span> _ <span class="k">in</span> range(n_passes):
+            recon, seg = model(x, mask)
+            preds.append(seg.unsqueeze(0))
+
+    preds = torch.cat(preds, dim=0)
+    mean_pred   = preds.mean(dim=0)
+    uncertainty = preds.var(dim=0)   <span class="c"># epistemic uncertainty</span>
+    <span class="k">return</span> mean_pred, uncertainty</pre>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 5 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 05</span>
+    <h2>Loss Function Design</h2>
+  </div>
+
+  <div class="step">
+    <h3>Step 5.1 — Reconstruction loss (L_recon)</h3>
+    <p>Three components applied only to originally-valid pixels in the target tile. The Sobel edge term is critical for log edge preservation.</p>
+<pre><span class="k">class</span> <span class="n">ReconstructionLoss</span>(nn.Module):
+    <span class="k">def</span> __init__(self, lambda_perc=0.1, lambda_edge=0.5):
+        super().__init__()
+        self.lambda_perc = lambda_perc
+        self.lambda_edge = lambda_edge
+
+        <span class="c"># Sobel kernels for edge loss</span>
+        sobel_x = torch.tensor([[-1,0,1],[-2,0,2],[-1,0,1]], dtype=torch.float32)
+        sobel_y = sobel_x.T
+        self.register_buffer(<span class="s">'sobel_x'</span>, sobel_x.view(1,1,3,3))
+        self.register_buffer(<span class="s">'sobel_y'</span>, sobel_y.view(1,1,3,3))
+
+    <span class="k">def</span> <span class="n">sobel_edges</span>(self, x):
+        Gx = F.conv2d(x, self.sobel_x, padding=1)
+        Gy = F.conv2d(x, self.sobel_y, padding=1)
+        <span class="k">return</span> torch.sqrt(Gx**2 + Gy**2 + 1e-8)
+
+    <span class="k">def</span> <span class="n">forward</span>(self, pred, target, valid_mask):
+        <span class="c"># Only compute loss on originally valid pixels</span>
+        m = valid_mask.float()
+
+        l1 = (torch.abs(pred - target) * m).sum() / (m.sum() + 1e-8)
+
+        edge_pred   = self.sobel_edges(pred)   * m
+        edge_target = self.sobel_edges(target) * m
+        l_edge = F.l1_loss(edge_pred, edge_target)
+
+        <span class="k">return</span> l1 + self.lambda_edge * l_edge</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 5.2 — Segmentation loss (L_seg)</h3>
+    <p>Combined Dice + Focal loss handles the extreme class imbalance (CWD pixels ≪ ground pixels). Dice is insensitive to class ratio; Focal down-weights easy negatives.</p>
+<pre><span class="k">class</span> <span class="n">SegmentationLoss</span>(nn.Module):
+    <span class="k">def</span> __init__(self, gamma=2.0, smooth=1.0):
+        super().__init__()
+        self.gamma = gamma
+        self.smooth = smooth
+
+    <span class="k">def</span> <span class="n">dice_loss</span>(self, pred, target):
+        pred_f   = pred.flatten(1)
+        target_f = target.flatten(1)
+        intersection = (pred_f * target_f).sum(1)
+        <span class="k">return</span> 1 - (2*intersection + self.smooth) / \
+               (pred_f.sum(1) + target_f.sum(1) + self.smooth)
+
+    <span class="k">def</span> <span class="n">focal_loss</span>(self, pred, target):
+        bce = F.binary_cross_entropy(pred, target, reduction=<span class="s">'none'</span>)
+        pt  = torch.exp(-bce)
+        <span class="k">return</span> ((1 - pt) ** self.gamma * bce).mean()
+
+    <span class="k">def</span> <span class="n">forward</span>(self, pred, target):
+        <span class="k">return</span> self.dice_loss(pred, target).mean() + self.focal_loss(pred, target)</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 5.3 — Joint loss with learned weighting</h3>
+    <p>Use uncertainty-based multi-task loss weighting (Kendall et al. 2018) so the balance between reconstruction and segmentation is learned rather than manually tuned — more defensible academically.</p>
+<pre><span class="k">class</span> <span class="n">MultiTaskLoss</span>(nn.Module):
+    <span class="k">def</span> __init__(self):
+        super().__init__()
+        <span class="c"># log(σ²) — learned task uncertainty weights</span>
+        self.log_var_recon = nn.Parameter(torch.zeros(1))
+        self.log_var_seg   = nn.Parameter(torch.zeros(1))
+
+    <span class="k">def</span> <span class="n">forward</span>(self, l_recon, l_seg):
+        <span class="c"># Uncertainty-weighted multi-task loss (Kendall et al. 2018)</span>
+        w_recon = torch.exp(-self.log_var_recon)
+        w_seg   = torch.exp(-self.log_var_seg)
+
+        loss = (w_recon * l_recon + self.log_var_recon +
+                w_seg   * l_seg   + self.log_var_seg)
+        <span class="k">return</span> loss.mean(), {
+            <span class="s">"weight_recon"</span>: w_recon.item(),
+            <span class="s">"weight_seg"</span>: w_seg.item()
+        }</pre>
+    <div class="callout ok">Logging the learned weights per epoch is a meaningful experimental result for your thesis. If the model shifts weight from reconstruction to segmentation over training, this indicates the encoder has learned the spatial structure and is ready to focus on detection.</div>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 6 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 06</span>
+    <h2>Training Protocol</h2>
+  </div>
+
+  <div class="step">
+    <h3>Step 6.1 — Curriculum learning strategy</h3>
+    <p>Start training on easier (less sparse) masks and gradually increase sparsity. This mirrors human learning and prevents the model from collapsing early when faced with 99% NoData from epoch 1.</p>
+<pre>CURRICULUM SCHEDULE:
+  Epochs  1–10:  target_nodata = 0.70  (relatively easy, model learns CHM structure)
+  Epochs 11–20:  target_nodata = 0.85  (moderate difficulty)
+  Epochs 21–35:  target_nodata = 0.95  (near real-world conditions)
+  Epochs 36–50:  target_nodata = 0.99  (full challenge, real-world match)</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 6.2 — PyTorch Lightning training module</h3>
+<pre><span class="k">import</span> pytorch_lightning <span class="k">as</span> pl
+
+<span class="k">class</span> <span class="n">CWDModel</span>(pl.LightningModule):
+    <span class="k">def</span> __init__(self, encoder_name=<span class="s">"efficientnet-b2"</span>, dropout_rate=0.3):
+        super().__init__()
+        self.model      = MultiTaskPartialUNet(encoder_name, dropout_rate)
+        self.recon_loss = ReconstructionLoss(lambda_edge=0.5)
+        self.seg_loss   = SegmentationLoss(gamma=2.0)
+        self.mt_loss    = MultiTaskLoss()
+        self.save_hyperparameters()
+
+    <span class="k">def</span> <span class="n">training_step</span>(self, batch, batch_idx):
+        chm, valid_mask, cwd_label, sim_mask = batch
+        x = torch.cat([chm * sim_mask, sim_mask], dim=1)  <span class="c"># 2-channel input</span>
+
+        chm_hat, cwd_prob = self.model(x, sim_mask)
+
+        l_r = self.recon_loss(chm_hat, chm, valid_mask)
+        l_s = self.seg_loss(cwd_prob, cwd_label)
+        loss, weights = self.mt_loss(l_r, l_s)
+
+        self.log_dict({<span class="s">"train/loss"</span>: loss, <span class="s">"train/l_recon"</span>: l_r,
+                       <span class="s">"train/l_seg"</span>: l_s, **{f<span class="s">"w/{k}"</span>: v <span class="k">for</span> k,v <span class="k">in</span> weights.items()}})
+        <span class="k">return</span> loss
+
+    <span class="k">def</span> <span class="n">configure_optimizers</span>(self):
+        opt = torch.optim.AdamW(self.parameters(), lr=3e-4, weight_decay=1e-4)
+        sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=50)
+        <span class="k">return</span> [opt], [sched]</pre>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 7 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 07</span>
+    <h2>Inference Pipeline</h2>
+  </div>
+
+  <div class="step">
+    <h3>Step 7.1 — Overlapping tile inference with confidence blending</h3>
+<pre><span class="k">def</span> <span class="n">predict_tile_overlap</span>(model, chm_tile, valid_mask_tile,
+                         patch_size=256, stride=128, n_mc=30):
+    <span class="s">"""Inference with 50% overlap and Gaussian blending to eliminate
+    boundary artefacts. Returns mean CWD probability and uncertainty."""</span>
+    H, W = chm_tile.shape
+    accum_prob = np.zeros((H, W), dtype=np.float64)
+    accum_unc  = np.zeros((H, W), dtype=np.float64)
+    accum_w    = np.zeros((H, W), dtype=np.float64)
+
+    <span class="c"># Gaussian weight window — upweights patch centre, downweights edges</span>
+    window = gaussian_window(patch_size)
+
+    <span class="k">for</span> y <span class="k">in</span> range(0, H - patch_size + 1, stride):
+        <span class="k">for</span> x <span class="k">in</span> range(0, W - patch_size + 1, stride):
+            patch = chm_tile[y:y+patch_size, x:x+patch_size]
+            pmask = valid_mask_tile[y:y+patch_size, x:x+patch_size]
+            inp   = prepare_input(patch, pmask)
+
+            mean_p, unc = predict_with_uncertainty(model, inp, n_passes=n_mc)
+            accum_prob[y:y+patch_size, x:x+patch_size] += mean_p * window
+            accum_unc [y:y+patch_size, x:x+patch_size] += unc   * window
+            accum_w   [y:y+patch_size, x:x+patch_size] += window
+
+    cwd_prob    = accum_prob / (accum_w + 1e-8)
+    uncertainty = accum_unc  / (accum_w + 1e-8)
+    <span class="k">return</span> cwd_prob, uncertainty</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 7.2 — Formalised CWD candidate filter</h3>
+    <p>Post-processing applies three sequential filters to keep only high-confidence, physically plausible detections.</p>
+<pre><span class="k">from</span> skimage <span class="k">import</span> measure, morphology
+
+<span class="k">def</span> <span class="n">extract_cwd_candidates</span>(cwd_prob, uncertainty, valid_mask_original,
+                           prob_thresh=0.5, unc_thresh=0.15,
+                           min_valid_fraction=0.15,
+                           min_elongation=3.0) -> gpd.GeoDataFrame:
+    <span class="s">"""Extract CWD candidates with confidence filtering.
+
+    Formalised criteria (state these explicitly in thesis methods):
+      1. Probability threshold:     p_cwd > prob_thresh
+      2. Uncertainty threshold:     uncertainty < unc_thresh
+      3. Valid pixel fraction:      ≥15% of segment footprint has original ALS returns
+      4. Shape elongation:          major_axis / minor_axis > 3.0
+    """</span>
+    <span class="c"># 1+2: probability and uncertainty gates</span>
+    binary = (cwd_prob > prob_thresh) & (uncertainty < unc_thresh)
+
+    <span class="c"># 3+4: per-segment shape and provenance filters</span>
+    labels = measure.label(binary)
+    candidates = []
+
+    <span class="k">for</span> region <span class="k">in</span> measure.regionprops(labels):
+        <span class="c"># Shape filter: elongation</span>
+        <span class="k">if</span> region.minor_axis_length < 1: <span class="k">continue</span>
+        elongation = region.major_axis_length / region.minor_axis_length
+        <span class="k">if</span> elongation < min_elongation: <span class="k">continue</span>
+
+        <span class="c"># Provenance filter: original valid pixel fraction</span>
+        seg_mask = labels == region.label
+        valid_frac = (valid_mask_original[seg_mask]).mean()
+        <span class="k">if</span> valid_frac < min_valid_fraction: <span class="k">continue</span>
+
+        candidates.append({
+            <span class="s">"geometry"</span>: region.bbox,
+            <span class="s">"length_px"</span>: region.major_axis_length,
+            <span class="s">"elongation"</span>: elongation,
+            <span class="s">"mean_prob"</span>: cwd_prob[seg_mask].mean(),
+            <span class="s">"mean_uncertainty"</span>: uncertainty[seg_mask].mean(),
+            <span class="s">"valid_return_fraction"</span>: valid_frac,
+            <span class="c"># Confidence class for reporting</span>
+            <span class="s">"confidence"</span>: <span class="s">"HIGH"</span> <span class="k">if</span> valid_frac > 0.30 <span class="k">else</span> <span class="s">"MEDIUM"</span>
+        })
+    <span class="k">return</span> candidates</pre>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 8 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 08</span>
+    <h2>Evaluation & Validation</h2>
+  </div>
+
+  <div class="step">
+    <h3>Step 8.1 — Ablation study design</h3>
+    <p>Run ablation experiments to demonstrate the contribution of each architectural component. This is required for a strong methods section.</p>
+    <table>
+      <thead>
+        <tr><th>Experiment</th><th>Change from full model</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>A — Baseline</td><td>Standard U-Net, random mask, no edge loss</td><td>Lower bound</td></tr>
+        <tr><td>B — + Partial Conv</td><td>PConv only, no CBAM, no edge loss</td><td>Isolate PConv gain</td></tr>
+        <tr><td>C — + Realistic mask</td><td>PConv + realistic mask, no CBAM</td><td>Isolate mask sim. gain</td></tr>
+        <tr><td>D — + CBAM</td><td>PConv + realistic mask + CBAM</td><td>Isolate attention gain</td></tr>
+        <tr><td>E — + Edge loss</td><td>Full model without multi-task</td><td>Isolate Sobel gain</td></tr>
+        <tr><td><strong>F — Full model</strong></td><td>All components + multi-task</td><td>Final method</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="step">
+    <h3>Step 8.2 — Metrics</h3>
+    <div class="pills">
+      <span class="pill g">Reconstruction: RMSE, SSIM, PSNR</span>
+      <span class="pill b">Segmentation: F1, Precision, Recall, IoU</span>
+      <span class="pill y">Uncertainty: ECE (Expected Calibration Error)</span>
+      <span class="pill g">CWD detection: Log-level Precision/Recall vs field inventory</span>
+    </div>
+<pre><span class="k">from</span> skimage.metrics <span class="k">import</span> structural_similarity, peak_signal_noise_ratio
+
+<span class="k">def</span> <span class="n">evaluate_reconstruction</span>(pred, target, valid_mask):
+    m = valid_mask.astype(bool)
+    rmse = np.sqrt(((pred[m] - target[m])**2).mean())
+    ssim = structural_similarity(pred, target, data_range=target.max())
+    <span class="k">return</span> {<span class="s">"RMSE"</span>: rmse, <span class="s">"SSIM"</span>: ssim}
+
+<span class="k">def</span> <span class="n">evaluate_segmentation</span>(pred_prob, gt_mask, threshold=0.5):
+    pred_bin = (pred_prob > threshold).astype(int)
+    tp = (pred_bin * gt_mask).sum()
+    fp = (pred_bin * (1 - gt_mask)).sum()
+    fn = ((1 - pred_bin) * gt_mask).sum()
+    precision = tp / (tp + fp + 1e-8)
+    recall    = tp / (tp + fn + 1e-8)
+    f1 = 2 * precision * recall / (precision + recall + 1e-8)
+    iou = tp / (tp + fp + fn + 1e-8)
+    <span class="k">return</span> {<span class="s">"F1"</span>: f1, <span class="s">"Precision"</span>: precision,
+            <span class="s">"Recall"</span>: recall, <span class="s">"IoU"</span>: iou}</pre>
+  </div>
+
+  <div class="step">
+    <h3>Step 8.3 — Simulated degradation experiment (main validation)</h3>
+    <p>This is the core experiment that validates the entire pipeline with ground truth, since you have no ground truth for 99% sparse real tiles.</p>
+<pre>EXPERIMENTAL DESIGN:
+  ┌─────────────────────────────────────────────────────┐
+  │  Take held-out GOOD tiles (50% valid, manual CWD)  │
+  │           [Ground truth known]                      │
+  │                    │                                │
+  │    Simulate 99% NoData mask (simulate_als_mask)    │
+  │                    │                                │
+  │         Run full inference pipeline                 │
+  │                    │                                │
+  │  Compare detected CWD vs ground truth              │
+  │  → F1 score, Precision/Recall per diameter class   │
+  └─────────────────────────────────────────────────────┘
+
+EXPECTED RESULT STRUCTURE:
+  Table 2: Detection performance by diameter class
+    - &lt; 10 cm diameter: likely low recall (below detection limit)
+    - 10–20 cm:         moderate recall (~50–60%)
+    - &gt; 20 cm:          high recall (~70–85%)
+
+  This stratification is essential: it lets you state exactly WHERE
+  the physical detection limit is, not just a single aggregate number.</pre>
+    <div class="callout warn"><strong>Honest reporting.</strong> If recall for small-diameter logs is near zero, report it exactly. A paper that clearly defines its detection limits is more credible — and more useful — than one that reports inflated aggregate metrics.</div>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────── PHASE 9 ── -->
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-num">PHASE 09</span>
+    <h2>Academic Framing & Citations</h2>
+  </div>
+
+  <div class="step">
+    <h3>Thesis chapter structure</h3>
+    <table>
+      <thead>
+        <tr><th>Chapter</th><th>Key content</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Introduction</td><td>CWD ecological importance, remote sensing gap, research questions</td></tr>
+        <tr><td>Literature Review</td><td>ALS-based forest inventory, inpainting networks, sparse CNNs, multi-task learning in remote sensing</td></tr>
+        <tr><td>Data & Study Area</td><td>ALS acquisition parameters, ground density audit results, tile inventory</td></tr>
+        <tr><td>Methodology</td><td>Full pipeline (Phases 2–7), all formalised criteria, architecture diagram</td></tr>
+        <tr><td>Results</td><td>Ablation table, diameter-stratified detection table, uncertainty calibration figure</td></tr>
+        <tr><td>Discussion</td><td>Detection limits, hallucination vs. interpolation comparison, future work</td></tr>
+        <tr><td>Conclusions</td><td>Contribution summary, applicability to forest inventory workflows</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="step">
+    <h3>Essential citations by category</h3>
+
+    <p style="font-weight:500;margin:12px 0 6px;color:var(--ink);">Architecture foundations</p>
+    <div class="cite-block">
+      <div class="ref">Liu et al. (2018) — NeurIPS / ECCV</div>
+      <p><em>Image Inpainting for Irregular Holes Using Partial Convolutions.</em> The mathematical basis for your PConv layers. Cite for the layer formulation and the mask update rule.</p>
+    </div>
+    <div class="cite-block">
+      <div class="ref">Ronneberger et al. (2015) — MICCAI</div>
+      <p><em>U-Net: Convolutional Networks for Biomedical Image Segmentation.</em> U-Net architecture basis. Justified because sparse CHM segmentation is structurally analogous to medical image segmentation on sparse contrast data.</p>
+    </div>
+    <div class="cite-block">
+      <div class="ref">Woo et al. (2018) — ECCV</div>
+      <p><em>CBAM: Convolutional Block Attention Module.</em> Cite for the attention bottleneck. Note explicitly that you apply CBAM at the bottleneck only, not at every layer, citing computational constraints.</p>
+    </div>
+
+    <p style="font-weight:500;margin:12px 0 6px;color:var(--ink);">Loss functions & training</p>
+    <div class="cite-block">
+      <div class="ref">Kendall et al. (2018) — CVPR</div>
+      <p><em>Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics.</em> Justification for your learned multi-task loss weighting.</p>
+    </div>
+    <div class="cite-block">
+      <div class="ref">Lin et al. (2017) — ICCV</div>
+      <p><em>Focal Loss for Dense Object Detection.</em> Justification for Focal loss component to handle CWD class imbalance.</p>
+    </div>
+    <div class="cite-block">
+      <div class="ref">Gal & Ghahramani (2016) — ICML</div>
+      <p><em>Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning.</em> Theoretical basis for your MC Dropout uncertainty quantification.</p>
+    </div>
+
+    <p style="font-weight:500;margin:12px 0 6px;color:var(--ink);">CWD & ALS remote sensing</p>
+    <div class="cite-block">
+      <div class="ref">Polewski et al. (2015, 2017) — ISPRS Journal</div>
+      <p>Detection of fallen trees in ALS data using random forests. The closest existing work to your pipeline — compare your results to their reported metrics where possible.</p>
+    </div>
+    <div class="cite-block">
+      <div class="ref">Stereńczak et al. (2018) — Forest Ecology and Management</div>
+      <p>ALS-based CWD characterisation. Use for study design comparison and ecological context.</p>
+    </div>
+    <div class="cite-block">
+      <div class="ref">Frangi et al. (1998) — MICCAI</div>
+      <p>Multiscale vessel enhancement filtering (Frangi/vesselness filter). Cite as the baseline classical method you compare against in the ablation.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <h3>Experiment tracking — W&amp;B setup</h3>
+<pre><span class="k">import</span> wandb
+
+wandb.init(
+    project=<span class="s">"cwd-detection-thesis"</span>,
+    config={
+        <span class="s">"encoder"</span>:        <span class="s">"efficientnet-b2"</span>,
+        <span class="s">"patch_size"</span>:     256,
+        <span class="s">"batch_size"</span>:     8,
+        <span class="s">"lr"</span>:             3e-4,
+        <span class="s">"dropout"</span>:        0.3,
+        <span class="s">"lambda_edge"</span>:    0.5,
+        <span class="s">"focal_gamma"</span>:    2.0,
+        <span class="s">"mc_passes"</span>:      30,
+        <span class="s">"min_valid_frac"</span>: 0.15,
+        <span class="s">"min_elongation"</span>: 3.0,
+    }
+)
+<span class="c"># Log everything: loss curves, sample predictions, uncertainty maps,
+# confusion matrices, learned task weights per epoch</span></pre>
+  </div>
+
+  <div class="callout ok" style="margin-top:32px;">
+    <strong>Thesis novelty summary</strong> — four distinct contributions you can claim:<br>
+    1. First application of Partial Convolution inpainting to single-band geophysical (CHM) rasters for sub-canopy structure reconstruction.<br>
+    2. Physically-calibrated ALS gap simulation as a self-supervised training strategy.<br>
+    3. Multi-task joint reconstruction + CWD segmentation with uncertainty-weighted loss.<br>
+    4. Formalised detection confidence framework (provenance filtering + MC Dropout uncertainty) that is directly transferable to operational forest inventory workflows.
+  </div>
+</div>
+
+</body>
+</html>

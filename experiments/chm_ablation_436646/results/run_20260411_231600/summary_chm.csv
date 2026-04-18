@@ -1,0 +1,2 @@
+year,chm_name,chm_path,variant_id,source_root,relative_parent,mean_f1,mean_auc,mean_precision,mean_recall,mean_accuracy,n_models
+2018,436646_2018_madal_cdw_features_lowest_all_all_20cm.tif,/workspace/data/lamapuit/cdw_experiments_436646/lowest_all/436646_2018_madal_cdw_features_lowest_all_all_20cm.tif,madal_cdw_features_lowest_all_all_20cm,lamapuit,cdw_experiments_436646/lowest_all,0.02777777777777778,0.8510273972602741,0.16666666666666666,0.015151515151515152,0.929936305732484,3

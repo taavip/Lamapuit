@@ -1,0 +1,6 @@
+raster,row_off,col_off,chunk_size,label,source,annotator,model_name,model_prob,timestamp
+451397_2022_madal_chm_max_hag_20cm.tif,128,1472,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9997,2026-03-23T20:10:49
+451397_2022_madal_chm_max_hag_20cm.tif,3264,0,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9995,2026-03-23T20:11:07
+451397_2022_madal_chm_max_hag_20cm.tif,4480,1088,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9996,2026-03-23T20:11:14
+451397_2022_madal_chm_max_hag_20cm.tif,4544,2496,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9996,2026-03-23T20:11:15
+451397_2022_madal_chm_max_hag_20cm.tif,4736,2560,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9995,2026-03-23T20:11:16

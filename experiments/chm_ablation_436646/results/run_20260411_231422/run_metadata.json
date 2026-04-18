@@ -1,0 +1,16 @@
+{
+  "tile_id": "436646",
+  "years": [
+    2018,
+    2020,
+    2022,
+    2024
+  ],
+  "dry_run": true,
+  "run_dir": "/workspace/experiments/chm_ablation_436646/results/run_20260411_231422",
+  "n_selected_models": 5,
+  "n_discovered_chms": 12,
+  "n_label_years": 4,
+  "n_metric_rows": 60,
+  "label_sources_filter": []
+}

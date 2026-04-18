@@ -1,0 +1,19 @@
+raster,row_off,col_off,chunk_size,label,source,annotator,model_name,model_prob,timestamp
+580540_2019_madal_chm_max_hag_20cm.tif,768,3264,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0695,2026-03-23T21:01:04
+580540_2019_madal_chm_max_hag_20cm.tif,960,3648,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9995,2026-03-23T21:01:05
+580540_2019_madal_chm_max_hag_20cm.tif,1024,4416,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9996,2026-03-23T21:01:06
+580540_2019_madal_chm_max_hag_20cm.tif,1088,2688,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0457,2026-03-23T21:01:06
+580540_2019_madal_chm_max_hag_20cm.tif,1152,2688,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0640,2026-03-23T21:01:07
+580540_2019_madal_chm_max_hag_20cm.tif,1344,1536,128,no_cdw,manual,,Ensemble(4 models),0.1308,2026-03-24T20:54:23
+580540_2019_madal_chm_max_hag_20cm.tif,1664,3072,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0555,2026-03-23T21:01:11
+580540_2019_madal_chm_max_hag_20cm.tif,2176,4288,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0693,2026-03-23T21:01:15
+580540_2019_madal_chm_max_hag_20cm.tif,2368,1344,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9997,2026-03-23T21:01:17
+580540_2019_madal_chm_max_hag_20cm.tif,2368,2944,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0674,2026-03-23T21:01:17
+580540_2019_madal_chm_max_hag_20cm.tif,2752,384,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0591,2026-03-23T21:01:20
+580540_2019_madal_chm_max_hag_20cm.tif,3008,960,128,cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.9996,2026-03-23T21:01:22
+580540_2019_madal_chm_max_hag_20cm.tif,3200,640,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0652,2026-03-23T21:01:23
+580540_2019_madal_chm_max_hag_20cm.tif,3392,2944,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0696,2026-03-23T21:01:25
+580540_2019_madal_chm_max_hag_20cm.tif,3456,2816,128,no_cdw,manual,,Ensemble(4 models),0.0965,2026-03-24T20:54:34
+580540_2019_madal_chm_max_hag_20cm.tif,3584,448,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0677,2026-03-23T21:01:26
+580540_2019_madal_chm_max_hag_20cm.tif,4096,3392,128,no_cdw,manual,,Ensemble(4 models),0.1257,2026-03-24T20:54:43
+580540_2019_madal_chm_max_hag_20cm.tif,4544,128,128,no_cdw,manual,,Ensemble(4 models),0.1142,2026-03-24T20:54:02

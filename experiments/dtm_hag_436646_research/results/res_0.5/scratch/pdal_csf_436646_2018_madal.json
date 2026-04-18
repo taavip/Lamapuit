@@ -1,0 +1,24 @@
+[
+  {
+    "type": "readers.las",
+    "filename": "data/lamapuit/laz/436646_2018_madal.laz",
+    "override_srs": "EPSG:3301"
+  },
+  {
+    "type": "filters.assign",
+    "value": "Classification = 1"
+  },
+  {
+    "type": "filters.csf",
+    "resolution": 0.5,
+    "rigidness": 3,
+    "step": 0.65,
+    "threshold": 0.5,
+    "hdiff": 0.3
+  },
+  {
+    "type": "writers.las",
+    "filename": "experiments/dtm_hag_436646_research/results/res_0.5/scratch/436646_2018_madal_csf_ground.laz",
+    "compression": "true"
+  }
+]

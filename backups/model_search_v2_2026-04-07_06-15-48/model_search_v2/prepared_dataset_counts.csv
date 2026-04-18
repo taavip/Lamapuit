@@ -1,0 +1,11 @@
+metric,value
+base_labeled_rows,21998
+drop_labeled_rows,585477
+drop_kept_manual_or_reviewed,8386
+drop_kept_threshold_gate,5448
+curated_rows_after_dedup,35832
+base_test_keys,2849
+extra_test_keys,500
+total_test_keys,3349
+linked_chm_files,0
+selected_model_count,12

@@ -1,0 +1,2 @@
+variant_id,mean_f1,mean_auc,mean_precision,mean_recall,mean_accuracy,n_years,n_cases
+madal_cdw_features_lowest_all_all_20cm,0.02777777777777778,0.8510273972602741,0.16666666666666666,0.015151515151515152,0.929936305732484,1,3

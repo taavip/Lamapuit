@@ -1,0 +1,17 @@
+{
+  "pipeline": [
+    "data/lamapuit/laz/436646_2018_madal.laz",
+    {
+      "type": "filters.range",
+      "limits": "Classification[2:2]"
+    },
+    {
+      "type": "filters.voxeldownsize",
+      "cell": 0.2
+    },
+    {
+      "type": "writers.ogr",
+      "filename": "test_out.shp"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "created_at": "2026-04-03T18:02:48+00:00",
+  "args": {
+    "base_labels": "/workspace/output/tile_labels",
+    "drop_labels": "/workspace/output/onboarding_labels_v2_drop13",
+    "base_test_split": "/workspace/output/tile_labels/cnn_test_split.json",
+    "base_chm_dir": "/workspace/chm_max_hag",
+    "drop_chm_dir": "/workspace/data/lamapuit/chm_max_hag_13_drop",
+    "prior_summary": "/workspace/output/model_search/experiment_summary.csv",
+    "base_search_script": "/workspace/scripts/model_search.py",
+    "output": "output/model_search_v2",
+    "n_models": 12,
+    "t_high": 0.9995,
+    "t_low": 0.0698,
+    "extra_test_fraction": 0.1,
+    "max_extra_test": 500,
+    "min_extra_group_size": 15,
+    "seed": 2026,
+    "n_folds": 5,
+    "batch_size": 32,
+    "epochs_scratch": 60,
+    "epochs_pretrained": 40,
+    "patience": 10,
+    "top_k_expand": 12,
+    "top_k_final": 12,
+    "max_extended": 36,
+    "stage2_strategies": "full,focal,mixup_swa,tta",
+    "stage2_epochs": 60,
+    "stage2_patience": 10,
+    "stage2_pilot": false,
+    "stage2_pilot_top_models": 6,
+    "smoke_test": false,
+    "prepare_only": false
+  },
+  "thresholds": {
+    "t_high": 0.9995,
+    "t_low": 0.0698
+  },
+  "top_models": [
+    "deep_cnn_attn",
+    "deep_cnn_attn_headlight",
+    "deep_cnn_attn_dropout_tuned",
+    "deep_cnn_attn_headwide",
+    "convnext_small",
+    "convnext_tiny",
+    "efficientnet_b2",
+    "densenet121",
+    "efficientnet_b0",
+    "swin_t",
+    "resnet34",
+    "resnet50"
+  ],
+  "curated_stats": {
+    "base_labeled_rows": 21998,
+    "drop_labeled_rows": 585477,
+    "drop_kept_manual_or_reviewed": 8386,
+    "drop_kept_threshold_gate": 5448,
+    "drop_kept_total_before_dedup": 13834,
+    "curated_rows_after_dedup": 35832,
+    "curated_rasters": 111,
+    "drop_rows_after_dedup": 13834
+  },
+  "test_stats": {
+    "created_at": "2026-04-03T18:02:48+00:00",
+    "base_test_keys": 2849,
+    "extra_test_keys": 500,
+    "total_test_keys": 3349,
+    "extra_fraction": 0.1,
+    "max_extra": 500,
+    "min_group_size": 15
+  },
+  "chm_stats": {
+    "merged_dir": "output/model_search_v2/prepared/chm_merged",
+    "linked_files": 0,
+    "skipped_existing": 177,
+    "missing_dirs": []
+  }
+}

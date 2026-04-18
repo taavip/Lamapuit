@@ -1,0 +1,3 @@
+raster,row_off,col_off,chunk_size,label,source,annotator,model_name,model_prob,timestamp
+579543_2018_madal_chm_max_hag_20cm.tif,2304,2240,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0687,2026-03-23T20:12:43
+579543_2018_madal_chm_max_hag_20cm.tif,4352,832,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0692,2026-03-23T20:12:54

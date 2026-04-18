@@ -1,0 +1,95 @@
+{
+  "config": {
+    "experiment_id": "s1_deep_cnn_attn_full_ce_mixup_60_5_1068218c",
+    "model_name": "deep_cnn_attn",
+    "data_strategy": "full",
+    "loss_name": "ce",
+    "regularization": "mixup",
+    "epochs": 60,
+    "batch_size": 32,
+    "lr_head": 0.0005,
+    "lr_backbone": 0.0005,
+    "label_smoothing": 0.05,
+    "patience": 10,
+    "seed": 2027,
+    "use_tta": false
+  },
+  "summary": {
+    "experiment_id": "s1_deep_cnn_attn_full_ce_mixup_60_5_1068218c",
+    "model_name": "deep_cnn_attn",
+    "data_strategy": "full",
+    "loss_name": "ce",
+    "regularization": "mixup",
+    "epochs": 60,
+    "batch_size": 32,
+    "lr_head": 0.0005,
+    "lr_backbone": 0.0005,
+    "label_smoothing": 0.05,
+    "patience": 10,
+    "seed": 2027,
+    "use_tta": false,
+    "n_samples": 33146,
+    "mean_cv_auc": 0.990128633682896,
+    "std_cv_auc": 0.00043739140072660226,
+    "mean_cv_f1": 0.9126119205561958,
+    "std_cv_f1": 0.00305935843488713,
+    "mean_cv_precision": 0.8935340903409671,
+    "mean_cv_recall": 0.9327956566073741,
+    "best_fold_f1": 0.9172849683979115,
+    "worst_fold_f1": 0.9086350974930362,
+    "mean_threshold": 0.622,
+    "training_time_s": 8744.262246706
+  },
+  "folds": [
+    {
+      "experiment_id": "s1_deep_cnn_attn_full_ce_mixup_60_5_1068218c",
+      "fold": 1,
+      "auc": 0.9899024157702447,
+      "f1": 0.9128516271373415,
+      "precision": 0.879383634431456,
+      "recall": 0.9489678899082569,
+      "threshold": 0.58,
+      "best_epoch": 58
+    },
+    {
+      "experiment_id": "s1_deep_cnn_attn_full_ce_mixup_60_5_1068218c",
+      "fold": 2,
+      "auc": 0.9903552265477794,
+      "f1": 0.9172849683979115,
+      "precision": 0.8977945131791286,
+      "recall": 0.9376404494382022,
+      "threshold": 0.6499999999999999,
+      "best_epoch": 54
+    },
+    {
+      "experiment_id": "s1_deep_cnn_attn_full_ce_mixup_60_5_1068218c",
+      "fold": 3,
+      "auc": 0.9906131249684098,
+      "f1": 0.9142236699239956,
+      "precision": 0.9107625743645213,
+      "recall": 0.9177111716621253,
+      "threshold": 0.6699999999999999,
+      "best_epoch": 60
+    },
+    {
+      "experiment_id": "s1_deep_cnn_attn_full_ce_mixup_60_5_1068218c",
+      "fold": 4,
+      "auc": 0.9893853223968327,
+      "f1": 0.9100642398286938,
+      "precision": 0.8835758835758836,
+      "recall": 0.9381898454746137,
+      "threshold": 0.59,
+      "best_epoch": 55
+    },
+    {
+      "experiment_id": "s1_deep_cnn_attn_full_ce_mixup_60_5_1068218c",
+      "fold": 5,
+      "auc": 0.9903870787312132,
+      "f1": 0.9086350974930362,
+      "precision": 0.8961538461538462,
+      "recall": 0.9214689265536723,
+      "threshold": 0.62,
+      "best_epoch": 48
+    }
+  ]
+}

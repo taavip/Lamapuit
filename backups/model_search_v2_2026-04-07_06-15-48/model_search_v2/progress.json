@@ -1,0 +1,12 @@
+{
+  "status": "running",
+  "stage": "stage2",
+  "stage_progress": {
+    "current": 8,
+    "total": 36
+  },
+  "experiment_id": "s2_convnext_small_full_ce_mixup_tta_1_ep_60_focused_e047d101",
+  "use_tta": true,
+  "message": "Running Stage 2 extended experiment",
+  "updated_at": "2026-04-07T06:15:48+00:00"
+}

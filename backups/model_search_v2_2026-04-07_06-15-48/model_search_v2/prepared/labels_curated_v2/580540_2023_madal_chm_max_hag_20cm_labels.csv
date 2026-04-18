@@ -1,0 +1,8 @@
+raster,row_off,col_off,chunk_size,label,source,annotator,model_name,model_prob,timestamp
+580540_2023_madal_chm_max_hag_20cm.tif,0,3008,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0586,2026-03-23T21:03:27
+580540_2023_madal_chm_max_hag_20cm.tif,64,3072,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0642,2026-03-23T21:03:28
+580540_2023_madal_chm_max_hag_20cm.tif,448,3072,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0552,2026-03-23T21:03:31
+580540_2023_madal_chm_max_hag_20cm.tif,448,3136,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0568,2026-03-23T21:03:31
+580540_2023_madal_chm_max_hag_20cm.tif,448,3200,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0577,2026-03-23T21:03:31
+580540_2023_madal_chm_max_hag_20cm.tif,768,3264,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0685,2026-03-23T21:03:33
+580540_2023_madal_chm_max_hag_20cm.tif,3328,384,128,no_cdw,auto_threshold_gate_v2,,Ensemble(4 models),0.0617,2026-03-23T21:03:53

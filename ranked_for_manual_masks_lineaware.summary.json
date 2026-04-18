@@ -1,0 +1,22 @@
+{
+  "manifest_csv": "output/cam_masks_gradcam_lineaware_smallsplit/manifest.csv",
+  "output_csv": "ranked_for_manual_masks_lineaware.csv",
+  "input_candidates": 128,
+  "prefiltered_candidates": 128,
+  "selected_candidates": 128,
+  "assigned_classifier_probs": 0,
+  "used_classifier_entropy": false,
+  "prefilter_k": 4000,
+  "top_k": 1000,
+  "max_per_mapsheet": 0,
+  "weights": {
+    "w_entropy": 0.45,
+    "w_border": 0.25,
+    "w_ratio": 0.15,
+    "w_structure": 0.1,
+    "w_cam_unc": 0.05
+  },
+  "diversity_exp": 0.5,
+  "target_positive_ratio": 0.05,
+  "ratio_sigma": 0.04
+}

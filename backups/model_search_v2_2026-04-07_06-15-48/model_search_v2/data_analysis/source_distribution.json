@@ -1,0 +1,10 @@
+{
+  "counts": {
+    "manual": 27890,
+    "auto_threshold_gate_v2": 5256
+  },
+  "fractions": {
+    "manual": 0.841428830024739,
+    "auto_threshold_gate_v2": 0.15857116997526097
+  }
+}
