@@ -1,0 +1,29 @@
+{
+  "laz": "data/lamapuit/laz/436646_2018_madal.laz",
+  "fused_surface": "data/lamapuit/cdw_experiments_436646_2018_ground_last_vs_last2/median_ground/436646_2018_madal_fused_surface_median_ground_20cm.tif",
+  "hag_min": 0.0,
+  "hag_max": 1.3,
+  "total_points_seen": 32442204,
+  "total_mapped_to_grid": 32442204,
+  "total_in_hag_range": 13671669,
+  "class_counts_in_hag_range": {
+    "1": 567817,
+    "2": 13103754,
+    "5": 9,
+    "9": 89
+  },
+  "class6_count_in_hag_range": 0,
+  "class9_count_in_hag_range": 89,
+  "return_counts_in_hag_range": {
+    "last": 13599992,
+    "second_last": 71677,
+    "third_last": 0,
+    "unknown": 0
+  },
+  "return_counts_after_excluding_classes_6_9": {
+    "last": 13599903,
+    "second_last": 71677,
+    "third_last": 0,
+    "unknown": 0
+  }
+}

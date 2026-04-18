@@ -1,0 +1,8 @@
+model_id,experiment_source,model_name,data_strategy,loss_name,regularization,test_auc,test_f1,test_precision,test_recall,threshold_from_val,confusion_matrix
+stacking_top5,stacking,stacking_logreg,mixed,mixed,mixed,0.9982415876499082,0.9671641791044776,0.9788519637462236,0.9557522123893806,0.9243853558660104,"[[1840, 7], [15, 324]]"
+soft_vote_top5,ensemble,soft_vote,mixed,mixed,mixed,0.9981920774020856,0.9646017699115044,0.9646017699115044,0.9646017699115044,0.596,"[[1835, 12], [12, 327]]"
+deep_cnn_attn_headwide_full_ce_mixup,s2_deep_cnn_attn_headwide_full_ce_mixup_tta_1_ep_60_pilot_dbfbab2a,deep_cnn_attn_headwide,full,ce,mixup,0.997676212561868,0.9643916913946587,0.9701492537313432,0.9587020648967552,0.73,"[[1837, 10], [14, 325]]"
+deep_cnn_attn_full_ce_mixup,s2_deep_cnn_attn_full_ce_mixup_tta_1_ep_60_pilot_69193e35,deep_cnn_attn,full,ce,mixup,0.9973152668841924,0.9629629629629628,0.9672619047619048,0.9587020648967552,0.6,"[[1836, 11], [14, 325]]"
+deep_cnn_attn_headlight_full_ce_mixup,s2_deep_cnn_attn_headlight_full_ce_mixup_tta_1_ep_60_pilot_38345209,deep_cnn_attn_headlight,full,ce,mixup,0.9973999134369216,0.9614243323442137,0.9671641791044776,0.9557522123893806,0.5599999999999999,"[[1836, 11], [15, 324]]"
+deep_cnn_attn_dropout_tuned_full_ce_mixup,s2_deep_cnn_attn_dropout_tuned_full_ce_mixup_tta_0_ep_60_pilot_25878e77,deep_cnn_attn_dropout_tuned,full,ce,mixup,0.9980706974396814,0.9604685212298684,0.9534883720930232,0.967551622418879,0.61,"[[1831, 16], [11, 328]]"
+deep_cnn_attn_dropout_tuned_full_ce_mixup,s2_deep_cnn_attn_dropout_tuned_full_ce_mixup_tta_1_ep_60_pilot_65a877e9,deep_cnn_attn_dropout_tuned,full,ce,mixup,0.9956846229155788,0.9588235294117649,0.9560117302052786,0.9616519174041298,0.4799999999999999,"[[1832, 15], [13, 326]]"
