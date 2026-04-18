@@ -28,9 +28,13 @@ venv/
 
 # Project outputs (not for git)
 runs/
+output/
 cwd_output/
 visuals/
 yolo_dataset*/
+data/
+chm_max_hag/
+Data/
 
 # Data files (too large for git)
 *.tif
@@ -47,10 +51,15 @@ yolo_dataset*/
 !examples/data/README.md
 
 
-# Model weights (too large - use GitHub Releases)
+# Model weights — large trained models excluded, small base weights committed
 *.pt
 *.pth
 *.onnx
+# Allow base YOLO pre-trained weights (<50MB)
+!yolo11n-seg.pt
+!yolo11s-seg.pt
+!yolo11m-seg.pt
+!yolo26n.pt
 
 # But include model registry and metadata
 !models/MODEL_REGISTRY.md
@@ -62,6 +71,25 @@ yolo_dataset*/
 *.txt
 !README*.md
 !requirements.txt
+
+# Build and test artifacts
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.coverage
+postgres-data/
+*.tar.gz
+*.tar
+
+# Temp experiment workspaces
+*_tmp/
+kpconv_tmp/
+myria3d_tmp/
+openpcseg_tmp/
+randla_tmp/
+
+# Unrelated exports
+export_coco-instance_*.json
 
 # OS
 .DS_Store

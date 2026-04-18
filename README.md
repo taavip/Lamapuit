@@ -1,214 +1,166 @@
-# CDW-Detect
+# Lamapuit — CWD Detection from Airborne LiDAR
 
-**Coarse Woody Debris Detection from LiDAR using Deep Learning**
+**Master's thesis project** — Detecting Coarse Woody Debris (CWD) in Estonian forests from low-density airborne LiDAR (ALS) using machine learning.
 
-Detects fallen logs (coarse woody debris) in LiDAR-derived Canopy Height Model (CHM) rasters using YOLO11 instance segmentation.
+## Research Challenge
 
-## Features
+Estonian ALS data are low-density (typically 1–4 pts/m²), making direct CWD detection unreliable. The approach:
 
-- 🎯 YOLO11n-seg instance segmentation for CDW detection
-- 📊 Training data preparation from vector line annotations
-- 🗺️ Georeferenced GeoPackage output
-- 🔄 Nodata-robust augmentation for LiDAR edge artifacts
+1. Generate high-quality labeled CHMs from denser reference data
+2. Train segmentation models on manually curated CWD masks
+3. Simulate low-density conditions to improve generalization across scan densities
+
+The **key bottleneck** is labeled training data — a custom brush segmentation tool is being built to accelerate mask annotation directly on CHM rasters.
+
+## Repository Contents
+
+| Path | Contents |
+|---|---|
+| `LaTeX/` | Thesis source (main write-up) |
+| `src/cdw_detect/` | Core Python package: data preparation, training, detection, LAZ classifier |
+| `scripts/` | Pipeline and experiment scripts |
+| `scripts/model_search_v3/` | Latest model selection experiments (CWD / not-CWD tile classification) |
+| `labeler/` | Manual tile review and label curation utilities |
+| `configs/` | YAML/XML configuration files |
+| `docs/` | Stable documentation and experiment runbooks |
+| `examples/` | Small sample data for quick-start testing |
+
+## CHM Generation Pipelines
+
+Two pipelines produce Canopy Height Models from LAZ:
+
+- **Legacy pipeline** (`scripts/process_laz_to_chm.py`) — produces CHMs in `chm_max_hag_13_drop/`, clips or drops points above HAG threshold
+- **Harmonized pipeline** (`experiments/laz_to_chm_harmonized_0p8m/`) — produces harmonized DEMs + both raw and Gaussian-smoothed CHMs at 0.8 m resolution; this is the current best pipeline
 
 ## Installation
 
 ```bash
-# Clone repository
-git clone https://github.com/taavip/cdw-detect.git
-cd cdw-detect
-
-# Create conda environment
 conda env create -f environment.yml
-conda activate cdw-detect
-
-# Install package
+conda activate cwd-detect
 pip install -e .
 ```
 
-## Quick Start
+## Workflow
 
-### 0. (Optional) Convert LAZ to CHM Raster
-
-If you have raw LiDAR LAZ files, convert them to CHM first:
+### 1. Convert LAZ → CHM
 
 ```bash
-python scripts/process_laz_to_chm.py --input points.laz --output chm.tif --resolution 0.2
+python scripts/process_laz_to_chm.py \
+  --input points.laz \
+  --output chm.tif \
+  --resolution 0.8 \
+  --drop-above-hag-max
 ```
 
-**Requirements**: LAZ file must have ground classification (class 2) from SMRF or similar algorithm.
+Requirements: LAZ must have ground classification (class 2) from SMRF or similar.
 
-### 1. Prepare Training Data
+### 2. Prepare Training Data
 
 ```python
 from cdw_detect import YOLODataPreparer
 
 preparer = YOLODataPreparer(
-    output_dir='data/yolo_dataset',
-    buffer_width=0.5,  # 1m total width for CDW lines
+    output_dir="data/dataset",
+    buffer_width=0.5,
 )
-
 stats = preparer.prepare(
-    chm_path='path/to/chm.tif',
-    labels_path='path/to/labels.gpkg',  # LineString geometries
-)
-print(f"Created {stats['total']} tiles ({stats['with_cdw']} with CDW)")
-```
-
-### 2. Train Model
-
-```python
-from cdw_detect.train import train
-
-best_model = train(
-    dataset_yaml='data/yolo_dataset/dataset.yaml',
-    epochs=50,
-    device='cpu',  # or '0' for GPU
+    chm_path="path/to/chm.tif",
+    labels_path="lamapuit.gpkg",
 )
 ```
 
-### 3. Run Detection
+### 3. Train and Detect
 
-```python
-from cdw_detect import CDWDetector
-
-detector = CDWDetector(
-    model_path='runs/cdw_detect/train/weights/best.pt',
-    confidence=0.15,
-)
-
-detections = detector.detect_to_vector(
-    raster_path='path/to/new_chm.tif',
-    output_path='detections.gpkg',
-)
-print(f"Found {len(detections)} CDW features")
+```bash
+python scripts/train_model.py --data data/dataset/dataset.yaml --epochs 50
+python scripts/run_detection.py --chm path/to/chm.tif --model runs/.../best.pt --output detections.gpkg
 ```
 
-## Data Requirements
-
-### Input CHM
-- GeoTIFF format
-- 0.2m resolution recommended
-- Height Above Ground (HAG) values 0-1.5m
-- Can be created from LAZ using `scripts/process_laz_to_chm.py`
-
-### Training CHM Files (Included via Git LFS)
-- **Location**: `visuals/chm_max_hag/`
-- **~25 files** of 10-20 MB each (~350 MB total)
-- Ready-to-use for creating training datasets
-- See [docs/TRAINING_DATA_SETUP.md](docs/TRAINING_DATA_SETUP.md) for details
-
-### Training Labels
-- GeoPackage with LineString geometries
-- Same CRS as CHM raster
-- Lines representing log centerlines
-
-## Scripts
+## Key Scripts
 
 | Script | Purpose |
-|--------|---------|
-| `process_laz_to_chm.py` | Convert LAZ LiDAR files to CHM GeoTIFF rasters |
-| `prepare_data.py` | Create YOLO training dataset from CHM + labels |
-| `train_model.py` | Train YOLO11n-seg model |
-| `run_detection.py` | Run CDW detection on new CHM rasters |
-| `cleanup_memory.py` | Clear memory and kill lingering processes |
+|---|---|
+| `scripts/process_laz_to_chm.py` | LAZ → CHM GeoTIFF (clip or drop HAG filter) |
+| `scripts/prepare_data.py` | CHM + line labels → training dataset |
+| `scripts/train_model.py` | Train segmentation model |
+| `scripts/finetune_model.py` | Fine-tune from existing checkpoint |
+| `scripts/run_detection.py` | Run CWD detection on CHM rasters |
+| `scripts/cleanup_memory.py` | Clear GPU/CPU memory, kill lingering processes |
+| `scripts/model_search_v3/` | Model selection experiments (tile classifier) |
 
-## Troubleshooting
+## Data
 
-### Memory Errors During Training
+### Input CHM
+- GeoTIFF, 0.2–0.8 m resolution
+- Height Above Ground (HAG) values, clipped to 0–1.5 m
+- Nodata: 0 or −9999
 
-If you see `RuntimeError: not enough memory` during training on CPU:
+### Training Labels (`lamapuit.gpkg`)
+- LineString geometries representing CWD centerlines
+- Same CRS as the CHM raster
+- Committed to this repository
 
-1. **Run cleanup script first:**
-   ```bash
-   python scripts/cleanup_memory.py
-   ```
-
-2. **Reduce batch size:**
-   ```bash
-   python scripts/train_model.py --data dataset.yaml --batch 2  # or even --batch 1
-   ```
-
-3. **Use smaller image size:**
-   ```bash
-   python scripts/train_model.py --data dataset.yaml --imgsz 512
-   ```
-
-4. **The package automatically disables AMP on CPU** (saves memory)
-
-### Lingering Processes
-
-If detection fails with import errors after training, kill old Python processes:
-```bash
-python scripts/cleanup_memory.py
-# Answer 'y' to kill processes
-```
+Large outputs (`output/`, `runs/`, `experiments/`, `data/`) are not tracked in Git — see `models/MODEL_REGISTRY.md` for the list of trained checkpoints.
 
 ## Project Structure
 
 ```
-cdw-detect/
-├── src/cdw_detect/        # Main package
-│   ├── prepare.py         # Training data preparation
-│   ├── train.py           # Model training
-│   └── detect.py          # Inference
-├── scripts/               # CLI tools
-│   ├── process_laz_to_chm.py
-│   ├── prepare_data.py
-│   ├── train_model.py
-│   └── run_detection.py
-├── docs/                  # Documentation
-│   ├── presentations/     # Project presentations
-│   └── references/        # Scientific references
-├── examples/              # Usage examples
-├── configs/               # Configuration files
-├── environment.yml        # Conda dependencies
-└── pyproject.toml         # Package metadata
+Lamapuit/
+├── src/cdw_detect/            # Core package
+│   ├── prepare.py             # Training data preparation
+│   ├── train.py               # Model training wrapper
+│   ├── detect.py              # Sliding-window inference → GeoPackage
+│   ├── laz_classifier/        # Random Forest classifier on LAZ point features
+│   └── wms_utils.py           # WMS tile fetching
+├── scripts/                   # Pipeline and experiment scripts
+│   └── model_search_v3/       # Latest model search
+├── LaTeX/                     # Thesis source
+├── labeler/                   # Tile review and label curation
+├── configs/                   # YAML and XML configs
+├── docs/                      # Documentation and runbooks
+├── examples/                  # Small sample CHM tile + labels
+├── tests/                     # pytest suite
+├── environment.yml            # Conda environment
+├── pyproject.toml             # Package metadata
+└── lamapuit.gpkg              # CWD line labels
 ```
 
-## 📚 Documentation
+## Experiment Tracking
 
-- **Presentations**: See [docs/presentations/cdw_detection_overview.pptx](docs/presentations/cdw_detection_overview.pptx) for project overview
-- **References**: [Joyce et al. 2019 - CDW LiDAR Detection](docs/references/Joyce_et_al_2019_CDW_LiDAR.pdf)
-- **Guides**:
-  - [MEMORY_FIXES.md](MEMORY_FIXES.md) - Memory optimization troubleshooting
-  - [LAZ_PROCESSING_INTEGRATION.md](LAZ_PROCESSING_INTEGRATION.md) - LAZ to CHM workflow
-- **Examples**: See [examples/](examples/) folder for quick start tutorials
+- `experiments_results.yaml` — consolidated results
+- `experiments_progress.yaml` — in-progress tracking
+- `massive_multirun_all_runs.csv` / `massive_multirun_statistics.csv` — multi-run summaries
+- `docs/` — per-experiment runbooks and analysis notes
 
-## 📦 Model Weights
+## CLI Entry Points
 
-Pre-trained model is not included in repository due to file size (11.4MB).
+After `pip install -e .`:
 
-**Download from GitHub Releases**:
 ```bash
-# Using wget
-wget https://github.com/taavip/cdw-detect/releases/download/v1.0.0/cdw_detect_v1.0.0.pt -O models/best.pt
-
-# Using curl
-curl -LO https://github.com/taavip/cdw-detect/releases/download/v1.0.0/cdw_detect_v1.0.0.pt
+cdw-detect           # main detection CLI
+cdw-laz-classifier   # LAZ point-feature RF classifier
 ```
 
-Or **train your own model**:
+## Troubleshooting
+
+### Memory errors
+
 ```bash
-python scripts/train_model.py --config configs/default.yaml --data ./yolo_dataset/data.yaml --epochs 50
+python scripts/cleanup_memory.py
+python scripts/train_model.py --data dataset.yaml --batch 2 --imgsz 512
 ```
 
 ## Citation
 
-If you use this code, please cite:
-
 ```bibtex
-@software{cdw_detect_2026,
-  title = {CDW-Detect: Coarse Woody Debris Detection from LiDAR},
+@software{lamapuit_2026,
+  title  = {Lamapuit: Coarse Woody Debris Detection from Airborne LiDAR},
   author = {Taavi Pipar},
-  year = {2026},
-  url = {https://github.com/taavip/cdw-detect}
+  year   = {2026},
+  url    = {https://github.com/taavip/cdw-detect}
 }
 ```
 
-**Reference methodology**:
-> Joyce, M. J., Erb, J. D., & Sampson, B. A. (2019). Detection of coarse woody debris using airborne light detection and ranging (LiDAR). *Forest Science*, 65(6), 711-724.
-
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License — see LICENSE file for details.

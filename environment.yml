@@ -15,6 +15,7 @@ dependencies:
   - shapely>=2.0
   - pyproj
   - gdal
+  - fiona>=1.9  # Vector I/O backend for geopandas
   
   # LiDAR processing (for LAZ to CHM conversion)
   - pdal
@@ -25,15 +26,30 @@ dependencies:
   - opencv
   - scikit-learn
   - scikit-image
+  - pytorch>=2.0
+  - torchvision
+  
+  # Testing
+  - pytest>=7.0
+  - pytest-cov>=4.0
+  - pytest-mock>=3.10
   
   # Utilities
   - tqdm>=4.65
   - pyyaml
   - matplotlib
   - seaborn
+  - pillow>=9.0
+  - requests
+  - beautifulsoup4
+  - urllib3
   
   # Install via pip (not available or better from pip)
   - pip
   - pip:
-    - ultralytics>=8.0  # YOLO models
+    - ultralytics>=8.3  # YOLO models (updated version)
     - opencv-python>=4.8  # Ensure latest OpenCV
+    - albumentations>=1.3  # Advanced augmentation
+    - pytest-xdist>=3.0  # Parallel testing
+    - black>=23.0
+    - ruff>=0.1
