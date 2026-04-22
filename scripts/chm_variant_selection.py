@@ -692,8 +692,9 @@ def main():
 
     # Run ablation per mode
     all_records = []
-    modes = [m.strip() for m in args.modes.split(",")]
-    models = [m.strip() for m in args.models.split(",")]
+    # modes and models may already be lists (from smoke test) or strings
+    modes = args.modes if isinstance(args.modes, list) else [m.strip() for m in args.modes.split(",")]
+    models = args.models if isinstance(args.models, list) else [m.strip() for m in args.models.split(",")]
 
     for mode in modes:
         logger.info(f"\n{'='*60}")
