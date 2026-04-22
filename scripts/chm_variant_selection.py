@@ -300,20 +300,29 @@ def build_model_for_mode(
         # EfficientNet
         num_ftrs = backbone.fc.in_features
         backbone.fc = nn.Linear(num_ftrs, 2)
-    elif hasattr(backbone, "classifier"):
-        # ConvNeXt
-        if isinstance(backbone.classifier[-1], nn.Linear):
-            num_ftrs = backbone.classifier[-1].in_features
-            backbone.classifier[-1] = nn.Linear(num_ftrs, 2)
-        else:
-            # ConvNeXt has classifier as Sequential with AdaptiveAvgPool + Flatten + Linear
-            for i, layer in enumerate(backbone.classifier):
-                if isinstance(layer, nn.Linear):
-                    num_ftrs = layer.in_features
-                    backbone.classifier[i] = nn.Linear(num_ftrs, 2)
-                    break
+    elif hasattr(backbone, "classifier") and isinstance(backbone.classifier, nn.Sequential):
+        # ConvNeXt: classifier is Sequential([LayerNorm2d, Flatten, Linear])
+        # Replace the Linear layer (last element)
+        for i, layer in enumerate(backbone.classifier):
+            if isinstance(layer, nn.Linear):
+                num_ftrs = layer.in_features
+                backbone.classifier[i] = nn.Linear(num_ftrs, 2)
+                break
     else:
-        raise ValueError(f"Cannot find classification head in {model_name}")
+        # Fallback: try to find and replace any Linear layer
+        found = False
+        for name, module in backbone.named_modules():
+            if isinstance(module, nn.Linear) and module.out_features == 1000:
+                parent_name = name.rsplit(".", 1)[0] if "." in name else None
+                if parent_name:
+                    parent = dict(backbone.named_modules())[parent_name]
+                    attr_name = name.rsplit(".", 1)[1]
+                    num_ftrs = module.in_features
+                    setattr(parent, attr_name, nn.Linear(num_ftrs, 2))
+                    found = True
+                    break
+        if not found:
+            raise ValueError(f"Cannot find classification head in {model_name}")
 
     backbone.to(device)
     return backbone
