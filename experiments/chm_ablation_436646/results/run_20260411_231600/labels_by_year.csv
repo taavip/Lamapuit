@@ -1,5 +1,0 @@
-year,labels_csv,n_tiles
-2018,/workspace/output/model_search_v3_academic_leakage26/prepared/labels_curated_v2/436646_2018_madal_chm_max_hag_20cm_labels.csv,314
-2020,/workspace/output/model_search_v3_academic_leakage26/prepared/labels_curated_v2/436646_2020_madal_chm_max_hag_20cm_labels.csv,424
-2022,/workspace/output/model_search_v3_academic_leakage26/prepared/labels_curated_v2/436646_2022_madal_chm_max_hag_20cm_labels.csv,385
-2024,/workspace/output/model_search_v3_academic_leakage26/prepared/labels_curated_v2/436646_2024_madal_chm_max_hag_20cm_labels.csv,181

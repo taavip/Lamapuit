@@ -1,5 +1,0 @@
-model_source,model_experiment_id,model_name,mean_f1,mean_auc,mean_precision,mean_recall,mean_accuracy,n_chms
-v3,s1_convnext_small_full_ce_mixup_40_5_3b1439db,convnext_small,0.08333333333333334,0.9489414694894147,0.5,0.045454545454545456,0.9299363057324841,1
-v2,s2_convnext_small_full_ce_mixup_swa_tta_0_ep_60_focused_df4d4976,convnext_small,0.0,0.663293897882939,0.0,0.0,0.9299363057324841,1
-v2,s2_convnext_tiny_full_ce_mixup_tta_1_ep_60_focused_3fb56d79,convnext_tiny,0.0,0.6580012453300125,0.0,0.0,0.9299363057324841,1
-v3,s1_efficientnet_b2_full_ce_mixup_40_5_7a5bb15c,efficientnet_b2,0.0,0.9461394769613948,0.0,0.0,0.9299363057324841,1

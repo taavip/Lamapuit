@@ -1,2 +1,0 @@
-k,precision_at_k,recall_at_k,lift_at_k,ndcg_at_k
-5,0.200000,1.000000,1.000000,1.000000
