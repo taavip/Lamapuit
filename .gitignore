@@ -45,6 +45,18 @@ Data/
 *.geojson
 !configs/*.yaml
 
+# Spatial data files
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.qpj
+
+# Large experiment and label outputs
+experiments/
+labels_standardized_*/
+
 # But include specific small examples in examples/data/
 !examples/data/sample_chm_tile.tif
 !examples/data/lamapuit_labels.gpkg
