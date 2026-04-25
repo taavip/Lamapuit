@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  chm-benchmark:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    image: lamapuit:gpu-benchmark
+    container_name: chm_benchmark_runner
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: bash -lc "source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect && python scripts/chm_variant_benchmark_quick.py --output output/chm_variant_benchmark --device cuda"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
