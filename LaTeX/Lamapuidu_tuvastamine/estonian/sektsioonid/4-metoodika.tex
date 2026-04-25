@@ -1,16 +1,136 @@
 \section{Metoodika}
 
 \subsection{Andmete kogumine}
-% Kirjeldada, millised andmed koguti ja millistel aladel
-% Nt LiDAR, õhu- või satelliitandmed, kohapealsed mõõtmised
+
+Uuringus kasutati Maa-ameti 2020.–2023. aasta õhulaserskannimise (ALS) andmeid punkttihedusega
+1–4 punkti/m². Andmed kaeti kokku 23 rasterala ulatuses üle Eesti, kokku 17\,403 märgistatud
+kiibi kujul (iga kiip 128\,px × 128\,px, ruumilahutus 0,2 m, st 25,6 m × 25,6 m
+maapinnal).
+
+Kõrgusmudelit (CHM) toodetud kahe konveiieri abil:
+\begin{itemize}
+    \item \textbf{Legacy-konveiier} (\texttt{process\_laz\_to\_chm.py}): 0,2 m lahutusvõimega
+          max-HAG filter (kõrgus maapinnast 0–1,5 m lävi), väljund \texttt{chm\_max\_hag\_13\_drop/}.
+    \item \textbf{Harmoniseeritud konveiier} (\texttt{laz\_to\_chm\_harmonized\_0p8m/}): 0,8 m
+          lahutusvõimega, ühtlustatud DEM, toorete ja Gaussi-silutud CHM kihtidega.
+\end{itemize}
+
+Märgistused saadi osaliselt käsitsi koostatud andmetest (vektorkiht \texttt{lamapuit.gpkg}),
+osaliselt automaatse usalduslävega filtreerimise teel (lähtelävi $t_{\mathrm{high}}=0{,}9995$,
+$t_{\mathrm{low}}=0{,}0698$). Kõik allikad ühendati deduplikatsiooni prioriteedireguliga:
+käsimärgistus (prioriteet 30) $>$ automaatne ülevaatlusega (20) $>$ lävedega filtreeritud (10).
+Unikaalse kiibiga jäeti alles kõrgeima prioriteediga kirje.
 
 \subsection{Eeltöötlus}
-% Kirjeldada, kuidas andmeid puhastati, filtreeriti, normaliseeriti
-% Näiteks punktipilve filtrid, geomeetrilised transformatsioonid
+
+\subsubsection{Märgistuste kureerimine}
+
+Iga kiip klassifitseeriti kahe klassi vahel: \emph{lamapuit} (CWD) ja \emph{taust}.
+Allikapõhine deduplikatsioon tagas, et samast füüsilisest asukohast ei kasutata
+mitme aasta andmeid sõltumatult — sama koordinaat eri aastatest loetakse üheks kohaks
+(\emph{place}-identifikaator), et vältida aastateülest leket.
+
+Pärast deduplikatsiooni ja kuraatorlikku kvaliteedikontrolli jäi alles kokku 17\,403 kiip
+23 erinevast asukohast.
+
+\subsubsection{Ruumiline treening-/testimisjaotus}
+
+Ruumilise leke vältimiseks ei ole standardne juhuslik jaotus sobiv — naaberpiirkonnad
+jagavad sarnaseid ruumilisi omadusi (Roberts jt 2017). Töötati välja kolm lekkekontrolli kihti:
+
+\begin{enumerate}
+    \item \textbf{Kohapõhine grupeerimine} — kõik kiibid samast füüsilisest asukohast
+          (isegi eri aastatest) liigituvad ühte gruppi; grupp läheb tervikuna kas treeningu-
+          või testimiskomplekti.
+    \item \textbf{Naaberpuhver} — kõik treeningkohad, mille Tšebõševi kaugus testimiskohast
+          on ≤ 1 kaardilehe (1 km), suunatakse puhvertsoonile ja jäetakse treenimisest välja
+          (Le Rest jt 2014).
+    \item \textbf{Mõõdikuaed} — 26 m minimaalne naaberkaugus kiipide vahel, et vältida
+          tihedalt kõrvutiolevate kiipide vahelist leket.
+\end{enumerate}
+
+Eksperimentaalse analüüsi käigus leiti, et kohapõhine jaotus (V1/V2) tekitab \textbf{struktuurse
+puhverjäägi}: klaster B (koordinaadid 436–437 / 646–648) sisaldab 75,8\% kõigist ridadest
+täielikult külgneva 2 × 3 km võrgustikuna. Kui mõni klastri B koht valitakse testiks,
+sattuvad ülejäänud viis kohta (~55\% kõigist ridadest) puhvertsoonile — sõltumata
+kasutatavast algoritmist. Tulemusena läheb V1/V2 jaotuses puhverisse 63–66\% kõigist
+ridadest, treenimiseks jääb vaid 15–17\%.
+
+Probleemi lahendamiseks töötati välja \textbf{V3 kiibisisene jaotus}: iga raster
+jagatakse $n_{\mathrm{blocks}} \times n_{\mathrm{blocks}}$ ruumiliseks plokiks (3 × 3 juhul
+≈ 333 m × 333 m plokk), plokid jaotatakse treeningu/testi/puhvri vahel plokiindeksi järgi.
+Klastri B kohad osalevad treenimises ka siis, kui mõni nende kiipidest on testis.
+
+Kõigi üheksa eksperimendi (E01–E09) tulemused on toodud tabelis~\ref{tab:spatial_splits}.
+
+\begin{table}[h!]
+\centering
+\caption{Ruumilise jaotuse eksperimendid (5 seemnete keskmine, seemned 2026–2030).}
+\label{tab:spatial_splits}
+\begin{tabular}{llrrrr}
+\hline
+ID & Meetod & puhver\% & treening\% & test\% & val\% \\
+\hline
+E01 & V1 (plokk=2, nbr=1) & 64,9 & 15,1 & 20,0 & 0,0 \\
+E02 & V1 (plokk=1, nbr=1) & 63,4 & 16,6 & 20,0 & 0,0 \\
+E03 & V2 puhver=1 km, pole val & 63,4 & 16,6 & 20,0 & 0,0 \\
+E04 & V2 puhver=1 km, val=10\% & 66,0 & 3,7 & 20,0 & 10,3 \\
+E05 & V2 puhver=1 km, val, stratif. & 61–65 & 1–4 & 20–28 & 10–12 \\
+E06 & V2 puhver=2 km, val, stratif. & 62–69 & 0–0,2 & 20–28 & 10–11 \\
+\textbf{E07} & \textbf{V3 3×3 plokki, puhver=2 kiipi (51,2 m)} & \textbf{7,5} & \textbf{69,1} & \textbf{23,4} & \textbf{0,0} \\
+E08 & V3 4×4 plokki, puhver=2 kiipi & 8,4 & 71,6 & 20,0 & 0,0 \\
+E09 & V3 3×3 plokki, puhver=1 kiip (25,6 m) & 3,1 & 73,5 & 23,4 & 0,0 \\
+\hline
+\end{tabular}
+\end{table}
+
+Soovituseks on \textbf{E07 (V3, 3×3 plokki, puhver=2 kiipi)}, kuna puhver 51,2 m ületab
+lamapuidu empiirilise autokorrelatsiooni ulatuse (~50 m, Gu jt 2024) ning treeningkomplekt
+on 4,6 korda suurem kui V1 puhul (69\% vs 15\%).
 
 \subsection{Analüüsi meetodid}
-% Kirjeldada kasutatud algoritme ja meetodeid lamapuidu tuvastamiseks
-% Nt masinõppe mudelid, statistilised meetodid, rasteriseerimine
+
+\subsubsection{Mudeli valik}
+
+Mudelivalikus kasutati \emph{alumise usaldusvahemiku} (Lower Confidence Bound, LCB) järjestust:
+\begin{equation}
+    \mathrm{LCB}_k = \overline{F_1} - k \cdot \sigma_{F_1}, \quad k = 1
+\end{equation}
+kus $\overline{F_1}$ on ruumilise ristvalideerimise keskmine F1-skoor ja $\sigma_{F_1}$
+on selle standardhälve. See karistab kõrge dispersiooniga mudeleid, mis tavalise
+keskmise põhjal paistavad paremad, kuid on ebastabiilsed.
+
+Võrreldi kolme sisenevate andmete režiimi:
+\begin{itemize}
+    \item \textbf{CHM} — ühekanaliline kanalikõrguste muster (1-ch).
+    \item \textbf{GF} — klassikalised 24 tunnust kanaliti: 10 momenti + 8 gradiendistatistikat
+          (4 telgsuunalist + 4 diagonaalset) + 2 Laplaciani + 2 ülakübara jääkide + 2 harjasuse puhvrit.
+    \item \textbf{fusion3} — 3-kanaline CHM siseneb ImageNet-eeltreenitud neuroontaustale,
+          mida eelneb $1 \times 1$ depthwise konvolutsioon (CHMInputNorm), mis õpib affiin-
+          normeerimist CHM statistikalt ImageNet-eeldatavale jaotusele.
+\end{itemize}
+
+\subsubsection{CHMInputNorm}
+
+ImageNet-eeltreenitud taustadel eeldatakse sisendit vahemikus $[0, 1]$, normeeritud
+ImageNet keskmise ja standardhälbega. CHM kiipide statistika erineb sellest oluliselt.
+Probleemi lahendamiseks lisati backboneile ette õpitav kanalipõhine affiinnormeerimine:
+\begin{equation}
+    \hat{x}_c = w_c \cdot x_c + b_c, \quad c = 1, 2, 3
+\end{equation}
+kus $w_c$ ja $b_c$ on initsiatiseeritud vastavalt 1 ja 0 (identiteeditransformatsioon) ning
+treenimise käigus kohanduvad CHM kanali statistika järgi.
 
 \subsection{Kvaliteedi kontroll}
-% Kuidas kontrolliti andmete ja tulemuste täpsust ning usaldusväärsust
+
+\subsubsection{Käsimärgistuse auditeerimise mõõdik}
+
+Kuna osa silte pärineb automaatse läve filtreerimisest, hinnati mudelite generaliseerumisvõimet
+eraldi käsimärgistuse kiipadel. Kui käsimärgistuse F1 erineb kõigi kiiipide F1-st rohkem
+kui 0,03, annab süsteem hoiatuse võimaliku pseudosildi memoreerimise kohta.
+
+\subsubsection{Seemnete stabiilsus}
+
+Kõik eksperimendid jooksid viie erineva juhusliku seemne (2026–2030) peale.
+V3 jaotuse korral oli seemnetevaheline hajuvus alla 0,2 protsendipunkti, mis näitab,
+et tulemused ei sõltu konkreetsest kiipijaotuse valikust.
