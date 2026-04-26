@@ -59,10 +59,15 @@ VARIANTS = {
         "channels": 2,
         "desc": "2-band (Gauss+Raw at 0.2m, 119 tiles)",
     },
+    "composite_2band_masked": {
+        "path": REPO_ROOT / "data" / "chm_variants" / "harmonized_0p8m_chm_raw_2band_masked",
+        "channels": 2,
+        "desc": "2-band masked (Raw+Mask, explicit validity signal)",
+    },
     "composite_4band": {
-        "path": REPO_ROOT / "data" / "chm_variants" / "composite_3band_with_masks",
+        "path": REPO_ROOT / "data" / "chm_variants" / "composite_4band_full",
         "channels": 4,
-        "desc": "4-band (Gauss+Raw+Base+Mask with conservative masking, 2 test tiles)",
+        "desc": "4-band (Gauss+Raw+Base+Mask, conservative masking, 119 tiles)",
     },
 }
 
