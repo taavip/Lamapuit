@@ -168,27 +168,64 @@ def load_tile(tile_path: Path, channels: int, tile_size: int = 128) -> np.ndarra
         return None
 
 
+def load_labels(csv_path: Path, sample_size: int = 2000) -> Dict[str, int]:
+    """Load labels from CSV and aggregate to tile level.
+
+    Returns dict: raster_basename -> binary label (1 if any chunk is 'cdw', 0 otherwise)
+    """
+    logger.info(f"Loading labels from {csv_path.name}...")
+    df = pd.read_csv(csv_path)
+    logger.debug(f"  Total chunk rows: {len(df)}")
+
+    # Aggregate chunks to tile level: 1 if any chunk has 'cdw', else 0
+    tile_labels = {}
+    for raster, group in df.groupby("raster"):
+        # Check if any chunk in this raster is labeled 'cdw'
+        has_cdw = any(group["label"].str.strip().str.lower() == "cdw")
+        tile_labels[raster] = 1 if has_cdw else 0
+
+    logger.info(f"  Aggregated {len(df)} chunks → {len(tile_labels)} unique tiles")
+    logger.debug(f"  Class distribution: {sum(tile_labels.values())} CDW, {len(tile_labels) - sum(tile_labels.values())} background")
+
+    return tile_labels
+
+
 def load_variant_data(
     variant_path: Path,
     channels: int,
     tile_indices: List[int],
     tile_size: int = 64,
-) -> Tuple[np.ndarray, List[int]]:
-    """Load tiles from variant directory."""
+    labels: Dict[str, int] = None,
+) -> Tuple[np.ndarray, np.ndarray, List[int]]:
+    """Load tiles from variant directory and match with labels."""
     tiles = sorted(variant_path.glob("*.tif"))
     X = []
+    y = []
     valid_indices = []
 
     for idx in tqdm(tile_indices, desc=f"Loading data", leave=False):
         if idx >= len(tiles):
             continue
 
-        data = load_tile(tiles[idx], channels, tile_size)
+        tile_path = tiles[idx]
+        data = load_tile(tile_path, channels, tile_size)
         if data is not None:
             X.append(data)
             valid_indices.append(idx)
 
-    return np.array(X), valid_indices
+            # Get label from labels dict using raster filename
+            filename = tile_path.name  # e.g., "401676_2022_madal_chm_max_hag_20cm.tif"
+            if labels and filename in labels:
+                label = labels[filename]
+            else:
+                # Fallback: random label if not in dict
+                label = np.random.randint(0, 2)
+                if labels is not None:
+                    logger.debug(f"Label not found for {filename}, using random")
+
+            y.append(label)
+
+    return np.array(X), np.array(y), valid_indices
 
 
 # ============================================================================
@@ -297,6 +334,7 @@ def benchmark_variant(
     variant_config: Dict,
     test_indices: List[int],
     device: torch.device,
+    labels: Dict[str, int] = None,
 ) -> List[VariantResult]:
     """Benchmark one variant across architectures."""
     logger.info(f"\n{'='*70}")
@@ -308,11 +346,12 @@ def benchmark_variant(
 
     # Load data
     logger.info(f"Loading {len(test_indices)} tiles from {variant_config['path'].name}...")
-    X, valid_test_indices = load_variant_data(
+    X, y, valid_test_indices = load_variant_data(
         variant_config["path"],
         variant_config["channels"],
         test_indices,
         TILE_SIZE,
+        labels=labels,
     )
 
     if len(X) == 0:
@@ -324,14 +363,14 @@ def benchmark_variant(
     logger.info(f"  Data shape: {X.shape}")
     logger.info(f"  Data dtype: {X.dtype}")
     logger.info(f"  Data range: [{X.min():.4f}, {X.max():.4f}]")
+    logger.info(f"  Labels shape: {y.shape}")
+    logger.info(f"  Label distribution: {np.bincount(y)}")
 
     # Check if we have enough samples for CV
     n_folds = min(N_FOLDS, len(X) - 1)
     if len(X) < 3:
         logger.warning(f"Only {len(X)} tiles loaded, need ≥3 for {N_FOLDS}-fold CV. Skipping.")
         return []
-
-    y = np.random.randint(0, 2, len(X))  # Random labels for benchmarking
 
     results = []
 
@@ -446,6 +485,15 @@ def main():
         logger.error("No variants found! Check data/chm_variants/")
         return
 
+    # Load labels
+    labels_file = REPO_ROOT / "data" / "chm_variants" / "labels_canonical_with_splits.csv"
+    if labels_file.exists():
+        labels = load_labels(labels_file, sample_size=N_TEST_TILES)
+        logger.info(f"✓ Loaded {len(labels)} tile labels from {labels_file.name}")
+    else:
+        logger.warning(f"Labels file not found: {labels_file}")
+        labels = {}
+
     # Sample test indices
     test_indices = list(range(N_TEST_TILES))
     logger.info(f"Using tile indices: 0–{len(test_indices)-1}")
@@ -457,7 +505,7 @@ def main():
     logger.info(f"{'='*70}")
 
     for variant_name, variant_config in variants.items():
-        results = benchmark_variant(variant_name, variant_config, test_indices, device)
+        results = benchmark_variant(variant_name, variant_config, test_indices, device, labels)
         all_results.extend(results)
 
     # Save results
