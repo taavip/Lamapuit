@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 """
-CHM Variant Benchmark — Comprehensive evaluation
+CHM Variant Benchmark — Comprehensive evaluation with extended training
 
 Tests all available CHM variants:
-  1. baseline_1band (1-band: original sparse LiDAR at 0.2m)
-  2. composite_2band (2-band: Gauss+Raw at 0.2m)
-  3. composite_4band (4-band: Gauss+Raw+Base+Mask with conservative masking)
+  1. baseline_1band (original sparse LiDAR at 0.2m)
+  2. harmonized_raw_1band (DEM-normalized raw, 0.8m kernel, 119 tiles)
+  3. harmonized_gauss_1band (DEM-normalized Gaussian, 0.8m kernel, 119 tiles)
+  4. composite_2band (Gauss+Raw at 0.2m, 119 tiles)
+  5. composite_4band (Gauss+Raw+Base+Mask, 65 tiles)
+  6. composite_2band_masked (Raw+Mask, 2 tiles - may skip)
 
 Configuration:
-  - Sample 2000 tiles for good variety representation on 600K labels
+  - Sample 10,000 tiles for comprehensive variety representation
   - Full 128x128 tiles (no cropping)
   - 3 model architectures (ConvNeXt, EfficientNet, ResNet50)
   - 3-fold CV with early stopping
-  - 15 epochs max per fold
+  - 50 epochs max per fold (increased for convergence)
   - GPU acceleration with CUDA
-  - Comprehensive logging (debug + info levels)
+  - Comprehensive logging
 
-Expected runtime: 3-4 hours with 2000 tiles × 3 variants × 3 models × 3 folds
+Expected runtime: 5-8 hours with 10K tiles × 6 variants × 3 models × 3 folds × 50 epochs
 """
 
 import argparse
@@ -54,6 +57,16 @@ VARIANTS = {
         "channels": 1,
         "desc": "1-band baseline (original sparse LiDAR at 0.2m, 119 tiles)",
     },
+    "harmonized_raw_1band": {
+        "path": REPO_ROOT / "output" / "chm_dataset_harmonized_0p8m_raw_gauss" / "chm_raw",
+        "channels": 1,
+        "desc": "1-band harmonized raw (0.8m kernel, DEM-normalized, 119 tiles)",
+    },
+    "harmonized_gauss_1band": {
+        "path": REPO_ROOT / "output" / "chm_dataset_harmonized_0p8m_raw_gauss" / "chm_gauss",
+        "channels": 1,
+        "desc": "1-band harmonized Gaussian (0.8m kernel smoothed, DEM-normalized, 119 tiles)",
+    },
     "composite_2band": {
         "path": REPO_ROOT / "data" / "chm_variants" / "composite_3band",
         "channels": 2,
@@ -67,19 +80,19 @@ VARIANTS = {
     "composite_4band": {
         "path": REPO_ROOT / "data" / "chm_variants" / "composite_4band_full",
         "channels": 4,
-        "desc": "4-band (Gauss+Raw+Base+Mask, conservative masking, 119 tiles)",
+        "desc": "4-band (Gauss+Raw+Base+Mask, conservative masking, 65 tiles)",
     },
 }
 
 # Models (3 architectures)
 MODELS = ["convnext_small", "efficientnet_b2", "resnet50"]
 
-# Hyperparameters
+# Hyperparameters (increased for comprehensive evaluation)
 N_FOLDS = 3
-MAX_EPOCHS = 15
+MAX_EPOCHS = 50  # Increased from 15 (more training time for convergence)
 BATCH_SIZE = 64
 TILE_SIZE = 128  # Full 128x128 tiles (no crop)
-N_TEST_TILES = 2000  # Sample 2000 tiles for better variety representation
+N_TEST_TILES = 10000  # Increased from 2000 (more comprehensive sampling)
 
 logger = None
 
