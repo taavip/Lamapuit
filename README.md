@@ -28,18 +28,24 @@ The **key bottleneck** is labeled training data — a custom brush segmentation 
 ## Critical Resources (2026-04-26)
 
 ### 📊 Training Labels
-**File:** `data/chm_variants/labels_canonical_with_splits.csv` (580,136 rows)
+**Primary File:** `data/chm_variants/labels_canonical_with_splits_retrained_ensemble.csv` (580,136 rows, updated 2026-04-26)
 
 - **Size:** 580,136 labeled locations across 23 map sheets and 8 years (2018–2024)
+- **Content:** All labels with train/val/test splits + retrained ensemble probabilities
 - **Splits (stratified):** 
-  - Train: 67,290 (11.6%)
-  - Val: 13,850 (2.4%)
-  - Test: 56,521 (9.7%)
-  - Buffer/ineligible: 442,475 (76.3%)
+  - Train: 67,290 (11.6%) — high quality, 93% mean CWD probability
+  - Val: 13,850 (2.4%) — high quality, 95% mean CWD probability
+  - Test: 56,521 (9.7%) — high quality, 96% mean CWD probability
+  - Buffer/ineligible: 442,475 (76.3%) — properly excluded uncertain zones
 - **Class distribution (eligible):** 71.8% CWD, 28.2% NO_CWD
 - **Spatial isolation:** 51.2 m gap (exceeds 50 m CWD autocorrelation threshold per Gu et al. 2024)
 - **Methodology:** Spatial-temporal splits prevent leakage across years and locations
-- **Reference:** See `SPLIT_ASSIGNMENT_REPORT.md` for full methodology
+- **Probabilities:** Ensemble soft-voting from 4-model ensemble (CNN×3 + EfficientNet)
+- **Reference:** See `SPLIT_ASSIGNMENT_REPORT.md` for methodology, `OPTION_B_SPATIAL_SPLITS_COMPARISON.md` for ensemble details
+
+**Legacy Versions:**
+- `labels_canonical_with_splits.csv` — Original split assignment (2026-04-23)
+- `labels_canonical_with_splits_recalculated.csv` — Intermediate version (2026-04-23)
 
 ### 🏔️ CHM Variants
 
@@ -147,20 +153,23 @@ detections_gpkg = detector.detect(chm_path='data/chm_variants/baseline_chm_20cm/
 detections_gpkg.to_file('detections.gpkg')
 ```
 
-### Access Training Labels with Splits
+### Access Training Labels with Splits & Probabilities
 ```python
 import pandas as pd
 
-# Load 580K labels with train/val/test assignment
-labels = pd.read_csv('data/chm_variants/labels_canonical_with_splits.csv')
+# Load 580K labels with splits and retrained ensemble probabilities
+labels = pd.read_csv('data/chm_variants/labels_canonical_with_splits_retrained_ensemble.csv')
 
 # Filter by split
 train_labels = labels[labels['split'] == 'train']  # 67,290 labels
 val_labels = labels[labels['split'] == 'val']      # 13,850 labels
 test_labels = labels[labels['split'] == 'test']    # 56,521 labels
 
+# Access ensemble probabilities
+train_probs = train_labels['ensemble_prob_cwd']  # Retrained ensemble predictions
 print(f"Train: {len(train_labels)}, Val: {len(val_labels)}, Test: {len(test_labels)}")
 print(f"CWD distribution: {(train_labels['class'] == 'CWD').mean():.1%}")
+print(f"Mean CWD probability (train): {train_probs[train_labels['class'] == 'CWD'].mean():.1%}")
 ```
 
 ### Evaluate CHM Variants
@@ -248,11 +257,16 @@ python scripts/run_detection.py --chm path/to/chm.tif --model runs/.../best.pt -
 ## Data & Files Guide
 
 ### Ground Truth Labels
-**File:** `lamapuit.gpkg` (committed to repo)
+**Primary File:** `lamapuit.gpkg` (committed to repo)
 - LineString geometries representing CWD centerlines
 - 23 map sheets, 8 years of observations
 - CRS: same as CHM rasters
-- **Derived:** `data/chm_variants/labels_canonical_with_splits.csv` (580K labeled locations with train/val/test splits)
+
+**Processed Labels (Canonical for Training):** `data/chm_variants/labels_canonical_with_splits_retrained_ensemble.csv` (580,136 rows, 2026-04-26)
+- 580K labeled locations with train/val/test splits
+- Includes retrained ensemble probabilities (4-model soft-voting)
+- Split assignment: 67.3K train, 13.9K val, 56.5K test, 442.5K buffer
+- Ready for model training and evaluation
 
 ### Input CHM Rasters
 **Location:** `data/chm_variants/` (generated data, not tracked in Git)
@@ -393,15 +407,15 @@ Expected Completion:  ~05:00 UTC 2026-04-26
 
 ```
 📁 Critical Data & Models
-├── 📄 data/chm_variants/labels_canonical_with_splits.csv      (580K labels)
+├── 📄 data/chm_variants/labels_canonical_with_splits_retrained_ensemble.csv (580K + probs)
+├── 📄 lamapuit.gpkg                                            (ground truth lines)
 ├── 📁 data/chm_variants/baseline_chm_20cm/                    (full variant)
 ├── 📁 data/chm_variants/composite_3band/                      (full variant)
 ├── 📁 output/tile_labels_spatial_splits/
-│   ├── cnn_seed42_spatial.pt
-│   ├── cnn_seed43_spatial.pt
-│   ├── cnn_seed44_spatial.pt
-│   └── effnet_b2_spatial.pt
-├── 📄 lamapuit.gpkg                                            (ground truth)
+│   ├── cnn_seed42_spatial.pt                                  (model 1)
+│   ├── cnn_seed43_spatial.pt                                  (model 2)
+│   ├── cnn_seed44_spatial.pt                                  (model 3)
+│   └── effnet_b2_spatial.pt                                   (model 4)
 └── 📄 SPLIT_ASSIGNMENT_REPORT.md                              (methodology)
 
 📁 Methodology & Results
