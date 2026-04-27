@@ -20,6 +20,27 @@ conda activate cwd-detect    # env name differs from package name cdw-detect
 pip install -e .
 ```
 
+## Docker Setup
+
+When executing scripts inside Docker containers, **always use the existing conda environment** already installed in the image. Do NOT create new environments or run `pip install` again inside containers.
+
+```bash
+# For GPU-enabled scripts:
+docker-compose -f docker-compose.benchmark.yml up
+
+# For labeler backend:
+docker-compose -f docker-compose.labeler.yml up
+
+# Or use the build script directly:
+bash docker/build_and_run_gpu.sh
+```
+
+Inside a running container, activate the pre-configured environment:
+```bash
+conda activate cwd-detect
+python scripts/train_model.py --data data/dataset/dataset.yaml
+```
+
 ## Commands
 
 ### Tests
