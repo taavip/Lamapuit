@@ -29,14 +29,36 @@ Uuringus kasutati kolmest allikast pärinevaid märgistusandmeid:
 
 Duplikaatide käsitlemiseks rakendati prioriteetsuse reeglit: käsimärgistus (prioriteet 30) ületas automaatse ülevaatlusega andmed (prioriteet 20), mis omakorda ülesid lävedega filteeritud ennustusi (prioriteet 10). Igal ainsuses koordinaadil säiliti ühe allikast pärinev, kõrgeimate prioriteetidega märgistus, väldimaks aastateülest leket ja kordusmärgistamist.
 
-Märgistuste jaotus allikate vahel:
-\begin{itemize}
-    \item \textbf{Automaatne} (\texttt{auto}): 536\,122 märgistust (92,4\%)
-    \item \textbf{Käsitsi} (\texttt{manual}): 12\,177 märgistust (2,1\%)
-    \item \textbf{Automaatne, jäetud vahele} (\texttt{auto\_skip}): 31\,837 märgistust (5,5\%)
-\end{itemize}
+Märgistuste jaotus allikate vahel on toodud tabelis \ref{tab:andmed-marked-allikad}:
 
-Käsimärgistuse näidised sisaldavad kõrgema lamapuidu protsendiga märgistusi (36,63\% CWD) võrreldes automaatse märgistamise keskmisega (30,01\% CWD), mis näitab käsitsi koostatud andmete erinevat karakteristikut ja rikkalikke sihtkohti.
+\begin{table}[h!]
+\centering
+\caption{Märgistuste jaotus allikate vahel}
+\label{tab:andmed-marked-allikad}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Märgistuse allikas} & \textbf{Arv} & \textbf{Osakaal} & \textbf{Lamapuit} & \textbf{Taust} & \textbf{CWD \%} \\
+\hline
+Käsitsi (\texttt{manual}) & 12\,177 & 2,1\% & 4\,466 & 7\,711 & 36,63\% \\
+Automaatne (\texttt{auto}) & 536\,122 & 92,4\% & 160\,946 & 375\,176 & 30,01\% \\
+Automaatne, jäetud vahele (\texttt{auto\_skip}) & 31\,837 & 5,5\% & --- & --- & --- \\
+\hline
+\textbf{Kokku} & \textbf{580\,136} & \textbf{100\%} & \textbf{165\,357} & \textbf{414\,779} & \textbf{28,50\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+Käsimärgistuse näidised sisaldavad märkimisväärselt kõrgema lamapuidu protsendiga märgistusi (36,63\% CWD) võrreldes automaatse märgistamise keskmisega (30,01\% CWD), mis näitab käsitsi koostatud andmete erinevat karakteristikut ja rikkalikke sihtkohti. See erinevus peegeldab tõenäoliselt seda, et käsitsi märgistamine concentreerub lamapuidu-rohkete aladele.
+
+\subsubsection{Märgistamise kvaliteet allikate kaupa}
+
+Märgistamisallikate vaheline erinevus CWD esindatuses (käsitsi 36,63\% versus automaatne 30,01\%) viitab erinevatele märgistamisharjumustele ja potentsiaalsetele kallutatusele:
+
+\begin{itemize}
+    \item \textbf{Käsitsi märgistamine} (2,1\%): Keskendub lamapuidu-rohkete aladele, kõrgem CWD-esindatus võib viidata uurija poolt valitud aladele või märgistamiskriteeriumidele
+    \item \textbf{Automaatne märgistamine} (92,4\%): Lähedalt jäljendab andmestiku üldist klassi tasakaalu (28,50\%), mis viitab mudeli ühtlasele käitumisele
+    \item \textbf{Automaatne, jäetud vahele} (5,5\%): Sisaldab mudeli poolt ebakindlaks klassifitseeritud juhtumeid, mis jäävad analüüsist välja
+\end{itemize}
 
 
 \subsection{Andmete valideerimine ja kvaliteedi kontroll} \label{andmed-valideerimine}
@@ -64,11 +86,39 @@ Valideerimise tulemused:
 
 \subsubsection{Tervikliku andmestiku omadused}
 
-Kogu magistritöös kasutatud andmestik sisaldab 580\,136 märgistatud 128 × 128 piksli suuruseid kiibi (tile) andmeid, mis on eraldatud 100 CHM rasterist 23 erineva kaardilehe hõlmamisel üle Eesti. Ajaline ulatus katab perioodi 2017--2024, tagades ajalis-ruumilise representatiivsuse ning lubades analüüsida lamapuidu mustrite muutusi aja jooksul.
+Kogu magistritöös kasutatud andmestik sisaldab 580\,136 märgistatud 128 × 128 piksli suuruseid kiibi (tile) andmeid, mis on eraldatud 100 CHM rasterist 23 erineva kaardilehe hõlmamisel üle Eesti. Ajaline ulatus katab perioodi 2017--2024, tagades ajalis-ruumilise representatiivsuse ning lubades analüüsida lamapuidu mustrite muutusi aja jooksul. Andmestiku põhilised omadused on esitatud tabelis \ref{tab:andmed-ulekanne}:
+
+\begin{table}[h!]
+\centering
+\caption{Andmestiku põhilised karakteristikud}
+\label{tab:andmed-ulekanne}
+\begin{tabular}{lc}
+\hline
+\textbf{Omadus} & \textbf{Väärtus} \\
+\hline
+\textbf{Märgistuste koguarv} & 580\,136 \\
+\textbf{Lamapuitu (CWD)} & 165\,357 (28,50\%) \\
+\textbf{Taust (no\_cdw)} & 414\,779 (71,50\%) \\
+\textbf{Klassi tasakaalutus} & 2,51:1 \\
+\hline
+\textbf{CHM rastereid} & 100 \\
+\textbf{Kaardilehti} & 23 \\
+\textbf{Ruumikate (km²)} & ~380,2 \\
+\textbf{Ajaline ulatusperiood} & 2017--2024 (8 aastat) \\
+\hline
+\textbf{Punktipilve tihedus} & 1--4 pts/m² \\
+\textbf{Keskmine tihedus} & 2,5 pts/m² \\
+\textbf{Punktid / kiibi kohta} & ~1\,638 \\
+\textbf{CHM lahutusvõime} & 0,2 m \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsubsection{Ruumiline jaotus}
 
 Andmestik jaotub 23 erineva kaardilehe vahel, millest suurimad osa-alad sisaldavad 41\,503 märgistust (näiteks kaardilehed 580543, 580535, 580536, 580537, 580538, 580539, 580540). Väiksemad alad sisaldavad 3\,927--5\,929 märgistust. See ruumiline jaotus peegeldab erinevaid metsatüüpe ja maastikutingimusi Eestis, varieerudes tihedalt metsa kaetud aladest kuni harvamate puistutel esinevate lamapuidu kontsentratsioonideni.
+
+Geograafiliselt on andmestik ebaühtlaselt jaotunud: suurimad kaardilehed katavad ligikaudu 41\,500 märgistust (~27 km² ekvivalent), keskmise suurusega kaardilehed 23\,700 märgistust (~15,5 km²) ja väiksemad kaardilehed 5\,900 märgistust (~3,8 km²). Iga kaardilehe siseselt jäetakse erinevate aastate andmed, mis tähendab et sama geograafiline ala võib sisaldada mitmete aastate CHM andmeid, lubades ajalist analüüsi sama geograafilise piirkonna ulatuses.
 
 \subsubsection{Ajaline jaotus}
 
@@ -106,6 +156,25 @@ Kogu andmestikus on märgistused jaotunud kahe klassi vahel:
 \end{itemize}
 
 Klassidevahelise tasakaalutamatuse suhe on 2,51:1 (tausta:lamapuitu). See tasakaalutus on mõistlik ja töödeldav täiustatud õpimeetodite abil, erinevalt äärmuste tasakaalutumatusest, mis tekiks palju harvema lamapuidu klassiga. Klassidevahelise esindatuse varieerumine geograafiliste alade vahel on märkimisväärselt suurem: lamapuidu osakaal varieerub 8,48\% kuni 55,89\% eri kaardilehtede vahel.
+
+\subsubsection{Maastikutüübi jaotus (area type)}
+
+Uuringus kasutatud andmestik sisaldab ainult ühte maastikutüübi klassifikatsioon: \textbf{``madal''} (madal ehk pehme maastik). See kategooria hõlmab kõiki 580\,136 märgistust, mis kajastab uuringu fokuseerimist peamiselt järveääre-, soistunud ja madala vegetatsiooniga aladele. Madala maastiku omadused on:
+
+\begin{table}[h!]
+\centering
+\caption{Maastikutüübi (area type) jaotus}
+\label{tab:andmed-areatype}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Maastikutüüp} & \textbf{Märgistusi} & \textbf{Osakaal} & \textbf{Lamapuit} & \textbf{CWD \%} & \textbf{Aasta vahemik} \\
+\hline
+Madal (\texttt{madal}) & 580\,136 & 100\% & 165\,357 & 28,50\% & 2017--2024 \\
+\hline
+\end{tabular}
+\end{table}
+
+Maastikutüübi homogeensus (ainult ``madal'') tähendab, et geograafiline varieerumine CWD esindatuses (8,48\% kuni 55,89\%) ei ole tingitud maastikutüübi erinevustest, vaid eri-lokaalsetest metsatüüpidest, topograafiast ja lamapuidu tegelikust esinemissagedusest madala maastiku piires.
 
 \subsubsection{Punktipilve tiheduse analüüs}
 
