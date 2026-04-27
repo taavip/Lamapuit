@@ -4,7 +4,7 @@ Käesolevas peatükis kirjeldatakse magistritöös kasutatud andmeallikaid, nend
 
 \subsection{LiDAR-andmed} \label{andmed-lidar}
 
-Magistritöö teostamisel kasutati Maa- ja Ruumiameti aerolaserskaneerimise andmeid perioodist 2017--2024. Maa-amet jätkab Eesti territooriumi süstemaatilist katmist ALS-IV programmi raames, mille käigus kaetakse igal aastal ligikaudu veerand Eesti maast. Kasutatud andmete punktitihedus on 1--4 punti ruutmeetri kohta \parencite{ruumiamet_als_nodate}, keskmiselt 2,5 pts/m², mis kajastab praktilist kompromissi detailsuse ja andmete kogumise kulude vahel. Andmestiku analüüs näitas, et see tihedus on ühtlane kogu perioodi 2017--2024 ulatuses, kõikide geograafiliste aladel ja lamapuidu klasside vahel. Üks 25,6 m × 25,6 m suurune analüüsiüksus (128 × 128 pikslit) sisaldab sellisel tihedusel ligikaudu 1\,600--1\,700 punkti. See hõredate andmete koosseisuga seotud väljakutse motiveerib käesoleva tööga tegelda --- nimelt kuidas saab tuvastada lamapuitu usaldusväärsel viisil just sellisel hõredal punktipilvele tuginedes.
+Magistritöö teostamisel kasutati Maa- ja Ruumiameti aerolaserskaneerimise andmeid perioodist 2017--2024. Maa-amet jätkab Eesti territooriumi süstemaatilist katmist ALS-IV programmi raames, mille käigus kaetakse igal aastal ligikaudu veerand Eesti maast erinevate otstarvetega lennutega \parencite{ruumiamet_als_nodate}. Andmete punktitihedus varieerub otstarve järgi: tiheasustusalade kaardistamine (18 p/m²), pildistamise prioriteet (3,5 p/m²), üle-eestiline kaardistamine (2,1 p/m²) ja metsandusliku kaardistamine (0,8 p/m²). Käesolev uuringu rakendab \textbf{intentsioonilt filtreeritud madala tihedusega lähendust}: originaalselt kasutati tiheasustusalade kaardistamise andmeid (18 p/m²), mida filtreeriti kontrollitud viisil 1--4 punti ruutmeetri tasemele, et saavutada praktilise madal-tiheduse ALS-i tingimused. Andmestiku analüüs näitas, et see filtreeritud tihedus on ühtlane kogu perioodi 2017--2024 ulatuses, kõikide geograafiliste aladel ja lamapuidu klasside vahel. Üks 25,6 m × 25,6 m suurune analüüsiüksus (128 × 128 pikslit) sisaldab sellisel tihedusel ligikaudu 1\,638 punkti keskmiselt. See hõredate andmete koosseisuga seotud väljakutse motiveerib käesoleva tööga tegelda --- nimelt kuidas saab tuvastada lamapuitu usaldusväärsel viisil just sellisel hõredal punktipilvele tuginedes, mis vastab Eesti metsanduse operatiivse seire vajadustele.
 
 Kuigi kõrgema tihedusega aerolaserskaneerimise andmete (nt 20--50 pts/m²) kasutamine võimaldab suuremat detailsust üksikute puude koruste eristamisel \parencite{marchi_airborne_2018}, on riiklike monitoorimisprogrammide tasandil kehtestatud madalam tihedus majanduslike ja operatiivse tõhususe kaalutluste tõttu. Samas on hiljutised uuringud näidanud, et Maa-ameti andmeid saab edukalt rakendada erinevate maastikuelementide tuvastamisel, kasutades sügavõppimist ja kaugseiremeetodeid \parencite{virro_2025}, mis omakorda annab aluse uskuda, et sobiva andmetöötluse ja märgistamisega on võimalik saavutada rahuldavaid tulemusi ka lamapuidu tuvastamisel.
 
@@ -16,6 +16,35 @@ Uuringus kasutati peamiselt Maa-ameti 2017.--2024. aasta lennukipõhiseid lasers
 \end{itemize}
 
 Selles uuringus kasutati peamiselt 0,2 m lahutusvõimega CHM-e legacy-konveierist, mis toodab kokku 128 × 128 pikseli suuruseid kiibi (tile) andmeid (ruumilahutus 0,2 m, st 25,6 m × 25,6 m maapinnal). Punkt-tihedus 1--4 pts/m² määrab CHM-ide genereerimise ebaühtlase täpsuse: harvemini asetsevad punktid põhjustavad suuremaid andmekvaliteedi variatsioone eri aladel.
+
+Maa-amet teostab ALS-IV programmi raames lende erineva kõrguse ja otstarbe järgi, mis määravad punktitiheduse:
+
+\begin{table}[h!]
+\centering
+\caption{Maa-ameti ALS-IV lennu parameetrid ja punktitihedus eri otstarvetega \parencite{ruumiamet_als_nodate}}
+\label{tab:andmed-als-iv-parameetrid}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Parameeter} & \textbf{Tihea-} & \textbf{Pildi-} & \textbf{Üle-} & \textbf{Metsandi-} \\
+ & \textbf{sustus} & \textbf{stamine} & \textbf{eestiline} & \textbf{uslik} \\
+\hline
+\textbf{Lennukõrgus} & 1200 m & 2000 m & 2600 m & 3100 m \\
+\textbf{Otstarve} & Linna & Pildist. & Üle-Eesti & Metsandus \\
+ & kaardist. & priori- & kaardist. & \\
+ & (KEVAD) & teet (KEVAD) & (KEVAD) & (SUVI) \\
+\hline
+\textbf{Keskmine} & 18 p/m² & 3,5 p/m² & 2,1 p/m² & 0,8 p/m² \\
+\textbf{punktitihedus} & & & & \\
+\textbf{Keskmine} & 0,26 m & 0,64 m & 0,72 m & 1,64 m \\
+\textbf{punktivahe} & & & & \\
+\textbf{Impulsisagedus} & 2×1000 kHz & 2×350 kHz & 2×350 kHz & 2×150 kHz \\
+\textbf{Lennukiirus} & 203 km/h & 241 km/h & 278 km/h & 278 km/h \\
+\textbf{Laseri võimsus} & 100\% & 100\% & 100\% & 100\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Käesolev uuringu kasutab \textbf{tiheasustusalade kaardistamise andmeid} (Tiheasustusalade kaardistamine, 18 p/m² algotsast), mille punktitihedus on filtreeritud kontrollikohalt 1--4 pts/m² tasemele, et saavutada madala tihedusega operatiivse ALS-i tingimused. See filtreerimine on metodoloogiliselt oluline, sest võimaldab uurida lamapuidu tuvastamise võimalusi just sellisel hõredal andmestikul, mis on praktiline Eesti metsanduse monitoorimisel.
 
 \subsection{Märgistused ja andmete kogumine} \label{andmed-abistavad}
 
