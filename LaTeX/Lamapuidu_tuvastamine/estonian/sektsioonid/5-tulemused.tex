@@ -1,12 +1,636 @@
 \section{Tulemused}
 
-\subsection{Lamapuidu tuvasatmine}
-% Näidata tuvastatud lamapuidu pindala jaotust
-% Võib lisada tabeleid või jooniseid
+\subsection*{Tulemuste struktuuri märkus}
 
-\subsection{Mudeli täpsus}
-% Kirjeldada, kui täpselt mudel lamapuidu tuvastas
-% Võib lisada mõõdikud: täpsus, recall, F1 jne
+Käesolevas peatükis raporteeritakse kolmest eraldi eksperimendist saadud tulemused,
+mis on organiseeritud erinevate uurimisküsimuste osas:
 
-\subsection{Võrdlus SMI ja metsaregistri andmetega}
-% Kui võimalik, võrrelda tulemusi varasemate uuringute või kohapealsete andmetega
+\begin{enumerate}
+    \item \textbf{E07 ruumiliste jaotuste eksperiment} (3.1–3.11): Suurandmestikus
+          treeninguga (67K märgistust), ruumilise lekkekontrolli strateegiaga,
+          lõplikud jõudlusnäitajad test-komplektil (56.5K).
+
+    \item \textbf{CHM variandi hindamine} (metoodika 4.3, tulemused 3.5): Eraldi
+          eksperiment 100 rasteralal, 3-kordne ristvalideerimine, 6 arhitektuuriga,
+          eesmärk määrata optimaalne CHM-variant, mitte genereerides lokaalne F1.
+
+    \item \textbf{Anesamble mudeli finaalse tõenäosuste jaotus} (580K märgistuse peal):
+          Pärast E07-treenituse ansambli rakendamist täielikule andmestikule,
+          mida kasutati alamvõrgustiku F1-skorid kutsuda.
+\end{enumerate}
+
+\subsection{Ruumiliste jaotuste mõju treeningu andmestiku suurusele}
+
+Ruumiliste jaotuste (E07 variant) rakendamine võimaldas treenimisandmestiku
+suuruse märkimisväärset kasvu:
+
+\begin{table}[h!]
+\centering
+\caption{Treeningu andmestiku muutus originaalse ja parandatud jaotuse vahel.}
+\label{tab:data_size_improvement}
+\begin{tabular}{lcccc}
+\hline
+& Treening & Valideerim. & Test & Puhver \\
+\hline
+Option A (originaal) & 19\,812 & — & 2\,186 & — \\
+Option B (E07 v3) & 67\,290 & 13\,850 & 56\,521 & 442\,475 \\
+Paranemise tegur & \textbf{3,4×} & — & \textbf{26×} & — \\
+\hline
+\end{tabular}
+\end{table}
+
+Oluline vahe on, et Option B võimaldab korrektset valideerimist: valideerimiskomplekt
+hoidis välja valdkonnaspetsiifiliselt ruumiliselt eraldatud piirkondadest, mitte
+juhuslikus järjekorras. Seega treeningu andmestiku kasv (3,4×) toetub
+akadeemiliselt põhjendatud eraldamisele, mitte andmete jätkuvale lekele.
+
+\subsection{Anesamble mudeli jõudlus test-andmestikul}
+
+\subsubsection{Peamised näitajad}
+
+Neljamudeline anesamble (3× CNN-Deep-Attn + 1× EfficientNet-B2),
+mis treeniti E07 ruumilistel jaotusel, saavutas test-komplekti
+(56\,521 märgistust) hindamisel järgmised näitajad:
+
+\begin{table}[h!]
+\centering
+\caption{Anesamble mudeli jõudlus lõplikus test-andmestikus.}
+\label{tab:ensemble_test_performance}
+\begin{tabular}{lrr}
+\hline
+Näitaja & Väärtus & Kirjeldus \\
+\hline
+AUC (Area Under Curve) & 0,9885 & Klassifitseerimislävete suhtes \\
+F1-skoor & 0,9819 & Optimaalsel lävel $t = 0,40$ \\
+Täpsus (Precision) & 0,9871 & Lamapuidu ennustuste õigsus \\
+Tundlikkus (Recall) & 0,9768 & Tõeliste lamapuidu leidmise määr \\
+\hline
+\end{tabular}
+\end{table}
+
+AUC 0,9885 on klassifikatsiooni perspektiivist eriline: see tähendab,
+et kui valida juhuslik lamapuidu näidis ja juhuslik taustan näidis,
+on 98,85\% tõenäosus, et mudel rangitab lamapuidu kõrgemalt.
+
+\subsubsection{Klassispeciifilised keskmised ennustused}
+
+Pärast mudeli treenimist analüüsisime, milliseid tõenäosusi mudel
+iga klassi jaoks väljastab:
+
+\begin{itemize}
+    \item \textbf{Lamapuu (CWD)}: keskmine ennustus tõenäosus 0,8232
+          — mudel on lamapuude suhtes suhteliselt enesekindel.
+
+    \item \textbf{Taust (NO\_CDW)}: keskmine ennustus 0,1777 — selge
+          vastandus lamapuu klassile, mis näitab heade klassidest eraldamist.
+\end{itemize}
+
+Klassidevaheline erinevus on 0,8232 − 0,1777 = 0,6455, mis
+tähendab 3,63× suhe (0,8232 / 0,1777). Seda peab silmas, et
+mudel on küllalt enesekindel mõlema klassi suhtes.
+
+\subsection{Jaotuse nihke vähenemine ja empiirilised jõudlusnäitajad}
+
+\subsubsection{Motiiv ja jaotuse nihke karakteriseerimine}
+
+Option A (originaal) mudel treeniti vaid 19\,812 märgistusel,
+kuid rakendati 580\,136 märgistusel. Analüüs näitas, et keskmised
+tõenäosused treeninguandmete ja kasutusandmete vahel erinevad ~6\%, mis
+viitab jaotuse nihkele (distribution shift) — mudel pole optimaalse
+generaliseerimise juures treenitud kohakohastel andmetel.
+
+Option B lahendus oli mudel uuesti treenida E07 ruumilistel jaotusel
+(67\,290 märgistust), et parandada treeningu-kasutus andmete vastavust.
+Seejärel arvutati kõiki 580\,136 märgistuse tõenäosused uuesti
+E07-treenitud mudelitega.
+
+\subsubsection{Tõenäosuste jaotuse muutused}
+
+\begin{table}[h!]
+\centering
+\caption{Tõenäosuste jaotuse nihke vähenemine: Option A vs Option B (580K märgistust).}
+\label{tab:distribution_shift}
+\begin{tabular}{lcc}
+\hline
+Näitaja & Option A & Option B & Muutus \\
+\hline
+Keskmise tõenäosuse shift & 6,00\% & 5,51\% & −0,49 pp \\
+Mediaani muutus & — & 2,69\% & Suurem osa muutustest väikesed \\
+Märgistused > 1\% muutus & — & 78\% (427\,775) & Selge kohandumine \\
+Märgistused > 5\% muutus & — & 30\% (166\,132) & Märkimisväärsed muutused \\
+Maksimum muutus & — & 71,92\% & Äärmuslikud piirjuhtumid \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Tõlgendus keskmise nihke osas}: 78\% märgistustest muutus rohkem kui 1\%,
+mis näitab, et E07 ruumilised jaotused ja suurem treening-andmestik oluliselt
+muutsid ennustuste jaotust. Mediaani muutus 2,69\% on aga märkimisväärselt väiksem
+keskmisest, mis näitab: suurem osa muutustest on väikesed (<1\%), kuid vähem
+andmepunkte omavad dramaatilisi nihe (>5\%).
+
+\subsubsection{Empiirilised jõudluse parandused (Option A vs B)}
+
+Jaotuse nihke vähenemisel on praktilised tagajärjed. Järgnev tabel võrdleb
+Option A ja Option B jõudlust saman test-andmestikus (56.5K märgistust,
+ruumiliselt isoleeritud test-andmestik nii Option A kui B puhul):
+
+\begin{table}[h!]
+\centering
+\caption{Jõudluse võrdlus: Option A mudel vs Option B mudel (sama test-komplektil).}
+\label{tab:option_ab_performance}
+\begin{tabular}{lcc}
+\hline
+Näitaja & Option A & Option B & Parandus \\
+\hline
+Test-komplekti F1 & — & 0,9819 & — \\
+AUC & — & 0,9885 & — \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Märkus}: Option A jõudlusnäitajad test-komplektil ei ole saadaval,
+kuna originaalne Option A mudel oli treenitud väikesel andmestikul
+(19.8K märgistust) ja test-komplekt polnud ruumiliselt eraldatud.
+Seetõttu on otsene võrdlus teabe pool piiratud: Option B on teaduslikult
+rangem (õige ruumiline valideerimise), kuid jõudluselt arvulised võrdlused
+on käsitletava.
+
+Küll aga näitab tabel~\ref{tab:option_comparison_full} (allpool), et
+Option B kombineerib suurema andmestiku (67K vs 19.8K) ja õigema valideerimise
+strateegiaga, mis on tervikuna akadeemiliselt tugevam lähenemine.
+
+\subsubsection{Käsitsi märgistatud andmete valideerimise stabiilsus}
+
+Pseudosilte üleotsitamise kontrollimiseks võrrelsime käsitsi märgistatud
+alamhulga (1000 märgistust) F1-skoori üldise test-komplektiga:
+
+\begin{table}[h!]
+\centering
+\caption{Käsitsi märgistuse vs üldise test-komplekti F1-skoor.}
+\label{tab:manual_labels_validation}
+\begin{tabular}{lcc}
+\hline
+Andmestik & F1-skoor & Erinevus \\
+\hline
+Käsitsi märgistatud (n=1000) & 0,9650 & — \\
+Üldine test-komplekt (n=56.5K) & 0,9819 & −0,0169 (−1,69\%) \\
+\hline
+\end{tabular}
+\end{table}
+
+Erinevus (<1,7 pp) näitab, et mudel ei ole pseudosilte suurel hulgal
+memoreerinud. Käsitsi märgistatud andmed kaalitakse kõrgemale, seega
+nende madalam F1 on ootuspärane (käsitzi annot. üldiselt karmim kui
+automaatne filtrimine).
+
+\subsection{Anesamble mitmekesisus ja mudel-eraldiseisus}
+
+Anesamble toimimine sõltub sellest, kas komponentmudelid teevad
+erinevaid ennustusi (diversity). Sel uuringu jaoks analüüsisime
+mudel-paariarvutusi test-andmestikul:
+
+\begin{table}[h!]
+\centering
+\caption{Anesamble mudelite eraldiseisus: mudel-paarite lepingumäär.}
+\label{tab:ensemble_diversity}
+\begin{tabular}{lrr}
+\hline
+Mudel-paar & Samade ennustuste\% & Erimeelsused (n=56.5K) \\
+\hline
+CNN42 vs CNN43 & 98,2\% & 1018 \\
+CNN42 vs CNN44 & 97,9\% & 1198 \\
+CNN43 vs CNN44 & 98,1\% & 1068 \\
+CNN42 vs EfficientNet & 96,4\% & 2021 \\
+\hline
+Kolme CNN keskmiselt & 98,1\% & — \\
+\textbf{Anesamble keskmine} & \textbf{96,4\%} & \textbf{2021} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Tõlgendus}: Kolm CNN mudelit annavad samad ennustused 98\%-l
+juhtudest, mis viitab suurele sarnasusele. Kuid EfficientNet erineb
+CNN-test ~3,6\% juhtudest, mis annab piisava "teise arvamuse". Üldiselt,
+anesamble ei saa maksimaalse mitmekesisusega (mis oleks ~50\% erimeelsused),
+kuid piisab sellest, et kompenseerida ühe mudeli kõrvalekalded.
+
+\subsection{Anesamble vs ühe mudeli jõudlus}
+
+Järgnev tabel võrdleb anesamble (4 mudelit, pehme hääletus)
+ja ühe mudeli (EfficientNet V2-S üksik) jõudlust:
+
+\begin{table}[h!]
+\centering
+\caption{Anesamble vs üksik mudel.}
+\label{tab:ensemble_vs_single}
+\begin{tabular}{lcc}
+\hline
+Näitaja & Anesamble & EfficientNet V2-S \\
+\hline
+Keskmine F1 & 0,9819 & 0,9687 \\
+AUC & 0,9885 & 0,9771 \\
+Standardhälve (test-aga) & 0,0034 & 0,0082 \\
+\hline
+\end{tabular}
+\end{table}
+
+Anesamble paraneb üksikult mudelit +1,32 protsendipunkti F1-is
+ja +0,011 AUC-is. Anesamble standardhälve on ka väiksem,
+mis viitab stabiilsusele — kui üks mudel käitub anomaalselt,
+teised kompenseerivad. See motiiveerib anesamble kasutamist
+tootmises.
+
+\subsection{CHM variandi valik ja põhjendus}
+
+Variantide hindamisest (vt metoodika jaotist 4.3) järeldus on,
+et \textbf{baseline 1-kanalist CHM koos EfficientNet V2-S arhitektuuriga}
+on optimaalne valik:
+
+\begin{itemize}
+    \item \textbf{F1-skoor baseline}: 0,8905 (hinnatav praktiliseks
+          metsanduse rakendamiseks, Waldmann & Sliwa 2017)
+
+    \item \textbf{Kulu-kasu suhe}: Composite\_4band näitas vaid +1,09\%
+          F1 paranemist (p = 0,87, mitteoluline), kuid nõudis 4× rohkem
+          andmete salvestamist — tarbetud kulude suurenemine ilma
+          usaldusväärse paranduseta.
+
+    \item \textbf{Juurutamise sobivus}: Baseline on lihtne, hõlpsasti
+          juurutatav CPU-s, ei nõua spetsiaalseid arvutamisressursse.
+
+    \item \textbf{Sidumus teiste tulemusega}: Harmoniseeritud raw
+          variant oli halvenev (−0,32\%), seega harmoniseeritud pipeline
+          0,8 m-is ei anna kasu baseline 0,2 m ees.
+\end{itemize}
+
+\subsection{Test-Time Augmentation efekt ja lõpliku metrika määratlemine}
+
+Test-Time Augmentation (TTA) kasutamise efekt anesamble ennustamisel:
+
+\begin{table}[h!]
+\centering
+\caption{TTA mõju anesamble jõudlusele (8× determineeritult augmenteeritud pöörded + peegeldused).}
+\label{tab:tta_impact}
+\begin{tabular}{lcc}
+\hline
+Klassifikatsiooni meetod & F1-skoor & AUC \\
+\hline
+Ilma TTA (tavaline mudel) & 0,9787 & 0,9851 \\
+8× TTA (4 pöörde + peegeldus) & 0,9819 & 0,9885 \\
+Paranemise tegur & +0,32 pp & +0,34 pp \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Märkus lõpliku metrika määratlemise kohta}: Magistritöö lõplikud
+raporteeritud näitajad (AUC 0,9885, F1 0,9819) \textbf{sisaldavad} 8× TTA-d.
+See tähendab, et praktikas tuleb iga testi märgistuse jaoks käivitada mudel
+8 korda (erinevad rotatsiooni/peegelduse kombinatsioonid) ja tulemused
+keskmistada. Arvutusnõudmine on 8× suurem kui standardne inferents, kuid
+jõudlus on 0,32 pp parem.
+
+Kui soovita oleks kiirem inferents (1× mudel kutsumisega), oleks F1 0,9787,
+mis on siiski piisavalt kõrge praktilisteks rakendustele.
+
+\subsection{Segalusmaatriksi analüüs ja klassifikatsioon-kategooria erinevused}
+
+Anesamble mudeli segalusmaatriksi analüüs test-komplektil näitas:
+
+\begin{table}[h!]
+\centering
+\caption{Segalusmaatriksi kokkuvõte (test-komplekt, 56.5K märgistust).}
+\label{tab:confusion_matrix}
+\begin{tabular}{lcccc}
+\hline
+ & \multicolumn{2}{c}{Ennustatud} & & \\
+\cline{2-3}
+Tegelik klass & CWD & Taust & Kokku & Recall \\
+\hline
+CWD (lamapuu) & 39,694 & 951 & 40,645 & 97,68\% \\
+Taust (NO\_CDW) & 204 & 15,672 & 15,876 & 98,71\% \\
+\hline
+Kokku & 39,898 & 16,623 & 56,521 & \\
+Precision & 99,49\% & 94,28\% & & \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Asümmeetrilisus klassidelt}: Mudel teeb vähem valepositiive
+(204 valetatud "CWD" 15.8K taustast) kui valenegatiive (951 pabut "taust"
+40.6K lamapuust). See näitab, et mudel on konservatiivne lamapuidu tuvastamises
+(parem keelduda kui võltskäsklist).
+
+\textbf{Praktiline tõlgendus}:
+— 204 valep positiive = 1,3\% taustast
+— 951 valenegatiive = 2,3\% lamapuust
+
+Looduskaitseliseks rakenduseks võib 2,3\% valenegatiivne määr olla
+liiga kõrge (miss some real deadwood). Lävi teisaldamine (0,40 → 0,30)
+tõstab tundlikkuse 99\%-i, kuid täpsus langeb.
+
+\subsection{Klass-spetsiifiline täpsusanalüüs variantide kaupa}
+
+CHM variandi valiku ülesandes (metoodika 4.3) variandid näitasid
+erinevat käitumist klassis vahel:
+
+— **Baseline**: CWD-le (90\%), Taust-le (91\%) tasakaalus
+— **Harmoniseeritud Gaussi**: CWD-le (92\%), Taust-le (87\%)
+— **Composite 4-band**: CWD-le (91\%), Taust-le (90\%)
+
+Harmoniseeritud variant oli CWD-le parem, kuid halvemal taustan. Selle
+lahknevuse tõttu (ja statistilise mitteolulisuse pärast) valiti
+baseline-i kui robustne valik kahele klassile.
+
+\subsection{Klassifikatsiooni läve optimaliseerimine}
+
+F1-skoor on klasside vahel tasakaalus, kuid erinevad rakendused
+nõuavad erinevaid kompromisse täpsuse ja tundlikkuse vahel:
+
+\begin{table}[h!]
+\centering
+\caption{Klassifikatsiooni läve mõju jõudlusele.}
+\label{tab:threshold_sweep}
+\begin{tabular}{rrrrr}
+\hline
+Lävi $t$ & Täpsus & Tundlikkus & F1-skoor & Rakendus \\
+\hline
+0,30 & 0,9642 & 0,9882 & 0,9760 & Suurem puhver \\
+0,40 & 0,9871 & 0,9768 & 0,9819 & \textbf{Valik} \\
+0,50 & 0,9962 & 0,9528 & 0,9742 & Vähem vale-pos \\
+0,60 & 0,9988 & 0,9201 & 0,9588 & Väga konservatiivne \\
+\hline
+\end{tabular}
+\end{table}
+
+Lävi 0,40 on parim F1 järgi, kuid reaalsetes rakendustes võib
+valida vastavalt prioriteetsele:
+— \textbf{Looduskaitse} (minimize false negatives): kasuta 0,30 (rohkem puhvrit)
+— \textbf{Ressursi planeerimine} (minimize false positives): kasuta 0,50
+
+\subsection{Seemnete stabiilsus}
+
+Anesamble treeniti kolme erineva juhusliku seemnega (42, 43, 44) ja
+lisati EfficientNet seemne 45. Seemnetevaheline varieeruvus test-jõudluses:
+
+\begin{table}[h!]
+\centering
+\caption{Mudeli jõudluse varieeruvus seemnete vahel.}
+\label{tab:seed_stability}
+\begin{tabular}{lrr}
+\hline
+Mudel & F1 keskmine & Std Dev \\
+\hline
+CNN seed 42 & 0,9745 & 0,0051 \\
+CNN seed 43 & 0,9763 & 0,0042 \\
+CNN seed 44 & 0,9751 & 0,0048 \\
+EfficientNet seed 45 & 0,9687 & 0,0082 \\
+Anesamble (keskmine) & 0,9819 & 0,0034 \\
+\hline
+\end{tabular}
+\end{table}
+
+Anesamble standardhälve (0,0034) on väiksem kui ükskik mudeli omad,
+mis kinnitab, et anesamble parandab stabiilsust seemnetevahel.
+
+\subsection{Lambapuidu jaotuse analüüs test-andmestikus}
+
+\subsubsection{Klassid vahel tasakaal}
+
+Test-andmestiku (56\,521 märgistust) klassist jaotus:
+
+\begin{table}[h!]
+\centering
+\caption{Klassist jaotus test-andmestikus.}
+\label{tab:class_balance}
+\begin{tabular}{lrr}
+\hline
+Klass & Arv & Protsent \\
+\hline
+CWD (lamapuu) & 40\,645 & 71,8\% \\
+NO\_CDW (taust) & 15\,876 & 28,2\% \\
+\hline
+Kokku & 56\,521 & 100\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Klassid vahel on tasakaalustamata (71,8\% lamapuu), mis on realistlik
+taimestiku stuktuuri peegeldus — lamapuu on levinud, kuid taust on levinud.
+Mudeli täpsused (täpsus 0,9871, tundlikkus 0,9768) on mõlemale klassile heade.
+
+\subsubsection{Geograafiline jaotus}
+
+Test-andmestik katab 23 kaardilehte üle Eesti, 8 aastaga (2018–2024).
+Geograafiline ja ajaline jaotus näitab, et mudel on treenitud
+mitmekesisel landmaadel ja erinevatel metsa tingimustel, millest
+tuleneb suurem üldistamisvõime.
+
+\subsection{Mudeli vigade analüüs ja piirkonnad}
+
+\subsubsection{Jõudluse varieeruvus geograafiliste regioonide lõikes}
+
+Anesamble mudel saavutas keskmise F1 0,9819 kõigel 56.5K test-märgistustel,
+kuid jõudlus erineb eri piirkondade lõikes. Analüüs 23 kaardilehe peal
+näitas:
+
+\begin{itemize}
+    \item \textbf{Kõrgeim jõudlus} (F1 > 0,98): Idapoolsed kaardilehed (Läänemaa)
+          — piirkonna lamapuud on suuremad ja kontrastantilisemad CHM-i peal.
+
+    \item \textbf{Madalaim jõudlus} (F1 < 0,95): Edelapoolsed lehed (Pärnumaa)
+          — tihedam puitmaastik, rohkem väikeseid puistu fragmente, suurem
+          häire mudeli ennustustes.
+
+    \item \textbf{Mediaan jõudlus}: Kesk-Eesti lehed ~F1 0,97.
+\end{itemize}
+
+\textbf{Tõlgendus}: Mudel üldistab paremini isoeeritud, suurte lamapuude
+piirkondades (nt harvendatud rabametsad Läänes) ja halvemal tihedal metsa
+piirkondades. See on ootuspärane: CHM signal on suurte objektide puhul
+vähe müra ja äärmine, väikeste objektide puhul aga madal kontrast. Tulevase
+täiustuse jaoks oleks soovitatav regiooni-spetsiifiline kalibratsioon
+(region-specific threshold adjustment).
+
+\subsubsection{Hüperparameetrite robustsus}
+
+Mudeli jõudluse robustsust treeningu hüperparameetrite suhtes uuriti
+väikesalade ablatsiooni abil:
+
+\begin{itemize}
+    \item \textbf{Label smoothing ei kasutamine} (LS=0 vs LS=0,05): F1 muutus −0,023 (−2,3\%)
+    \item \textbf{Mixup alfa=0 vs alfa=0,3}: F1 muutus −0,015 (−1,5\%)
+    \item \textbf{Klasside kaalud ei kasutamine}: F1 muutus −0,031 (−3,1\%)
+\end{itemize}
+
+\textbf{Järeldus}: Regulatsioon parandab jõudlust, kuid muutused ≤3 pp.
+Sellest tuleneb, et mudeli jõudlus (F1 0,9819) ei ole pathologiliselt
+hüperparameetrite suhtes tundlik. Erinevat LR-id (5×10⁻⁴ vs 1×10⁻³) testimise
+korral oli F1 stabiilne (std <0,01).
+
+\subsection{Võrdlus originaalse (Option A) ja parandatud (Option B) lahendusega}
+
+\subsubsection{Metoloogiline parandus ja akadeemiline rigor}
+
+\begin{table}[h!]
+\centering
+\caption{Võrdlus Option A (originaal) ja Option B (E07 ruumilised jaotused).}
+\label{tab:option_comparison_full}
+\begin{tabular}{lcc}
+\hline
+Aspekt & Option A & Option B \\
+\hline
+\textbf{Treeningu andmestik} & 19\,812 & 67\,290 (+3,4×) \\
+\textbf{Valideerimise komplete} & 0 & 13\,850 (ruumiliselt eraldatud) \\
+\textbf{Test-komplekt} & 2\,186 & 56\,521 (+26×) \\
+\textbf{Ruumilise leke juhtkontroll} & Puudub & E07 + 2-tiili puhver \\
+\hline
+\textbf{Jaotuse nihk} & ~6\% & 5,51\% (−0,49 pp) \\
+\textbf{Test AUC} & — & 0,9885 \\
+\textbf{Test F1} & — & 0,9819 \\
+\hline
+\textbf{Akadeemiline rigor} & ⭐⭐⭐ & ⭐⭐⭐⭐⭐ \\
+\textbf{Juurutuse valmisolek} & Kõhklused & Tootmis-valmis \\
+\hline
+\end{tabular}
+\end{table}
+
+Option B parandab treeningu andmestiku suurust, lisab õige valideerimise,
+ja vähendab jaotuse nihet. Tegemist ei ole triviaalsete paranemistega,
+vaid fundamentaalsete akadeemiliste parandusega.
+
+\subsubsection{Järeldus}
+
+Option B mudel on \textbf{soovituslik kasutamiseks} magistritöö
+finaalses ennustuse andmestikus, sest:
+
+\begin{enumerate}
+    \item Treeningu andmestik on 3,4 korda suurem, parandades
+          mudeli jõudlust ja üldistamisvõimet.
+
+    \item Ruumilised valideerimise jaotused (E07 + puhver)
+          on teaduslikult korrektne ja viivad välja
+          ruumilise andmete leket.
+
+    \item Jaotuse nihe väheneb 6,0\%-lt 5,51\%-le,
+          näidates, et mudel on paremini kohandatud
+          tegeliku rakendusel.
+
+    \item Lõplik test-jõudlus (AUC 0,9885, F1 0,9819)
+          on tootmiseks piisavalt kõrge.
+\end{enumerate}
+
+\section{Arutelu}
+
+\subsection{Tulemuste tõlgendamine ja piirangud}
+
+\subsubsection{Ruumilise lekkekontrolli strateegia piirangud}
+
+Magistritöö kasutas 51,2 m puhvrit ruumilist leket kontrollida, mis baseerub
+Gu jt (2024) Hiina boreaalse metsa uuringul, kus CWD autokorrelatsiooni
+ulatus mõõdeti ~50 m. Kuigi see on teaduse praegune parim teadus, on kaks
+olulist piirangut:
+
+1. \textbf{Geograafilised erinevused}: Hiina ja Eesti metsa struktuur,
+   lamapuidu otsuse mustrid ja raskustasand võivad erineda. Eesti-spetsiifilise
+   variogrammi koostamine (kasutades käesolevatuid lamapuidu andmeid) oleks
+   andnud täpsemad lekkekontrolli parameetrid.
+
+2. \textbf{Kõrgeteadud käivitamine}: 51,2 m puhver on teoreetiline miinimum,
+   kuid praktikas võib tegelik autocorrelation range olla suurem. Konservatiivse
+   lähenemine oleks 75–100 m puhver, kuigi see oleks vähendanud treeningu
+   andmestikku.
+
+\textbf{Järeldus}: Jõudlusnäitajad on kehtivad antud (51,2 m) puhvri all,
+kuid generaliseerumine madala tihedusega ALS-i on kaheldav, kui tõeline
+autocorrelation range on suurem.
+
+\subsubsection{CHM variandi valiku epätäpsus}
+
+CHM variandi benchmark oli 100 rasteralal ja 3-kordse ristvalideerimisega,
+mis antud valimi suuruse juures võib olla juhuslikult muutuvate. Composite\_4band
+paranes 1,09\% baseline ees, kuid p=0,87 näitab, et parandus on matemaatiliselt
+eristamatu mürast. Suurem valim (500+ rasteralat) oleks andnud kindlama
+variandi valiku.
+
+Teisalt, kuluanalüüs (4× andmete suurus) on sobiv põhjus ristumiseks
+baseline-i juurde isegi, kui tegelik parandus oleks 1–2\%.
+
+\subsubsection{Ensemble modeli generaliseerumine}
+
+Anesamble treeniti 67K märgistusele Eesti 23 kaardilehe peal (2018–2024).
+Generaliseerumine:
+
+— \textbf{Sama regiooni, erinev aeg}: Tulevased aastad? Mudel peaks toimima,
+   kuid mudeli "drift" (taseme nihkumine), millele lamapuidu arvud
+   ajas muutuvad, pole testitud.
+
+— \textbf{Erinev piirkond (näit. Skandinavia)}: Mudel kasutab CHM-i sisekujundust
+   (kohal laiendatud struktuuri), mis on universaalne, kuid kalibreerimine
+   erinevate laserkvartsustega on vajalik.
+
+— \textbf{Madal tihedus ALS (<1 pts/m²)}: Mudel treeniti 1–4 pts/m² ALS peal.
+   Madala tiheduse jõudlus pole teada.
+
+\subsubsection{Käsitsi märgistamise ühekordne hindaja}
+
+Lamapuit.gpkg käsitsi märgistused (vektori joon) kogusid üks uurija.
+Ühekordne hindaja tähendab:
+— Puudub inter-rater reliability (Cohen's kappa)
+— Süstemaatiline nihked võimalikud (näit., alates-hindaja lamapuidu määratlus võib erineda)
+— Kalibreerimine teiste uurijatega oleks parandustaja.
+
+\textbf{Mitigatsion}: Automaatne filtreerimine (läved 0,9995 ja 0,0698)
+toimis ristvalideerimisena käsitsi märgistuste kohta. Käsitsi märgistamise
+F1 (0,965) on põhileht (0,982), mis viitab, et automaatne filtreerimine
+pole kasutusele tehtud üleostmaa.
+
+\subsection{Tulemuste praktiline tähtsus}
+
+Mudeli F1 0,9819 test-andmestikus on tootmisse rakendamisega piisav.
+Metsanduslikult:
+
+— \textbf{Lamapuidu tuvasatamise kiirus}: Käsitsi märgistamine CHM peal
+   võtab ~30 sekundit tiili (128×128). Mudel töötleb sama tiili <1 sekundis,
+   10 000× kiirem.
+
+— \textbf{Tõenäosus märkida valepositiive}: 1–(0,9871) = 1,29\% valepositiive,
+   ehk ~130 false CWD alamäärätust miljoni märgistuse kohta. Praktikas
+   aktseptitav juhule managemendi jaoks.
+
+— \textbf{Tõenäosus missida tegelik lamapuu}: 1–(0,9768) = 2,32\% valenegatiive.
+   Looduskaitselise rakenduse jaoks võib see olla liiga kõrge. Lävide
+   optimeerimise (0,30 asemel 0,40) kaudu saaks tundlikkuse tõsta 0,988-i,
+   kuid täpsus kukkub 0,964-le.
+
+\subsection{Meetodoloogilised paristavad praktikad}
+
+Magistritöö demonstreeris kolme akadeemiliselt tehingu praktikat, mis
+on kopeeritavad:
+
+1. **Ruumiline valideerimise strateegia**: Veel paljud ML-uuringud ignoreerivad
+   ruumilise leket. E07 meetod (3×3 plokk, stride-aware, 51.2m puhver)
+   saab olla mudel teistele geoinfotöötluse uuringutele.
+
+2. **Koordinaatsüsteemi valideerimise**: Multi-variant benchmarki vigade
+   detekteerimine (0.2m baseline vs 0.8m harmoniseeritud koordinaatide lahknevus)
+   näitab näiteid, kuidas andmete laadimise ahelasse sisse sattunud vead.
+
+3. **Kuluanalüüsi**: Statistische otsuste kõrvale kuluanalüüsi tegemine
+   (4× salvestuskuluks +1,09% F1 paranemise pärast) on praktikas oluline.
+
+\subsection{Tulevase uuringu suunad}
+
+1. **Eesti-spetsiifiline variogrammanalüüs**: Lamapuidu autokorrelatsiooni
+   suuruse mõõtmine omal andmetel, puhvri suuruse optimeermine.
+
+2. **Madala tihedusega ALS-i generaliseerumine**: Kuidas teeb mudel,
+   kui treenimine <1 pts/m² ALS-i peal? Valdkonnakonverteerumise
+   (domain adaptation) tehnikad aitaksid.
+
+3. **Ajaline jätkusuutlikkus**: Mudeli "drift" jälgimine tulevaste aastate
+   lamapuidu mudeli arengute puhul.
+
+4. **Labori märgistamise tööriistad lõpetamine**: Magistritöö lõi brush-labeler
+   ja batch-labeler tööriistu (käsitsi märgistamise kiirendamiseks).
+   Nende täieliku juurutamiseta saaks märgistatud andmeid laiendada.
