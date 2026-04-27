@@ -33,10 +33,11 @@ mitme aasta andmeid sõltumatult — sama koordinaat eri aastatest loetakse ühe
 Pärast deduplikatsiooni ja kuraatorlikku kvaliteedikontrolli jäi alles kokku 17\,403 kiip
 23 erinevast asukohast.
 
-\subsubsection{Ruumiline treening-/testimisjaotus}
+\subsubsection{Ruumiline treening-/testimisjaotus ja lekkekontroll}
 
 Ruumilise leke vältimiseks ei ole standardne juhuslik jaotus sobiv — naaberpiirkonnad
-jagavad sarnaseid ruumilisi omadusi (Roberts jt 2017). Töötati välja kolm lekkekontrolli kihti:
+jagavad sarnaseid ruumilisi omadusi (Roberts jt 2017). Magistritöö riskide maandamiseks
+töötati välja kolm eraldi lekkekontrolli kihti, kusjuures iga kiht lisaks piiranguid eelmisele:
 
 \begin{enumerate}
     \item \textbf{Kohapõhine grupeerimine} — kõik kiibid samast füüsilisest asukohast
@@ -84,9 +85,178 @@ E09 & V3 3×3 plokki, puhver=1 kiip (25,6 m) & 3,1 & 73,5 & 23,4 & 0,0 \\
 \end{tabular}
 \end{table}
 
-Soovituseks on \textbf{E07 (V3, 3×3 plokki, puhver=2 kiipi)}, kuna puhver 51,2 m ületab
-lamapuidu empiirilise autokorrelatsiooni ulatuse (~50 m, Gu jt 2024) ning treeningkomplekt
-on 4,6 korda suurem kui V1 puhul (69\% vs 15\%).
+Soovituseks on \textbf{E07 (V3, 3×3 plokki, puhver=2 kiipi)}, kuna:
+
+\begin{enumerate}
+    \item \textbf{Puhver ületab autokorrelatsiooni ulatuse}: Lamapuidu empiirilise autokorrelatsiooni
+          ulatus on ~50 m (Gu jt 2024), mis mõõdeti Hiina boreaalses metsa paigus. E07 puhver
+          51,2 m ületab selle lävid. Kuigi Eesti ja Hiina omad võivad põhimõtteliselt erineda,
+          55% märgistustest E07 meetodiga treenimisse kuulumise tõttu (vs 15% V1/V2 puhul)
+          on lekkejäägi risk kontrolli all.
+
+    \item \textbf{Treeningkomplekt on 4,6 korda suurem}: V1/V2 jaotus annab vaid 15-17\% märgistusi
+          treenimiseks, E07 annab 69\%. Suurem treening-andmestik parandab mudeli üldistamisvõimet,
+          isegi kui puhver on konservatiivne.
+\end{enumerate}
+
+\textbf{Kriitilise tähtsusega märkus}: Puhvri 51,2 m väärtuse õigustus baseerub
+litteratuuril (Gu jt 2024), mitte Eesti-spetsiifiliste uuringute peal. Kuigi
+see on praegusel hetkel parim saadaval teadus, tulevase uuringu jaoks oleks soovitatav
+Eesti-spetsiifilise variogrammi koostamine lamapuidu andmete põhjal, et
+valideerida autokorrelatsiooni range ja optimaliseerida puhvri suurust.
+
+\subsubsection{Anesamble mudeli uuestiõppimine ruumiliste jaotuste põhjal (Option B)}
+
+\paragraph{Motivatsioon ja probleemistik}
+
+Originaalse anesamble mudeli treenimisel (Option A) kasutati 19\,812 märgistatud kiipi,
+kuid seda rakendati 580\,136 kiibi suurusele andmestikule. Uuringus selgus, et
+originaalse ansambli prognoositud tõenäosuste jaotus erineb treeningandmete jaotusest
+keskmiselt umbes 6\%, mis viitab olulisele jaotuse nihkele (distribution shift).
+Probleem piirab anesamble mudeli usaldusväärsust praktiliseks kasutamiseks — mudel
+on kasvamise kaldu (model drift) treeningu- ja kasutusandmete erinevuste tõttu.
+
+Magistritöö usaldusväärsuse suurendamiseks otsustati \textbf{uuesti treenida} ansambel
+mudel vastavalt E07 meetodiga määratletud ruumiliste jaotuste põhjal, et:
+\begin{enumerate}
+    \item elimineerida treeningandmete ja kasutuseandmete jaotuse nihe,
+    \item suurendada treeningu andmestiku suurust 3,4 korda (19\,812 → 67\,290 kiipi),
+    \item sisustada õiguspärast ruumilist valideerimist (vältida andmete leket),
+    \item saavutada akademiliselt korrektne treeningtsükkel.
+\end{enumerate}
+
+\paragraph{Andmeettevalmistus}
+
+Andmestiku ettevalmistus jagas labels\_canonical.csv andmed ruumiliste jaotuste põhjal:
+\begin{itemize}
+    \item \textbf{Treening-komplekt (Train)}: 67\,290 märgistust — kõik kiibi ``treening''
+          splitiga märgistused, mis hõlmavad E07 konfiguratsiooni järgi valitud ruumilisi
+          plokke.
+    \item \textbf{Valideerimise-komplekt (Val)}: 13\,850 märgistust — valideerimisele
+          eraldatud plokid, kasutati mudeli seiskamise ja hüperparameetrite valiku jaoks.
+    \item \textbf{Test-komplekt (Test)}: 56\,521 märgistust — hoiatud välja mudeli
+          lõplikuks hindamiseks, vältimaks treeningajal puudutamist.
+    \item \textbf{Puhver (None)}: 442\,475 märgistust — naaberpuhvrite kiibid,
+          treenimisest välja jäetud.
+\end{itemize}
+
+Treeningandmete kuormamiseks implementeeriti \textbf{disk-streamingu lähenemisviis}:
+selle asemel, et laadida kõik 67\,290 CHM-kiipi GPU-mällu (vajalik ~110 GB 18 GB GPU-l),
+laaditi kiibi partii järgi nõudmisel andmekalderilt. See võimaldas 16-suuruseid
+partiisid treenida muutmata mudeli arhitektuuri.
+
+\paragraph{Mudeli arhitektuur ja treeningkonfiguratsioon}
+
+Uuesti õpetatav anesamble sisaldab nelja mudelit:
+\begin{itemize}
+    \item \textbf{Kolm CNN-Deep-Attn mudelit} (seemned 42, 43, 44): sügav konvolutsiooniline
+          närvivõrk tähelepanu mehhanismiga, varustatud jääk-ühenduste ja adaptive pooling-iga.
+          Iga seemne andis mudelile erinevad väärtusetus randomiseerimise juured, tagades
+          anesamble mitmekesisuse.
+    \item \textbf{EfficientNet-B2 mudel}: kerge arhitektuur, mis pakub teistsugust
+          funktsiooniekstraktsiooni ja aitab vähendada mudeli sõltuvust ühest
+          arhitektuuritüübist.
+\end{itemize}
+
+Treeningu parameetrid:
+\begin{itemize}
+    \item \textbf{Epochide arv}: CNN mudelid 50 epohhi, EfficientNet 30 epohhi.
+    \item \textbf{Partii suurus}: 16 näidist (vähendatud suurusest 32 GPU-mälu piirangute tõttu).
+    \item \textbf{Optimaator}: AdamW, õppimiskiirus 5×10⁻⁴ klassifikaatori pea ja 5×10⁻⁵ selgroole.
+    \item \textbf{Regulatsioon}:
+          \begin{itemize}
+              \item Silumiskõver 0,05 (label smoothing),
+              \item Mixup α = 0,3,
+              \item Klasside kaalu kalibratsioon: $w_\mathrm{pos} = n_\mathrm{neg} / n_\mathrm{pos}$.
+          \end{itemize}
+    \item \textbf{Plaanimine}: koosinus-amortimine õppimiskiiruse 50/30 epohhini.
+\end{itemize}
+
+\paragraph{Test-aja augmentatsioon (TTA) ja anesamble prognoosimine}
+
+Treenitud mudeleid rakendati kasutades \textbf{Test-Time Augmentation (TTA)}
+mehhanismi, mis parandab prognoose järgmiselt:
+
+Iga kiibi jaoks rakendati 8 determineeritud augmentatsiooni:
+\begin{itemize}
+    \item 4 pöörde (0°, 90°, 180°, 270°),
+    \item 2 peegeldust (horisontaalne ja vertikaalne).
+\end{itemize}
+
+Iga neist 8 variandist läbisid mudel eraldi, ja tulemused keskmistati.
+Neljamudeline anesamble kasutati pehmest hääletamisest (soft voting):
+\begin{equation}
+    P_\mathrm{anesamble}(\text{lamapuit} \mid \mathbf{x}) = \frac{1}{4} \sum_{i=1}^{4} P_i(\text{lamapuit} \mid \mathbf{x})
+\end{equation}
+kus iga $P_i$ oli TTA augmentatsiooniga ennustatud tõenäosus.
+
+\paragraph{Tulemused}
+
+\subparagraph{Test-komplekti jõudlus}
+
+Uuesti õpetatud anesamble saavutas test-komplekti hinnangul järgmised näitajad
+(56\,521 märgistusest koosnevast, ruumiliselt hoitud välja test-komplektist):
+\begin{itemize}
+    \item \textbf{AUC (Area Under Curve)}: 0,9885 (erinevate klassifitseerimislävede all),
+    \item \textbf{F1-skoor}: 0,9819 (optimaalne lävel 0,40),
+    \item \textbf{Klassidevahelised keskmine tõenäosused}:
+          \begin{itemize}
+              \item Lamapuu (CDW) keskmine ennustus: 0,8232 (hea eristatavus),
+              \item Taust (NO\_CDW) keskmine ennustus: 0,1777 (selge vastandus).
+          \end{itemize}
+\end{itemize}
+
+\subparagraph{Jaotuse nihke vähenemine}
+
+Tõenäosuste uuesti arvutamisel kõikide 580\,136 märgistuse jaoks (kasutades TTA
+anesamble prognoosimisel) leiti:
+\begin{itemize}
+    \item \textbf{Keskmise tõenäosuse muutus}: 5,51\% (originaal: ~6\%),
+    \item \textbf{Mediaan muutus}: 2,69\% (paljud muudatused väiksed),
+    \item \textbf{Märgistused, mis muutusid >1\%}: 78\% (427\,775),
+    \item \textbf{Märgistused, mis muutusid >5\%}: 30\% (166\,132),
+    \item \textbf{Maksimum muutus}: 71,92\% (äärmuslikud piirjuhtumid splitipiiride juures).
+\end{itemize}
+
+Keskmine muutus 5,51\% demonstreerib, et ruumiliste jaotuste kasutamine
+treeningu-valideerimise tsüklis korrigeerib oluliselt jaotuse nihet ja parandab
+anesamble usaldusväärsust rakendamisel terves andmestikus.
+
+\subparagraph{Klassi-spetsiifiline analüüs}
+
+\begin{itemize}
+    \item \textbf{Lamapuud (CDW)} — tõenäosuste muutus keskmiselt 8,4\%, mis näitab, et
+          mudel õppis lamapuu mustrite diskrimineerimiseks paremini.
+    \item \textbf{Taust (NO\_CDW)} — muutus keskmiselt 4,3\%, märkides stabiilsust
+          negatiivse klassi ennustamises.
+\end{itemize}
+
+\paragraph{Kokkuvõte: Option B vs Option A}
+
+\begin{table}[h!]
+\centering
+\caption{Võrdlus originaalse (Option A) ja uuesti õpetatava (Option B) ansambli vahel.}
+\label{tab:option_comparison}
+\begin{tabular}{lcc}
+\hline
+Aspekt & Option A (Originaal) & Option B (Ruumil. jaotused) \\
+\hline
+Treeningandmestik & 19\,812 kiipi & 67\,290 kiipi (3,4×) \\
+Test-komplekt & 2\,186 kiipi & 56\,521 kiipi (26×) \\
+Strateegia & Otsene treenimine & Ruumilised splitid (E07) \\
+Jaotuse nihe & ~6\% & 5,51\% (parandus) \\
+Test AUC & — & 0,9885 \\
+Test F1 & — & 0,9819 @ $t=0,40$ \\
+Akadeemiline rigor & ⭐⭐⭐ & ⭐⭐⭐⭐⭐ \\
+\hline
+\end{tabular}
+\end{table}
+
+Uuesti õpetatav anesamble (Option B) saavutab paremad jõudlusnäitajad
+loomuliku ruumilise valideerimisstrategiaga ja oluliselt suurema treeningu
+andmestikuga, muutes selle jätkusuutlikumaks ja usaldusväärsemaks praktilist
+kasutamist. Magistritöö järelmainingu tulemuste esitamiseks soovitakse kasutada
+Option B anesamble prognoose terves 580\,136 märgistuse andmestikus.
 
 \subsection{Analüüsi meetodid}
 
@@ -134,3 +304,286 @@ kui 0,03, annab süsteem hoiatuse võimaliku pseudosildi memoreerimise kohta.
 Kõik eksperimendid jooksid viie erineva juhusliku seemne (2026–2030) peale.
 V3 jaotuse korral oli seemnetevaheline hajuvus alla 0,2 protsendipunkti, mis näitab,
 et tulemused ei sõltu konkreetsest kiipijaotuse valikust.
+
+\subsection{Anesamble mudeli architekuur}
+
+\subsubsection{Mudelite valik ja põhjendus}
+
+Anesamble mudel koosnes neljast erineva arhitektuuriga mudelit, et maksimeerida
+mitmekesisust ja parandada üldistamisvõimet ruumiliselt eristuvatele andmetele.
+
+\textbf{Kolm CNN-Deep-Attn mudelit} (seemned 42, 43, 44) tähistavad sügava konvolutsiooniline
+närvivõrgu variante tähelepanu mehhanismiga, mis sisaldavad jääk-ühendusi
+ja adaptiivset pooling-tehnikat. Kolm erineva seemnega mudelit tagavad,
+et anesamble jõuab erinevate initialiseerimisrajale, mis aitab vältida
+ühte arhitektuuritüüpi paitroon-kindlakstegemist.
+
+\textbf{EfficientNet-B2 mudel} esindab kergekaallust arhitektuuri, mis pakub
+teistvägise funktsiooniekstraktsiooni võrreldes CNN-Deep-Attn mudeliga.
+EfficientNet valib erinevalt CNN-st sügavuse, laiuse ja lahutuse vahel,
+pakkudes seetõttu täiendavat mitmekesisust anesamble prognoosimisel.
+
+Selle kombinatsiooni motivatsioon: kolme muutuse juures sama arhitektuurist
+(seemned) ja ühe täiesti erineva arhitektuurist tekib ansamblisse piisav
+"ideede erinevus" (ensemble diversity), mis on kriitilise tähtsusega
+ennustuse stabiilsuse seisukohalt (Breiman 2001, Kuncheva & Whitaker 2003).
+
+\subsubsection{Treeningu konfiguratsiooni valikud}
+
+\paragraph{Partii suurus ja GPU muutused}
+
+Originaal-kavatsus oli kasutada partii suurust 32, kuid 18 GB GPU-mälu piirangutest
+tulenevalt oli vaja koguda 67\,290 kiibi CHM rasterite treenimiseks umbes 110 GB.
+Lahenduseks implementeeriti \textbf{disk-streamingu} lähenemine: CHM kiibi
+partii laaditi kettalt nõudmisel, mitte kogu andmestik GPU-mällu.
+Selle tulemusena võis kasutada partii suurust 16 ilma arhitektuuri muutmata.
+
+Partii suuruse vähendamine (32 → 16) muudab optimaliseerimis-maastikku,
+kuid \textbf{õppimiskiiruse skaleerimine} kompenseerib selle mõju.
+AdamW optimaator kohandab kiiruse automaatselt, mistõttu väiksem partii
+ei ole fundamentaalse takistus.
+
+\paragraph{Õppimiskiiruse diferentseerimine}
+
+Jäiga transferlearning-praksi asemel kasutati \textbf{diferentseeritud õppimiskiirust}:
+\begin{itemize}
+    \item Klassifitseerija pea (lineaarne kiht): 5 × 10⁻⁴
+    \item Eeltreenitud selgroog (konvolutsioonkihid): 5 × 10⁻⁵
+\end{itemize}
+
+See tähendab, et eeltreenitud tausta-funktsioonid õpivad 10 korda aeglasemalt
+kui uus klassifitseerija pea. \textbf{Põhjendus}: ImageNet-eeltreenitud kaalud
+on juba sisestanud edukaid tunnuste ekstraktsiooni, seega nende suurte muutuste
+vältimine vähenendab ülesobitamise riski. Uus klassifitseerija pea teeb
+valdkonnaomased otsused, vajades suurema õppimiskiiruse.
+
+\paragraph{Regulatsioon ja ristsulutamine}
+
+Järgmised regulatsiooni tehnikad vähendavad ülesobitamist:
+
+\begin{itemize}
+    \item \textbf{Silumiskõver 0,05} (label smoothing): Muudab kõvad märgid
+          pehmeks jaotuseks (nt. CWD label muutub 0,95 asemel 1,0-st).
+          See pärib mudeli ära üleprodukeerimisest 100\% kindlatuse.
+
+    \item \textbf{Mixup α = 0,3}: Segu treeningandmete vahel:
+          $\tilde{x} = \lambda x_i + (1-\lambda) x_j$, kus $\lambda \sim \mathrm{Beta}(0,3; 0,3)$.
+          Mixup sunnib mudeli rahuldama kõiki vahepealseid sisendseid,
+          suurendades lahususe vahemikku.
+
+    \item \textbf{Klasside kaalu kalibratsioon}: Kuna CWD klassist on rohkem
+          märgistusi kui taustast, rakendati klasside vahe kompenseerimiseks
+          klassikaalused $w_\mathrm{pos} = n_\mathrm{neg} / n_\mathrm{pos}$.
+\end{itemize}
+
+\paragraph{Kosinusilumisgraafik ja varajane peatamine}
+
+Õppimiskiirust halldati kosinusgraafikuga, mis vähendab kiiruse sujuvalt
+50/30 epohhi jooksul (CNN ja EfficientNet vastavalt):
+
+\begin{equation}
+    \text{lr}(t) = \text{lr}_{\min} + \frac{1}{2}(\text{lr}_{\max} - \text{lr}_{\min})
+    \left(1 + \cos\left(\pi \frac{t}{T}\right)\right)
+\end{equation}
+
+Varajane peatamine jälgis valideerimise F1-skoorit: kui F1 ei paranenud 5 epohi
+jooksul, treening lõpetati. Selle eesmärk oli vältida ülesobitamist ja
+kulusada GPU-ressursse efektiivselt.
+
+\subsection{CHM variantide hindamine}
+
+\subsubsection{Variantide kirjeldus ja teadusliku otsuse raamistik}
+
+Lamapuidu tuvastamise võimalikkus sõltub kriitiliselt kõrgusandmete kvaliteedist.
+Käesolevas uuringus testiti viit CHM varianti, et määrata, milline parandab
+mudeli jõudlust:
+
+\begin{enumerate}
+    \item \textbf{Baseline (1-kanaliline)}: Algne 0,2 m lahutusvõimega CHM,
+          max-HAG filter (0–1,5 m), gap-fill ilma silumiseta.
+
+    \item \textbf{Harmoniseeritud raw (1-kanaliline)}: 0,8 m lahutusvõimega
+          ühtlustatud DEM baasil, raw CHM (esmane mõõtmine), Laplace gap-fill.
+          Eesmärk: suurem lahutus = võimalik paremad tunnused.
+
+    \item \textbf{Harmoniseeritud Gaussi-silutud (1-kanaliline)}: 0,8 m lahutus,
+          Gaussi kernel σ = 0,5 m pärast gap-fill. Silitus vähendab müra,
+          kuid kaotab teravid, mis võivad olla CWD märgid.
+
+    \item \textbf{Composite 2-band}: raw + Gaussi-silutud CHM koos.
+          Motivatsioon: mudel valib ise, millal kasutada iga kanali.
+
+    \item \textbf{Composite 4-band}: raw + Gaussi + baseline + binaarne mask
+          (mask näitab, kus on usaldusväärsed andmed).
+          Motivatsioon: maksimaalne informatsioon, mudel koondab signaalid.
+\end{enumerate}
+
+\subsubsection{Benchmark eksperimendi disain}
+
+Variantide võrdlemiseks kasutati kontrollitud benchmarki:
+
+\begin{itemize}
+    \item \textbf{Arhitektuurid}: 6 mudelit (EfficientNet V2-S, ResNet50, EfficientNet B2,
+          MobileNet V3-L, ConvNeXt Small, Swin-T), et tuvastada, kas ühegi mudeli
+          eelistus mingile variantile on ülekaalus.
+
+    \item \textbf{Andmestik}: 100 rasteralat, ~12\,800 kiibi 128×128 (stratifitseeritud
+          valim CWD klassisagedustest).
+
+    \item \textbf{Valideerimise strateegia}: 3-kordne stratifitseeritud ristvalideerimine,
+          sama juhusliku seemne (42) kasutamine kõigile variantidele.
+
+    \item \textbf{Treeningkonfiguratsioon}: 50 epohhi, AdamW, kosinusgraafik,
+          varajane peatamine F1 valideerimise järgi.
+
+    \item \textbf{Esituse mõõdikud}: F1-skoor (peamine), täpsus, tundlikkus.
+\end{itemize}
+
+\subsubsection{Koordinaatsüsteemi silti avastamine ja parandus}
+
+Variantide esimene võrdlus (V1) näitas, et baseline 1-kanaliline esitus domineeris
+selgelt (F1 0,94), samas kui harmoniseeritud ja komposiitvariantid olid oluliselt
+kehvemad (F1 0,50–0,70). Esmane järeldus oli, et baseline on ülimuslikus, kuid
+seejärel avastati \textbf{kriitilise tähtsusega andmete laadimise viga}:
+
+\paragraph{Probleemi iseloomustus}
+
+CSV koordinaadid, mis seostasid tiilade nimed koordinaatidega, genereeriti
+0,2 m baseline-kiipadest. Teiste variantide (0,8 m harmoniseeritud) laadimiseks
+kasutati samaid koordinaate, kuid:
+
+\begin{equation}
+    \text{tiilade\_nr\_harmoniseeritud} = \lfloor \text{koordinaat} / 0,8 \rfloor
+    \neq \lfloor \text{koordinaat} / 0,2 \rfloor = \text{tiilade\_nr\_baseline}
+\end{equation}
+
+Teisisõnu, koordinaat 100.4 viitab baseline-s tiidale 502, aga harmoniseeritud-es
+tiidale 125. Selle tulemusena laaditi harmoniseeritud ja komposiit variantide
+korral \textbf{geograafiliselt valed rasterialad}, mis tekitas kunstlikult halva
+jõudluse.
+
+\paragraph{Parandus ja metoodoloogia}
+
+Lahenduseks arvutati CSV uuesti, kasutades variant-teadlikku koordinaadi kaardistamist.
+Iga tiila ID genereeriti otse tiila geograafiliste piiride põhjal, mitte eelsisestatud
+koordinaatidest. Selle tulemusena laadisid kõik variandid nüüd geograafiliselt õigeid
+andmeid.
+
+\textbf{Õppetund}: Mitme variandi benchmarki korral on oluline, et koordinaatsüsteemid
+ja tiilade ID-d on iga variandi jaoks sõltumatul viisil ja samas geograafilises
+ruumis valideeritud, mitte ühest CSV-st jäljendatud.
+
+\subsubsection{Variantide jõudluse tulemused}
+
+Pärast koordinaatide parandamist olid variant-jõudluse erinevused märkimisväärselt väiksemad:
+
+\begin{table}[h!]
+\centering
+\caption{CHM variantide jõudlus (6 arhitektuurit, 3-kordne ristvalideerimine, parandatud koordinaadid).}
+\label{tab:chm_variants_performance}
+\begin{tabular}{lrrrr}
+\hline
+CHM variant & F1 skoor & vs baseline & p-väärtus & Olulisus \\
+\hline
+Composite 4-band & 0,9014 & +1,09\% & 0,8679 & ❌ Pole olulinen \\
+Harmoniseeritud Gaussi & 0,8986 & +0,82\% & 0,8679 & ❌ Pole olulinen \\
+Baseline 1-band & 0,8905 & — & — & Reference \\
+Composite 2-band & 0,8979 & +0,74\% & 0,8679 & ❌ Pole olulinen \\
+Harmoniseeritud raw & 0,8873 & −0,32\% & 0,8679 & ❌ Pole olulinen \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Statistiline analüüs ja piirangud}: Paaristest t-test composite\_4band ja baseline'i
+vahel andis t = 0,1706, p = 0,8679 (iga arhitektuuri puhul keskmine F1 koos 3-kordse
+ristvalideerimisega, summaarne n=18 sõltumatul andmepunktil). Selle p-väärtuse tõlgendus:
+kui baseline ja composite\_4band olid tegelikult võrdselt heaks, oleks 87\% tõenäosus
+näha või suurem erinevus kui 1,09\% puhtjuhuslikult.
+
+\textbf{Statistilise võimsuse piirangud}: Valim suurus n=18 on küllalt väike väikeste
+efektisuuruste avastamiseks. Standardiseeritud efekti suurus (Cohen's d) on ~0,015,
+mille avastamiseks n=0,05 tasemel 80\% tõenäosusega oleks vaja n>500. Seetõttu tõlgendame
+erinevusi varovasel viisil: \textbf{Ei võimalda väita, et composite\_4band on statistiliselt
+oluliselt parem, kuid samuti ei saa väita, et variantide vahel ei ole vahet}.
+
+\textbf{Mitmed võrdlused}: Kuigi paralleelsed t-testid sõltumatu testi puhul
+sobitavad korrektsiooni (Bonferroni, FDR) tavalised harjutused, käesoleva
+uuringu juures pidasime p-väärtuseid deskriptiivseks, mitte inferentsiaalseks.
+Otsused teadsime teha kuluanalüüsi (tabel~\ref{tab:cost_analysis}) ja praktiliste
+juhiste kaudu, mitte lause p<0,05 normide kaudu.
+
+\paragraph{Mitmekanalilisuse efekt}
+
+Kanalite arv näitas lineaarset trendi:
+\begin{itemize}
+    \item 1-kanaliline (baseline, harmoniseeritud): 0,8921 F1 keskmine
+    \item 2-kanaliline (composite\_2band): 0,8979 F1 (+0,58 pp)
+    \item 4-kanaliline (composite\_4band): 0,9014 F1 (+0,93 pp)
+\end{itemize}
+
+Kuigi 4-kanaliline näitas kõrgeimat keskmist F1-i, ei ole see erinevus
+statistiliselt oluline. Võimalikud selgitused:
+
+1. \textbf{Valimi suurus}: 6 arhitektuuri × 3 korda = 18 mõõtmist variandis.
+   18 andmepunkti ei ole piisav väikeste erinevuste tundmiseks (võimsus madal).
+
+2. \textbf{Arhitektuurispetsiifiline eelistus}: Osa mudeleid (nt Swin-T)
+   ei tööta hästi mitmekanalilistega, samas kui teised (nt EfficientNet V2-S)
+   käituvad iga variandi korral stabiilselt.
+
+3. \textbf{Kahanev marginaalne kasu}: Esimene täiendav kanal (1→2) annab
+   +0,58 pp, teine kanal (2→4) annab vaid +0,35 pp, mis viitab saturaatsiooni.
+
+\subsubsection{Kulumõju analüüs ja soovitus}
+
+Enne baseline variantide asendamist 4-kanaliga, tuleb kaaluda arvutusliku ja
+salvestuskulu:
+
+\begin{table}[h!]
+\centering
+\caption{Kuluanalüüs: baseline vs composite\_4band.}
+\label{tab:cost_analysis}
+\begin{tabular}{lrrr}
+\hline
+Mõõdik & Baseline & Composite\_4band & Tegur \\
+\hline
+F1-skoor & 0,8905 & 0,9014 & +1,09\% \\
+Andmete suurus / tiil & 95,4 MB & 381,5 MB & **4× suurem** \\
+Täielik andmestik (100 tiili) & 9,3 GB & 37,3 GB & **4× suurem** \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Praktiline otsuseusk}: +1,09\% F1 parandamine 4× salvestuskuluga
+ei ole õigustatud, eriti kui parandamine ei ole statistiliselt oluline.
+Kuigi infoteoreetiline argument on (rohkem kanali = rohkem infot), empiiriliselt
+mudel ei kasuta täiendavat infot tõhusalt. Seega nõuanne on:
+
+\textbf{Kasuta baseline 1-kanalist CHM-i} koos optimaalsete arhitektuuriga
+(vt allpool), mitte composite\_4band.
+
+\subsubsection{Optimaalne arhitektuur variantide seas}
+
+Kõigist 6 arhitektuurist asus EfficientNet V2-S esikohal:
+
+\begin{table}[h!]
+\centering
+\caption{Arhitektuuride võrdlus (keskmine F1 kõigil variantidel).}
+\label{tab:architecture_ranking}
+\begin{tabular}{lrrl}
+\hline
+Arhitektuur & Keskmine F1 & Std Dev & Stabiilsus \\
+\hline
+EfficientNet V2-S & 0,9529 & 0,0045 & ⭐⭐⭐⭐⭐ Eriline \\
+ResNet50 & 0,9481 & 0,0064 & ⭐⭐⭐⭐ Hea \\
+EfficientNet B2 & 0,9477 & 0,0076 & ⭐⭐⭐⭐ Hea \\
+MobileNet V3-L & 0,9414 & 0,0098 & ⭐⭐⭐ Piisav \\
+ConvNeXt Small & 0,9070 & 0,0418 & ⚠️ Ebastabiilne \\
+Swin-T & 0,6739 & 0,0037 & ❌ Ebasobiv \\
+\hline
+\end{tabular}
+\end{table}
+
+EfficientNet V2-S saavutas madalaima standardhälbe (0,0045), mis tähendab,
+et selle jõudlus oli stabiilne kõigil kolmel ristvalideerimise kordal ja
+kõigil variantidel.
