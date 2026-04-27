@@ -13,7 +13,6 @@
 | **label_all_rasters.py** | Batch orchestrator | Label all CHM rasters sequentially | Batch pipeline | Terminal (calls label_tiles) |
 | **brush_mask_labeler.py** | Advanced | Pixel-level mask refinement with brush | Interactive brush | OpenCV window |
 | **label_all_rasters_gui.py** | GUI wrapper | GUI for raster selection | Interactive GUI | Qt/PyQt GUI |
-| **label_all_rasters_segmentation.py** | Segmentation-based | AI-assisted mask generation | Semi-automated | OpenCV + model inference |
 
 ---
 
@@ -231,47 +230,6 @@ python scripts/label_all_rasters_gui.py
 
 ---
 
-### 5. **label_all_rasters_segmentation.py** — AI-Assisted Segmentation
-
-**Location:** `scripts/label_all_rasters_segmentation.py` (20 KB)  
-**Purpose:** Semi-automated mask generation using trained model + refinement  
-**Type:** Hybrid manual + AI approach  
-
-#### Features
-- Pre-generates mask proposals using ensemble model
-- Displays model predictions for manual refinement
-- User accepts/rejects/edits predictions
-- Reduces manual labeling time by ~60%
-- Uses same trained ensemble as inference pipeline
-
-#### Usage
-
-```bash
-# Generate proposals + interactive refinement
-python scripts/label_all_rasters_segmentation.py \
-  --chm-dir data/chm_max_hag \
-  --model output/tile_labels_spatial_splits/cnn_seed42_spatial.pt \
-  --output output/segmentation_labels \
-  --confidence-threshold 0.7
-
-# Review high-confidence predictions only
-python scripts/label_all_rasters_segmentation.py \
-  --chm-dir data/chm_max_hag \
-  --model-dir output/tile_labels_spatial_splits \
-  --output output/segmentation_labels \
-  --ensemble-vote 4  # Require all 4 models to agree
-```
-
-#### Workflow
-1. Load CHM
-2. Model generates mask proposal (ensemble voting)
-3. Display proposal overlaid on CHM
-4. User: Accept (A), Reject (R), or Edit (E) with brush
-5. Save refined mask
-6. Next chunk
-
----
-
 ## 🚀 Quick Start Workflow
 
 ### Scenario 1: Label a Few Tiles Quickly
@@ -315,27 +273,12 @@ python scripts/brush_mask_labeler.py \
 
 ---
 
-### Scenario 4: AI-Assisted Semi-Automated Labeling
-```bash
-# Let model propose masks, refine manually
-python scripts/label_all_rasters_segmentation.py \
-  --chm-dir data/chm_max_hag \
-  --model-dir output/tile_labels_spatial_splits \
-  --output output/segmentation_labels
-
-# Accept/reject/edit model predictions
-```
-⏱️ **Time:** ~1 hour for 100 rasters (60% faster than manual)
-
----
-
 ## 📊 Output Format Comparison
 
 | Tool | Output Type | Format | Chunks/Pixels | Use Case |
 |------|-------------|--------|---------------|----------|
 | label_tiles.py | Binary labels | CSV rows | 128×128 chunks | Chunk classification |
 | brush_mask_labeler.py | Mask + confidence | NPZ + PNG | Per-pixel | Pixel-level refinement |
-| label_all_rasters_segmentation.py | Binary mask | NPZ | Per-pixel | Model-assisted labeling |
 
 ---
 
@@ -373,7 +316,7 @@ python scripts/label_tiles.py \
 1. **Use keyboard shortcuts** — Faster than mouse
 2. **Label easier tiles first** — Build momentum
 3. **Batch similar resolutions** — Consistency in chunk difficulty
-4. **Use AI assistance** — Combine models + manual refinement
+4. **Use brush for detail work** — Combine batch + pixel-level refinement
 5. **Take breaks** — Mental fatigue affects annotation quality
 
 ---
