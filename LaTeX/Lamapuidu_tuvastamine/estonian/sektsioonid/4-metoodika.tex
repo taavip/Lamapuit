@@ -162,7 +162,7 @@ Treeningu parameetrid:
 \begin{itemize}
     \item \textbf{Epochide arv}: CNN mudelid 50 epohhi, EfficientNet 30 epohhi.
     \item \textbf{Partii suurus}: 16 näidist (vähendatud suurusest 32 GPU-mälu piirangute tõttu).
-    \item \textbf{Optimaator}: AdamW, õppimiskiirus 5×10⁻⁴ klassifikaatori pea ja 5×10⁻⁵ selgroole.
+    \item \textbf{Optimaator}: AdamW, õppimiskiirus $5 \times 10^{-4}$ klassifikaatori pea ja $5 \times 10^{-5}$ selgroole.
     \item \textbf{Regulatsioon}:
           \begin{itemize}
               \item Silumiskõver 0,05 (label smoothing),
@@ -326,7 +326,7 @@ pakkudes seetõttu täiendavat mitmekesisust anesamble prognoosimisel.
 Selle kombinatsiooni motivatsioon: kolme muutuse juures sama arhitektuurist
 (seemned) ja ühe täiesti erineva arhitektuurist tekib ansamblisse piisav
 "ideede erinevus" (ensemble diversity), mis on kriitilise tähtsusega
-ennustuse stabiilsuse seisukohalt (Breiman 2001, Kuncheva & Whitaker 2003).
+ennustuse stabiilsuse seisukohalt (Breiman 2001, Kuncheva \& Whitaker 2003).
 
 \subsubsection{Treeningu konfiguratsiooni valikud}
 
@@ -347,8 +347,8 @@ ei ole fundamentaalse takistus.
 
 Jäiga transferlearning-praksi asemel kasutati \textbf{diferentseeritud õppimiskiirust}:
 \begin{itemize}
-    \item Klassifitseerija pea (lineaarne kiht): 5 × 10⁻⁴
-    \item Eeltreenitud selgroog (konvolutsioonkihid): 5 × 10⁻⁵
+    \item Klassifitseerija pea (lineaarne kiht): $5 \times 10^{-4}$
+    \item Eeltreenitud selgroog (konvolutsioonkihid): $5 \times 10^{-5}$
 \end{itemize}
 
 See tähendab, et eeltreenitud tausta-funktsioonid õpivad 10 korda aeglasemalt
