@@ -1,0 +1,184 @@
+# Option B Comparison: Original vs Retrained Ensemble
+
+**Generated**: 2026-04-25T22:25:48.200336+00:00
+
+## Summary
+
+### Data Coverage
+- **Total labels**: 580,136
+- **Valid pairs (both probs non-NaN)**: 548,299
+- **Original NaN**: 31,837
+- **Retrained NaN**: 0
+
+### Mean Probability Difference
+
+**Original Ensemble (Option A):**
+- Mean prob: 0.3824
+- Std: 0.3541
+- Min/Max: 0.0134 / 1.0000
+
+**Retrained Ensemble (Option B):**
+- Mean prob: 0.3757
+- Std: 0.3244
+- Min/Max: 0.0460 / 0.9975
+
+---
+
+## Probability Change Statistics
+
+### Absolute Difference (|original - retrained|)
+- **Mean**: 0.055150 (5.51%)
+- **Median**: 0.026950 (2.69%)
+- **Std Dev**: 0.074826
+- **Min**: 0.000000
+- **Max**: 0.719155
+- **Q25**: 0.011527
+- **Q75**: 0.062536
+
+### Signed Difference (retrained - original)
+- **Mean**: -0.006688 (retrained is -0.67% on average)
+- **Median**: 0.006563
+- **Std Dev**: 0.092713
+
+### Magnitude of Changes
+- **Difference > 1%**: 427,775 labels (78.0%)
+- **Difference > 5%**: 166,132 labels (30.3%)
+- **Difference > 10%**: 88,327 labels (16.1%)
+
+---
+
+## Analysis by Split
+
+### TRAIN set
+- Count: 54,164
+- Mean abs diff: 0.041730
+- Median abs diff: 0.015438
+- Max abs diff: 0.719155
+
+### VAL set
+- Count: 10,893
+- Mean abs diff: 0.037113
+- Median abs diff: 0.012827
+- Max abs diff: 0.627855
+
+### TEST set
+- Count: 40,767
+- Mean abs diff: 0.032739
+- Median abs diff: 0.011228
+- Max abs diff: 0.656459
+
+### NONE set
+- Count: 442,475
+- Mean abs diff: 0.059301
+- Median abs diff: 0.029983
+- Max abs diff: 0.694578
+
+## Analysis by Class Label
+
+### CDW
+- Count: 165,357
+- Mean orig prob: 0.8947
+- Mean retrain prob: 0.8232
+- Mean abs diff: 0.084016
+- Median abs diff: 0.033391
+- Max abs diff: 0.719155
+
+### NO_CDW
+- Count: 382,942
+- Mean orig prob: 0.1612
+- Mean retrain prob: 0.1825
+- Mean abs diff: 0.042685
+- Median abs diff: 0.025999
+- Max abs diff: 0.653552
+
+## Top 10 Largest Probability Changes
+
+1. 580539_2017_madal_chm_max_hag_20cm.tif @ (1024,2240)
+   - Label: cdw, Split: train
+   - Original: 0.972200 → Retrained: 0.253045
+   - Change: 0.719155 (71.92%)
+
+2. 580538_2022_madal_chm_max_hag_20cm.tif @ (1280,1792)
+   - Label: cdw, Split: train
+   - Original: 0.959100 → Retrained: 0.248743
+   - Change: 0.710357 (71.04%)
+
+3. 601546_2022_madal_chm_max_hag_20cm.tif @ (704,3520)
+   - Label: cdw, Split: none
+   - Original: 0.885700 → Retrained: 0.191122
+   - Change: 0.694578 (69.46%)
+
+4. 580539_2019_madal_chm_max_hag_20cm.tif @ (576,2816)
+   - Label: cdw, Split: none
+   - Original: 0.940200 → Retrained: 0.253884
+   - Change: 0.686316 (68.63%)
+
+5. 580539_2022_madal_chm_max_hag_20cm.tif @ (4544,3264)
+   - Label: cdw, Split: none
+   - Original: 0.928300 → Retrained: 0.242875
+   - Change: 0.685425 (68.54%)
+
+6. 580539_2017_madal_chm_max_hag_20cm.tif @ (1024,2304)
+   - Label: cdw, Split: train
+   - Original: 0.967300 → Retrained: 0.288041
+   - Change: 0.679259 (67.93%)
+
+7. 580535_2019_madal_chm_max_hag_20cm.tif @ (4480,2368)
+   - Label: cdw, Split: none
+   - Original: 0.899700 → Retrained: 0.220485
+   - Change: 0.679215 (67.92%)
+
+8. 601546_2019_madal_chm_max_hag_20cm.tif @ (4160,1088)
+   - Label: cdw, Split: train
+   - Original: 0.982700 → Retrained: 0.304044
+   - Change: 0.678656 (67.87%)
+
+9. 581543_2019_madal_chm_max_hag_20cm.tif @ (3456,1600)
+   - Label: cdw, Split: none
+   - Original: 0.907600 → Retrained: 0.232169
+   - Change: 0.675431 (67.54%)
+
+10. 436647_2022_madal_chm_max_hag_20cm.tif @ (1472,2176)
+   - Label: cdw, Split: none
+   - Original: 0.896300 → Retrained: 0.223126
+   - Change: 0.673174 (67.32%)
+
+## Retrained Ensemble Metadata
+
+### Test Set Metrics (Option B)
+- Ensemble AUC: 0.9884721096928946
+- Ensemble F1: 0.9819397825760232
+- Threshold: 0.4
+- Test size: 56521
+- CDW count: 39504
+
+## Interpretation
+
+### Key Findings
+
+1. **Distribution shift reduction**: The mean probability difference should be lower than the original ~6% if retraining on spatial splits was successful.
+
+2. **Test set bias**: If differences are larger in 'test' split, models may be overfitting to the spatial split test set.
+
+3. **Buffer zone changes**: 'none' (buffer) labels should show different behavior since models weren't trained on them in the retrained approach.
+
+4. **Outliers**: Large changes (>10%) may indicate:
+   - Labels at split boundaries where models behave differently
+   - Edge cases where spatial splits significantly changed training data distribution
+   - Possible data quality issues
+
+### Comparison to Original Approach
+
+**Option A (Original):**
+- Training: 19,812 tiles
+- Applied to: 580,136 labels (includes buffer zones)
+- Expected prob difference: ~6% (due to distribution shift)
+
+**Option B (Retrained):**
+- Training: 67,290 tiles (spatial splits, 3.4× more data)
+- Applied to: 580,136 labels (same coverage)
+- Expected prob difference: Should be lower (~2-3%) due to better alignment
+
+---
+
+Generated by spatial split ensemble retraining pipeline.

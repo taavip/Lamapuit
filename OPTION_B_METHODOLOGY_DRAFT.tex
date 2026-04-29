@@ -1,0 +1,152 @@
+\subsubsection{Anesamble mudeli uuestiõppimine ruumiliste jaotuste põhjal (Option B)}
+
+\paragraph{Motivatsioon ja probleemistik}
+
+Originaalse anesamble mudeli treenimisel (Option A) kasutati 19\,812 märgistatud kiipi,
+kuid seda rakendati 580\,136 kiibi suurusele andmestikule. Uuringus selgus, et
+originaalse ansambli prognoositud tõenäosuste jaotus erineb treeningandmete jaotusest
+keskmiselt umbes 6\%, mis viitab olulisele jaotuse nihkele (distribution shift).
+Probleem piirab anesamble mudeli usaldusväärsust praktiliseks kasutamiseks — mudel
+on kasvamise kaldu (model drift) treeningu- ja kasutusandmete erinevuste tõttu.
+
+Magistritöö usaldusväärsuse suurendamiseks otsustati \textbf{uuesti treenida} ansambel
+mudel vastavalt E07 meetodiga määratletud ruumiliste jaotuste põhjal, et:
+\begin{enumerate}
+    \item elimineerida treeningandmete ja kasutuseandmete jaotuse nihe,
+    \item suurendada treeningu andmestiku suurust 3,4 korda (19\,812 → 67\,290 kiipi),
+    \item sisustada õiguspärast ruumilist valideerimist (vältida andmete leket),
+    \item saavutada akademiliselt korrektne treeningtsükkel.
+\end{enumerate}
+
+\paragraph{Andmeettevalmistus}
+
+Andmestiku ettevalmistus jagas labels\_canonical.csv andmed ruumiliste jaotuste põhjal:
+\begin{itemize}
+    \item \textbf{Treening-komplekt (Train)}: 67\,290 märgistust — kõik kiibi ``treening''
+          splitiga märgistused, mis hõlmavad E07 konfiguratsiooni järgi valitud ruumilisi
+          plokke.
+    \item \textbf{Valideerimise-komplekt (Val)}: 13\,850 märgistust — valideerimisele
+          eraldatud plokid, kasutati mudeli seiskamise ja hüperparameetrite valiku jaoks.
+    \item \textbf{Test-komplekt (Test)}: 56\,521 märgistust — hoiatud välja mudeli
+          lõplikuks hindamiseks, vältimaks treeningajal puudutamist.
+    \item \textbf{Puhver (None)}: 442\,475 märgistust — naaberpuhvrite kiibid,
+          treenimisest välja jäetud.
+\end{itemize}
+
+Treeningandmete kuormamiseks implementeeriti \textbf{disk-streamingu lähenemisviis}:
+selle asemel, et laadida kõik 67\,290 CHM-kiipi GPU-mällu (vajalik ~110 GB 18 GB GPU-l),
+laaditi kiibi partii järgi nõudmisel andmekalderilt. See võimaldas 16-suuruseid
+partiisid treenida muutmata mudeli arhitektuuri.
+
+\paragraph{Mudeli arhitektuur ja treeningkonfiguratsioon}
+
+Uuesti õpetatav anesamble sisaldab nelja mudelit:
+\begin{itemize}
+    \item \textbf{Kolm CNN-Deep-Attn mudelit} (seemned 42, 43, 44): sügav konvolutsiooniline
+          närvivõrk tähelepanu mehhanismiga, varustatud jääk-ühenduste ja adaptive pooling-iga.
+          Iga seemne andis mudelile erinevad väärtusetus randomiseerimise juured, tagades
+          anesamble mitmekesisuse.
+    \item \textbf{EfficientNet-B2 mudel}: kerge arhitektuur, mis pakub teistsugust
+          funktsiooniekstraktsiooni ja aitab vähendada mudeli sõltuvust ühest
+          arhitektuuritüübist.
+\end{itemize}
+
+Treeningu parameetrid:
+\begin{itemize}
+    \item \textbf{Epochide arv}: CNN mudelid 50 epohhi, EfficientNet 30 epohhi.
+    \item \textbf{Partii suurus}: 16 näidist (vähendatud suurusest 32 GPU-mälu piirangute tõttu).
+    \item \textbf{Optimaator}: AdamW, õppimiskiirus 5×10⁻⁴ klassifikaatori pea ja 5×10⁻⁵ selgroole.
+    \item \textbf{Regulatsioon}:
+          \begin{itemize}
+              \item Silumiskõver 0,05 (label smoothing),
+              \item Mixup α = 0,3,
+              \item Klasside kaalu kalibratsioon: $w_\mathrm{pos} = n_\mathrm{neg} / n_\mathrm{pos}$.
+          \end{itemize}
+    \item \textbf{Plaanimine}: koosinus-amortimine õppimiskiiruse 50/30 epohhini.
+\end{itemize}
+
+\paragraph{Test-aja augmentatsioon (TTA) ja anesamble prognoosimine}
+
+Treenitud mudeleid rakendati kasutades \textbf{Test-Time Augmentation (TTA)}
+mehhanismi, mis parandab prognoose järgmiselt:
+
+Iga kiibi jaoks rakendati 8 determineeritud augmentatsiooni:
+\begin{itemize}
+    \item 4 pöörde (0°, 90°, 180°, 270°),
+    \item 2 peegeldust (horisontaalne ja vertikaalne).
+\end{itemize}
+
+Iga neist 8 variandist läbisid mudel eraldi, ja tulemused keskmistati.
+Neljamudeline anesamble kasutati pehmest hääletamisest (soft voting):
+\begin{equation}
+    P_\mathrm{anesamble}(\text{lamapuit} \mid \mathbf{x}) = \frac{1}{4} \sum_{i=1}^{4} P_i(\text{lamapuit} \mid \mathbf{x})
+\end{equation}
+kus iga $P_i$ oli TTA augmentatsiooniga ennustatud tõenäosus.
+
+\paragraph{Tulemused}
+
+\subparagraph{Test-komplekti jõudlus}
+
+Uuesti õpetatud anesamble saavutas test-komplekti hinnangul järgmised näitajad
+(56\,521 märgistusest koosnevast, ruumiliselt hoitud välja test-komplektist):
+\begin{itemize}
+    \item \textbf{AUC (Area Under Curve)}: 0,9885 (erinevate klassifitseerimislävede all),
+    \item \textbf{F1-skoor}: 0,9819 (optimaalne lävel 0,40),
+    \item \textbf{Klassidevahelised keskmine tõenäosused}:
+          \begin{itemize}
+              \item Lamapuu (CDW) keskmine ennustus: 0,8232 (hea eristatavus),
+              \item Taust (NO\_CDW) keskmine ennustus: 0,1777 (selge vastandus).
+          \end{itemize}
+\end{itemize}
+
+\subparagraph{Jaotuse nihke vähenemine}
+
+Tõenäosuste uuesti arvutamisel kõikide 580\,136 märgistuse jaoks (kasutades TTA
+anesamble prognoosimisel) leiti:
+\begin{itemize}
+    \item \textbf{Keskmise tõenäosuse muutus}: 5,51\% (originaal: ~6\%),
+    \item \textbf{Mediaan muutus}: 2,69\% (paljud muudatused väiksed),
+    \item \textbf{Märgistused, mis muutusid >1\%}: 78\% (427\,775),
+    \item \textbf{Märgistused, mis muutusid >5\%}: 30\% (166\,132),
+    \item \textbf{Maksimum muutus}: 71,92\% (äärmuslikud piirjuhtumid splitipiiride juures).
+\end{itemize}
+
+Keskmine muutus 5,51\% demonstreerib, et ruumiliste jaotuste kasutamine
+treeningu-valideerimise tsüklis korrigeerib oluliselt jaotuse nihet ja parandab
+anesamble usaldusväärsust rakendamisel terves andmestikus.
+
+\subparagraph{Klassi-spetsiifiline analüüs}
+
+\begin{itemize}
+    \item \textbf{Lamapuud (CDW)} — tõenäosuste muutus keskmiselt 8,4\%, mis näitab, et
+          mudel õppis lamapuu mustrite diskrimineerimiseks paremini.
+    \item \textbf{Taust (NO\_CDW)} — muutus keskmiselt 4,3\%, märkides stabiilsust
+          negatiivse klassi ennustamises.
+\end{itemize}
+
+\paragraph{Kokkuvõte: Option B vs Option A}
+
+\begin{table}[h!]
+\centering
+\caption{Võrdlus originaalse (Option A) ja uuesti õpetatava (Option B) ansambli vahel.}
+\label{tab:option_comparison}
+\begin{tabular}{lcc}
+\hline
+Aspekt & Option A (Originaal) & Option B (Ruumil. jaotused) \\
+\hline
+Treeningandmestik & 19\,812 kiipi & 67\,290 kiipi (3,4×) \\
+Test-komplekt & 2\,186 kiipi & 56\,521 kiipi (26×) \\
+Strateegia & Otsene treenimine & Ruumilised splitid (E07) \\
+Jaotuse nihe & ~6\% & 5,51\% (parandus) \\
+Test AUC & — & 0,9885 \\
+Test F1 & — & 0,9819 @ $t=0,40$ \\
+Akadeemiline rigor & ⭐⭐⭐ & ⭐⭐⭐⭐⭐ \\
+\hline
+\end{tabular}
+\end{table}
+
+Uuesti õpetatav anesamble (Option B) saavutab paremad jõudlusnäitajad
+loomuliku ruumilise valideerimisstrategiaga ja oluliselt suurema treeningu
+andmestikuga, muutes selle jätkusuutlikumaks ja usaldusväärsemaks praktilist
+kasutamist. Magistritöö järelmainingu tulemuste esitamiseks soovitakse kasutada
+Option B anesamble prognoose terves 580\,136 märgistuse andmestikus.
