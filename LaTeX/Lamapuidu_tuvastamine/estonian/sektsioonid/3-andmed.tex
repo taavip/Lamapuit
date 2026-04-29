@@ -1,322 +1,131 @@
-\section{Andmed} \label{andmed}
+\section{Andmed ja andmete ettevalmistus}
+\label{andmed}
 
-Käesolevas peatükis kirjeldatakse magistritöös kasutatud andmeallikaid, nende ruumilist ja ajalist ulatust ning andmete eeltöötluse põhimõtteid. Eraldi käsitletakse lennukipõhiseid LiDAR-andmeid, valideerimiseks kasutatud välitöödel põhinevaid andmeid ning nende omavahelist kooskõlastamist analüüsi jaoks.
+Uurimistöös lähtuti Eesti topograafilisest andmestikust, kasutades lamapuidu kaardistamiseks Maa- ja Ruumiameti aerolaserskaneerimise (LiDAR) andmeid. Eduka masinõppemudeli treenimiseks vajaliku andmestiku loomine nõudis sihipärast uuringuala valikut, LiDAR-punktipilvedest spetsiifiliste võrastiku kõrgusmudelite (CHM) arvutamist ning visuaalset sildistamistööriista tõeväärtusandmete (ingl \textit{ground truth}) kogumiseks.
 
-\subsection{LiDAR-andmed} \label{andmed-lidar}
+\subsection{Aerolaserskaneerimine (LiDAR)}
 
-Magistritöö teostamisel kasutati Maa- ja Ruumiameti aerolaserskaneerimise andmeid perioodist 2017--2024. Maa-amet jätkab Eesti territooriumi süstemaatilist katmist ALS-IV programmi raames, mille käigus kaetakse igal aastal ligikaudu veerand Eesti maast erinevate otstarvetega lennutega \parencite{maa-ja_ruumiamet_als_nodate}. Andmete punktitihedus varieerub otstarve järgi: tiheasustusalade kaardistamine (18 p/m²), pildistamise prioriteet (3,5 p/m²), üle-eestiline kaardistamine (2,1 p/m²) ja metsandusliku kaardistamine (0,8 p/m²). Käesolev uuringu rakendab \textbf{intentsioonilt filtreeritud madala tihedusega lähendust}: originaalselt kasutati tiheasustusalade kaardistamise andmeid (18 p/m²), mida filtreeriti kontrollitud viisil 1--4 punti ruutmeetri tasemele, et saavutada praktilise madal-tiheduse ALS-i tingimused. Andmestiku analüüs näitas, et see filtreeritud tihedus on ühtlane kogu perioodi 2017--2024 ulatuses, kõikide geograafiliste aladel ja lamapuidu klasside vahel. Üks 25,6 m × 25,6 m suurune analüüsiüksus (128 × 128 pikslit) sisaldab sellisel tihedusel ligikaudu 1\,638 punkti keskmiselt. See hõredate andmete koosseisuga seotud väljakutse motiveerib käesoleva tööga tegelda --- nimelt kuidas saab tuvastada lamapuitu usaldusväärsel viisil just sellisel hõredal punktipilvele tuginedes, mis vastab Eesti metsanduse operatiivse seire vajadustele.
+LiDAR (Light Detection and Ranging) põhineb aktiivsel kaugseirel: sensor saadab välja lühikesi laserimpulsse, mõõdab impulsi teekonna aega ja arvutab tagasipeegeldunud signaali põhjal objekti kauguse. Kui sama põhimõtet rakendatakse suurel hulgal impulssidel, tekib punktipilv, mille tihedus sõltub lennukõrgusest, lennukiirusest, impulsside sagedusest ning maapinna ja taimkatte struktuurist. Madalam lennukõrgus ja aeglasem lennu trajektoor annavad üldjuhul tihedama punktipilve, kõrgem lend aga suurema katvuse väiksema detailsusega.
 
-Kuigi kõrgema tihedusega aerolaserskaneerimise andmete (nt 20--50 pts/m²) kasutamine võimaldab suuremat detailsust üksikute puude koruste eristamisel \parencite{marchi_airborne_2018}, on riiklike monitoorimisprogrammide tasandil kehtestatud madalam tihedus majanduslike ja operatiivse tõhususe kaalutluste tõttu. Samas on hiljutised uuringud näidanud, et Maa-ameti andmeid saab edukalt rakendada erinevate maastikuelementide tuvastamisel, kasutades sügavõppimist ja kaugseiremeetodeid \parencite{virro_detection_2025}, mis omakorda annab aluse uskuda, et sobiva andmetöötluse ja märgistamisega on võimalik saavutada rahuldavaid tulemusi ka lamapuidu tuvastamisel.
+Lamapuidu tuvastamise seisukohalt on oluline, et punktipilv sisaldaks piisavalt maapinnalähedasi tagasitulekuid, kuid samal ajal ei muutuks maapinna reljeef ja madal taimestik liiga mürarikkaks. Seetõttu ei piisa lamapuidu puhul ainult punktide olemasolust, vaid oluline on ka nende ruumiline kontsentratsioon ja kõrgusnormaliseerimine.
 
-Uuringus kasutati peamiselt Maa-ameti 2017.--2024. aasta lennukipõhiseid laserskaneerimise andmeid. Andmed hõlmavad 23 erinevat kaardilehte üle Eesti, kokku 100 erinevat rasterala (CHM - Canopy Height Model). Kõrgusmudelit toodeti kahe konveieriga:
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 3.1.} Skemaatiline vaade: lennuki kõrguse mõju punktipilve tihedusele (madallend vs tavalend).\
+Placeholder}}
+\caption{Lennukõrguse mõju LiDAR-punktipilve tihedusele.}
+\label{fig:lidar-flight-height}
+\end{figure}
 
-\begin{itemize}
-    \item \textbf{Legacy-konveiier} (\texttt{process\_laz\_to\_chm.py}): 0,2 m lahutusvõimega max-HAG filter (kõrgus maapinnast 0--1,5 m lävi), väljund \texttt{chm\_max\_hag\_13\_drop/}.
-    \item \textbf{Harmooniseeritud konveiier} (\texttt{laz\_to\_chm\_harmonized\_0p8m/}): 0,8 m lahutusvõimega, ühtlustatud DEM, toorete ja Gaussi-silutud CHM kihtidega.
-\end{itemize}
+\subsection{Maa- ja Ruumiameti andmekogum}
 
-Selles uuringus kasutati peamiselt 0,2 m lahutusvõimega CHM-e legacy-konveierist, mis toodab kokku 128 × 128 pikseli suuruseid kiibi (tile) andmeid (ruumilahutus 0,2 m, st 25,6 m × 25,6 m maapinnal). Punkt-tihedus 1--4 pts/m² määrab CHM-ide genereerimise ebaühtlase täpsuse: harvemini asetsevad punktid põhjustavad suuremaid andmekvaliteedi variatsioone eri aladel.
+Magistritöö aluseks on Maa- ja Ruumiameti aerolaserskaneerimise andmestik aastatest 2017--2024. Andmeid koguti mitme lennukategooria kaudu, mille punktitihedus ja katvuse eesmärk erinevad. Töö kontekstis on oluline eristada riiklikke baaskaardistamise lende ja tihedamaid lähilende, sest just nende erinevus määrab, kas lähteandmestik sobib referentsiks või operatiivseks tootmiseks.
 
-Maa-amet teostab ALS-IV programmi raames lende erineva kõrguse ja otstarbe järgi, mis määravad punktitiheduse:
+Maa- ja Ruumiameti töötlusloogika sisaldab tavaliselt maapinna mudeli eemaldamist, kõrgusnormaliseerimist ning kvaliteedikontrolli, et punktipilvest saaks tekitada võrreldavaid CHM-kihte. Antud uuringus kasutati eelkõige tihedamat lähilendu referentsi ja filtreerimise lähtekohana ning seejärel kanti valim üle madalama, operatiivse tihedusega tingimustesse.
 
 \begin{table}[h!]
 \centering
-\caption{Maa-ameti ALS-IV lennu parameetrid ja punktitihedus eri otstarvetega \parencite{maa-ja_ruumiamet_als_nodate}}
-\label{tab:andmed-als-iv-parameetrid}
-\begin{tabular}{lccccc}
+\caption{Maa- ja Ruumiameti lennukategooriate võrdlus.}
+\label{tab:andmed-lennud}
+\begin{tabular}{lllll}
 \hline
-\textbf{Parameeter} & \textbf{Tihea-} & \textbf{Pildi-} & \textbf{Üle-} & \textbf{Metsandi-} \\
- & \textbf{sustus} & \textbf{stamine} & \textbf{eestiline} & \textbf{uslik} \\
+\textbf{Lennu liik} & \textbf{Lennukõrgus} & \textbf{Punktitihedus} & \textbf{Otstarve} & \textbf{Ajaline aken} \\
 \hline
-\textbf{Lennukõrgus} & 1200 m & 2000 m & 2600 m & 3100 m \\
-\textbf{Otstarve} & Linna & Pildist. & Üle-Eesti & Metsandus \\
- & kaardist. & priori- & kaardist. & \\
- & (KEVAD) & teet (KEVAD) & (KEVAD) & (SUVI) \\
-\hline
-\textbf{Keskmine} & 18 p/m² & 3,5 p/m² & 2,1 p/m² & 0,8 p/m² \\
-\textbf{punktitihedus} & & & & \\
-\textbf{Keskmine} & 0,26 m & 0,64 m & 0,72 m & 1,64 m \\
-\textbf{punktivahe} & & & & \\
-\textbf{Impulsisagedus} & 2×1000 kHz & 2×350 kHz & 2×350 kHz & 2×150 kHz \\
-\textbf{Lennukiirus} & 203 km/h & 241 km/h & 278 km/h & 278 km/h \\
-\textbf{Laseri võimsus} & 100\% & 100\% & 100\% & 100\% \\
+Tiheasustuse / lähilend & u 1200 m & 18 p/m$^2$ & Referents ja tihe katvus & Kevad \\
+Pildistamise prioriteet & u 2000 m & 3,5 p/m$^2$ & Pildipõhine kaardistus & Kevad \\
+Üle-eestiline baaskaardistus & u 2600 m & 2,1 p/m$^2$ & Riiklik seire & Kevad \\
+Metsanduslik lend & u 3100 m & 0,8 p/m$^2$ & Metsanduslik inventuur & Suvi \\
 \hline
 \end{tabular}
 \end{table}
 
-Käesolev uuringu kasutab \textbf{tiheasustusalade kaardistamise andmeid} (Tiheasustusalade kaardistamine, 18 p/m² algotsast), mille punktitihedus on filtreeritud kontrollikohalt 1--4 pts/m² tasemele, et saavutada madala tihedusega operatiivse ALS-i tingimused. See filtreerimine on metodoloogiliselt oluline, sest võimaldab uurida lamapuidu tuvastamise võimalusi just sellisel hõredal andmestikul, mis on praktiline Eesti metsanduse monitoorimisel.
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 3.2.} Maa- ja Ruumiameti andmekogum: võrdlus madallendude ja riiklike baaskaardistamise lendude vahel.\
+Placeholder}}
+\caption{Maa- ja Ruumiameti lennukategooriate võrdlus.}
+\label{fig:mara-flights}
+\end{figure}
 
-\subsection{Märgistused ja andmete kogumine} \label{andmed-abistavad}
+\subsection{Uuringuala ja valimi moodustamine}
 
-Uuringus kasutati kolmest allikast pärinevaid märgistusandmeid:
+Uuringuala valik tehti kahes etapis. Esmalt kasutati Tartu lähedasi metsi ja tihedama punktiloendiga alasid, et kontrollida, kas CHM-i ja märgistamise töövoog töötab hästi väiksemal, kuid kvaliteetsel referentsalal. Seejärel laiendati valim üle Eesti nii, et hõlmatud oleksid erinevad metsatüübid, eri aastad ja erineva punktitihedusega kaardilehed.
 
-\begin{enumerate}
-    \item \textbf{Käsitsi koostatud LineString geomeetria} --- vektorkihis \texttt{lamapuit.gpkg} hoitavad manuaalselt digitaliseeritud lamapuidu keskkõverad, koostatud uurija poolt visuaalsel analüüsil CHM-de ja ortofotode alusel.
-    \item \textbf{Automaatse usaldusläve filtreerimisega detekteeritud objektid} --- mudelite ennustuste põhjal detekteeritud objektid, kasutades lävedega $t_\mathrm{kõrg} = 0,9995$ ja $t_\mathrm{madal} = 0,0698$.
-    \item \textbf{Käsitsi kontrollitud automaatsed ennustused} --- osaline automaatne ülevaatamine ja parandamine.
-\end{enumerate}
+Lõplik valim koosneb 29 valitud kaardilehest, mille kogupindala on 119 km$^2$. Valim on koostatud nii, et see kataks erinevaid metsa- ja maastikutüüpe ning sisaldaks nii tihedamaid kui ka hõredamaid ALSi olukordi. See võimaldab hiljem kontrollida, kui hästi töövoog üldistub piirkondadele, mida ei kasutata ainult referentsalana.
 
-Duplikaatide käsitlemiseks rakendati prioriteetsuse reeglit: käsimärgistus (prioriteet 30) ületas automaatse ülevaatlusega andmed (prioriteet 20), mis omakorda ülesid lävedega filteeritud ennustusi (prioriteet 10). Igal ainsuses koordinaadil säiliti ühe allikast pärinev, kõrgeimate prioriteetidega märgistus, väldimaks aastateülest leket ja kordusmärgistamist.
-
-Märgistuste jaotus allikate vahel on toodud tabelis \ref{tab:andmed-marked-allikad}:
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 3.3.} Eesti kaart 29 valitud kaardilehega, värvuskoodiga vastavalt metsatüübile või lennuaastale.\
+Placeholder}}
+\caption{Uuringuala valim ja kaardilehtede jaotus.}
+\label{fig:study-area}
+\end{figure}
 
 \begin{table}[h!]
 \centering
-\caption{Märgistuste jaotus allikate vahel}
-\label{tab:andmed-marked-allikad}
-\begin{tabular}{lccccc}
+\caption{Valimi kirjeldus: kaardileht, aasta, punktitihedus ja domineeriv metsatüüp.}
+\label{tab:sampling-description}
+\begin{tabular}{llll}
 \hline
-\textbf{Märgistuse allikas} & \textbf{Arv} & \textbf{Osakaal} & \textbf{Lamapuit} & \textbf{Taust} & \textbf{CWD \%} \\
+\textbf{Kaardileht} & \textbf{Aasta} & \textbf{Keskmine punktitihedus} & \textbf{Domineeriv metsatüüp} \\
 \hline
-Käsitsi (\texttt{manual}) & 12\,177 & 2,1\% & 4\,466 & 7\,711 & 36,63\% \\
-Automaatne (\texttt{auto}) & 536\,122 & 92,4\% & 160\,946 & 375\,176 & 30,01\% \\
-Automaatne, jäetud vahele (\texttt{auto\_skip}) & 31\,837 & 5,5\% & --- & --- & --- \\
-\hline
-\textbf{Kokku} & \textbf{580\,136} & \textbf{100\%} & \textbf{165\,357} & \textbf{414\,779} & \textbf{28,50\%} \\
+\textit{Täidetakse analüüsiskriptiga} & 2017--2024 & 1--4 pts/m$^2$ & Looduslik / majandusmets \\
 \hline
 \end{tabular}
 \end{table}
 
-Käsimärgistuse näidised sisaldavad märkimisväärselt kõrgema lamapuidu protsendiga märgistusi (36,63\% CWD) võrreldes automaatse märgistamise keskmisega (30,01\% CWD), mis näitab käsitsi koostatud andmete erinevat karakteristikut ja rikkalikke sihtkohti. See erinevus peegeldab tõenäoliselt seda, et käsitsi märgistamine concentreerub lamapuidu-rohkete aladele.
+\subsection{CHM ja eeltöötlus}
 
-\subsubsection{Märgistamise kvaliteet allikate kaupa}
+Lamapuidu märgistamise jaoks tekitati Canopy Height Model (CHM) järgmise töövoo järgi: punktipilvest eemaldati maapind, arvutati kõrgus maapinnast (HAG), filtreeriti välja punktid kõrgusvahemikust 0--1,3 m ning rasteriseeriti tulem 20 cm piksliga. 1,3 m piir on siin teadlik kompromiss: see jätab välja kõrgema ja tõenäolisemalt elusa taimestiku ning vähendab müra, kuid hoiab alles valdava osa lamapuiduga seotud maapinnalähedastest struktuuridest.
 
-Märgistamisallikate vaheline erinevus CWD esindatuses (käsitsi 36,63\% versus automaatne 30,01\%) viitab erinevatele märgistamisharjumustele ja potentsiaalsetele kallutatusele:
+Töövoo keskne valik on mitte klammerdada väärtusi üle 1,3 m, vaid need enne rasteriseerimist eemaldada. Selline \emph{drop-above-threshold} lähenemine hoiab CHM-i semantika lihtsana ja vähendab kõrgema taimestiku mõju. Rasteriseerimisel kasutati igas 20 cm lahtrites maksimaalset kõrgust, mis sobib lineaarsete ja piklike objektide esiletõstmiseks.
 
-\begin{itemize}
-    \item \textbf{Käsitsi märgistamine} (2,1\%): Keskendub lamapuidu-rohkete aladele, kõrgem CWD-esindatus võib viidata uurija poolt valitud aladele või märgistamiskriteeriumidele
-    \item \textbf{Automaatne märgistamine} (92,4\%): Lähedalt jäljendab andmestiku üldist klassi tasakaalu (28,50\%), mis viitab mudeli ühtlasele käitumisele
-    \item \textbf{Automaatne, jäetud vahele} (5,5\%): Sisaldab mudeli poolt ebakindlaks klassifitseeritud juhtumeid, mis jäävad analüüsist välja
-\end{itemize}
-
-
-\subsection{Andmete valideerimine ja kvaliteedi kontroll} \label{andmed-valideerimine}
-
-Kogu andmestik valideeriti automatiseeritud kvaliteedi kontrollskriptide abil, mis kinnitasid andmete terviklikkust ja sisuliste nõuete täitmist. Valideerimise käigus kontrolliti järgmisi aspekte:
-
-\begin{itemize}
-    \item \textbf{Struktuuri valideerimise}: kõik vajalikud veerud olid andmetes olemas
-    \item \textbf{Koordinaatide kehtivust}: read ja veerud olid mittenegatiivsed täisarvud
-    \item \textbf{Siltide kehtivust}: märgistused sisaldasid vaid lubatud väärtusi (\texttt{cdw} või \texttt{no\_cdw})
-    \item \textbf{Duplikaatide puudumist}: samast asukohast ei esinenud mitut sisendit
-    \item \textbf{Puuduvate väärtuste puudumist}: kriitilistes veergudes ei esinenud tühje kirjeid
-\end{itemize}
-
-Valideerimise tulemused:
-\begin{itemize}
-    \item ✓ Kõik 580\,136 kirjet olid strukturaalselt korrektsed
-    \item ✓ Koordinaadid olid kõik kehtivad
-    \item ✓ Märgistused sisaldasid vaid eelnevalt määratletud väärtusi
-    \item ✓ Duplikaate ei leitud
-    \item ✓ Kriitiliste veerud olid täielikud
-\end{itemize}
-
-\subsection{Andmete ruumiline ja ajaline ulatus} \label{andmed-eeltöotlus}
-
-\subsubsection{Tervikliku andmestiku omadused}
-
-Kogu magistritöös kasutatud andmestik sisaldab 580\,136 märgistatud 128 × 128 piksli suuruseid kiibi (tile) andmeid, mis on eraldatud 100 CHM rasterist 23 erineva kaardilehe hõlmamisel üle Eesti. Ajaline ulatus katab perioodi 2017--2024, tagades ajalis-ruumilise representatiivsuse ning lubades analüüsida lamapuidu mustrite muutusi aja jooksul. Andmestiku põhilised omadused on esitatud tabelis \ref{tab:andmed-ulekanne}:
-
-\begin{table}[h!]
+\begin{figure}[h!]
 \centering
-\caption{Andmestiku põhilised karakteristikud}
-\label{tab:andmed-ulekanne}
-\begin{tabular}{lc}
-\hline
-\textbf{Omadus} & \textbf{Väärtus} \\
-\hline
-\textbf{Märgistuste koguarv} & 580\,136 \\
-\textbf{Lamapuitu (CWD)} & 165\,357 (28,50\%) \\
-\textbf{Taust (no\_cdw)} & 414\,779 (71,50\%) \\
-\textbf{Klassi tasakaalutus} & 2,51:1 \\
-\hline
-\textbf{CHM rastereid} & 100 \\
-\textbf{Kaardilehti} & 23 \\
-\textbf{Ruumikate (km²)} & ~380,2 \\
-\textbf{Ajaline ulatusperiood} & 2017--2024 (8 aastat) \\
-\hline
-\textbf{Punktipilve tihedus} & 1--4 pts/m² \\
-\textbf{Keskmine tihedus} & 2,5 pts/m² \\
-\textbf{Punktid / kiibi kohta} & ~1\,638 \\
-\textbf{CHM lahutusvõime} & 0,2 m \\
-\hline
-\end{tabular}
-\end{table}
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 3.4.} Toor-punktipilv -> DTM-i eemaldamine -> normaliseeritud kõrgused -> filtreeritud punktid (0--1,3 m) -> rasterpilt (20 cm).\
+Placeholder}}
+\caption{CHM-i loomise ja eeltöötluse voogdiagramm.}
+\label{fig:chm-flow}
+\end{figure}
 
-\subsubsection{Ruumiline jaotus}
-
-Andmestik jaotub 23 erineva kaardilehe vahel, millest suurimad osa-alad sisaldavad 41\,503 märgistust (näiteks kaardilehed 580543, 580535, 580536, 580537, 580538, 580539, 580540). Väiksemad alad sisaldavad 3\,927--5\,929 märgistust. See ruumiline jaotus peegeldab erinevaid metsatüüpe ja maastikutingimusi Eestis, varieerudes tihedalt metsa kaetud aladest kuni harvamate puistutel esinevate lamapuidu kontsentratsioonideni.
-
-Geograafiliselt on andmestik ebaühtlaselt jaotunud: suurimad kaardilehed katavad ligikaudu 41\,500 märgistust (~27 km² ekvivalent), keskmise suurusega kaardilehed 23\,700 märgistust (~15,5 km²) ja väiksemad kaardilehed 5\,900 märgistust (~3,8 km²). Iga kaardilehe siseselt jäetakse erinevate aastate andmed, mis tähendab et sama geograafiline ala võib sisaldada mitmete aastate CHM andmeid, lubades ajalist analüüsi sama geograafilise piirkonna ulatuses.
-
-\subsubsection{Ajaline jaotus}
-
-Andmestiku ajaline jaotus aastate vahel näitab periooditi varieeruvat katmist:
-
-\begin{table}[h!]
+\begin{figure}[h!]
 \centering
-\caption{Andmestiku ajaline jaotus}
-\label{tab:andmed-ajajartus}
-\begin{tabular}{cccc}
-\hline
-\textbf{Aasta} & \textbf{Märgistuste arv} & \textbf{Lamapuidu \%} & \textbf{Märkus} \\
-\hline
-2017 & 47\,426 & 16,41\% & Madalaim esindatus \\
-2018 & 94\,864 & 20,16\% & Suurenemine \\
-2019 & 65\,219 & 31,92\% & Kõrgem esindatus \\
-2020 & 100\,793 & 33,67\% & \textbf{Kõrgeim} \\
-2021 & 59\,290 & 32,66\% & Kõrge esindatus \\
-2022 & 117\,733 & 30,24\% & Keskmine esindatus \\
-2023 & 59\,290 & 31,91\% & Kõrge esindatus \\
-2024 & 35\,521 & 27,65\% & Kahanev \\
-\hline
-\end{tabular}
-\end{table}
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 3.5.} Näide ühest objektist: punktipilv (3D) versus genereeritud 20 cm CHM raster.\
+Placeholder}}
+\caption{Lamapuu objekti esitus punktipilves ja CHM-is.}
+\label{fig:chm-example}
+\end{figure}
 
-Aastatel 2019--2021 oli lamapuidu esindatus kõrgeim (31,66--33,67\%), mis peegeldab selle perioodi soodsaid tingimusi lamapuidu detekteerimiseks CHM-delt. 2017. aasta andmed sisaldavad madalaimat lamapuidu protsenti (16,41\%), mis võib viidata varajastele katmise piirangutele või erinevale töötlusmetoodikale.
+Selle töötluse tulemuseks saadud CHM-id on alus nii märgistamisele kui ka mudeli sisendile. Eesmärk ei ole üksnes objektide nähtavaks tegemine, vaid ka erinevate aastate ja alade vahel võrdleva, ühtse kujutise loomine.
 
-\subsubsection{Klasside jaotus ja tasakaalustamatus}
+\subsection{Sildistamise tööriist}
 
-Kogu andmestikus on märgistused jaotunud kahe klassi vahel:
+Lamapuidu märgistamiseks töötati välja brauseripõhine sildistamistööriist, mis koondas üheks vaateks mitu ruumilist taustaallikat. Tööriista eesmärk oli vähendada märgistaja sõltuvust ühestainsast kihist ning toetada otsustamist mitme sõltumatu vaatluse põhjal.
 
-\begin{itemize}
-    \item \textbf{Lamapuit (cdw)}: 165\,357 märgistust (28,50\%)
-    \item \textbf{Taust (no\_cdw)}: 414\,779 märgistust (71,50\%)
-\end{itemize}
+Tööriistas sai samaaegselt vaadata CHM-i, ortofotot, ajaloolisi taimkattekihte, mudeli soojuskaarti, naaberalade konteksti ning vajadusel ka Street View ja Maa- ja Ruumiameti aerofoto linke. See võimaldas kontrollida, kas nähtav struktuur on tõenäolisemalt lamapuit, känd, kivi või muu maapinnaline objekt.
 
-Klassidevahelise tasakaalutamatuse suhe on 2,51:1 (tausta:lamapuitu). See tasakaalutus on mõistlik ja töödeldav täiustatud õpimeetodite abil, erinevalt äärmuste tasakaalutumatusest, mis tekiks palju harvema lamapuidu klassiga. Klassidevahelise esindatuse varieerumine geograafiliste alade vahel on märkimisväärselt suurem: lamapuidu osakaal varieerub 8,48\% kuni 55,89\% eri kaardilehtede vahel.
-
-\subsubsection{Maastikutüübi jaotus (area type)}
-
-Uuringus kasutatud andmestik sisaldab ainult ühte maastikutüübi klassifikatsioon: \textbf{``madal''} (madal ehk pehme maastik). See kategooria hõlmab kõiki 580\,136 märgistust, mis kajastab uuringu fokuseerimist peamiselt järveääre-, soistunud ja madala vegetatsiooniga aladele. Madala maastiku omadused on:
-
-\begin{table}[h!]
+\begin{figure}[h!]
 \centering
-\caption{Maastikutüübi (area type) jaotus}
-\label{tab:andmed-areatype}
-\begin{tabular}{lccccc}
-\hline
-\textbf{Maastikutüüp} & \textbf{Märgistusi} & \textbf{Osakaal} & \textbf{Lamapuit} & \textbf{CWD \%} & \textbf{Aasta vahemik} \\
-\hline
-Madal (\texttt{madal}) & 580\,136 & 100\% & 165\,357 & 28,50\% & 2017--2024 \\
-\hline
-\end{tabular}
-\end{table}
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 3.5.} Sildistamise kasutajaliidese ekraanitõmmis, kus on näha CHM, ortofoto, ajalooline vaade ja Street View link.\
+Placeholder}}
+\caption{Sildistamistööriista kasutajaliides ja kontekstivaated.}
+\label{fig:labeling-ui}
+\end{figure}
 
-Maastikutüübi homogeensus (ainult ``madal'') tähendab, et geograafiline varieerumine CWD esindatuses (8,48\% kuni 55,89\%) ei ole tingitud maastikutüübi erinevustest, vaid eri-lokaalsetest metsatüüpidest, topograafiast ja lamapuidu tegelikust esinemissagedusest madala maastiku piires.
-
-\subsubsection{Punktipilve tiheduse analüüs}
-
-Maa-ameti ALS-IV programmi punktipilve tihedus on määratud vahemikuks 1--4 punti ruutmeetri kohta. Uuringus kasutatud andmestikus peetud analüüsi tulemusena selgus, et see tihedus on \emph{ühtlane} kogu andmestikus ajaperioodil 2017--2024, geograafilistes aladel ja klasse-vahel. Arvestades keskmist tihedust 2,5 punti/m², sisaldab üks 25,6 m × 25,6 m suurune kiip (128 × 128 pikslit 0,2 m lahutusvõimega) ligikaudu 1\,638 punkti.
-
-\begin{table}[h!]
+\begin{figure}[h!]
 \centering
-\caption{Punktipilve tihedus aastati (ühtlane: 2,5 pts/m² keskmiselt)}
-\label{tab:andmed-tihedus-aasta}
-\begin{tabular}{ccccc}
-\hline
-\textbf{Aasta} & \textbf{Kiibi arv} & \textbf{Katetus (km²)} & \textbf{Tihedus} & \textbf{Lamapuidu \%} \\
-\hline
-2017 & 47\,426 & 31,1 & 1--4 pts/m² & 16,4\% \\
-2018 & 94\,864 & 62,2 & 1--4 pts/m² & 20,2\% \\
-2019 & 65\,219 & 42,7 & 1--4 pts/m² & 31,9\% \\
-2020 & 100\,793 & 66,1 & 1--4 pts/m² & 33,7\% \\
-2021 & 59\,290 & 38,9 & 1--4 pts/m² & 32,7\% \\
-2022 & 117\,733 & 77,2 & 1--4 pts/m² & 30,2\% \\
-2023 & 59\,290 & 38,9 & 1--4 pts/m² & 31,9\% \\
-2024 & 35\,521 & 23,3 & 1--4 pts/m² & 27,7\% \\
-\hline
-\end{tabular}
-\end{table}
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 3.6.} Mudeli soojuskaardi integratsioon tööriistas: kuidas mudel suunas sildistaja tähelepanu.\
+Placeholder}}
+\caption{Mudeli soojuskaardi kasutamine märgistuse abikihina.}
+\label{fig:labeling-heatmap}
+\end{figure}
 
-\begin{table}[h!]
-\centering
-\caption{Punktipilve tihedus klasside vahel (ühtlane)}
-\label{tab:andmed-tihedus-klass}
-\begin{tabular}{cccc}
-\hline
-\textbf{Klass} & \textbf{Kiibi arv} & \textbf{Osakaal} & \textbf{Tihedus} \\
-\hline
-Lamapuit (cdw) & 165\,357 & 28,5\% & 1--4 pts/m² \\
-Taust (no\_cdw) & 414\,779 & 71,5\% & 1--4 pts/m² \\
-\hline
-\end{tabular}
-\end{table}
+Objektiivsuse tagamiseks ei kasutatud soojuskaarti ainsa otsustajana, vaid abikihina, millele järgnes vajadusel käsitsi kontroll. Selline lähenemine aitab vältida märgistaja pimesi toetumist algoritmile, kuna igat objekti saab kontrollida erinevates vaadetes ja eri lennuaastate lõikes. Mitmekihiline visuaalne analüüs tagas masinõppemudelile kvaliteetse tõeväärtusandmestiku.
 
-Oluline tulemus: Punktipilve tihedus ei varieeru aastate vahel, geograafiliselt ega klasside lõikes. See tähendab, et lamapuidu esindatuse varieerumine (16,4\% kuni 33,7\% aastate vahel, 8,48\% kuni 55,89\% geograafiliselt) tuleneb \emph{mitte} punktipilve tiheduse muutustest, vaid tegelikest muutustest metsa seisundis, kahjustuse astmes, pooljäänud puidu lagundamise seisundis ja kohalike metsatüüpide erisustest.
-
-\begin{table}[h!]
-\centering
-\caption{Klassidevahelise esindatuse jaotus suurimate kaardilehtede kaupa}
-\label{tab:andmed-klassid-ala}
-\begin{tabular}{ccccc}
-\hline
-\textbf{Kaardileht} & \textbf{Kokku} & \textbf{Lamapuit} & \textbf{Taust} & \textbf{Lamapuidu \%} \\
-\hline
-494475 & 4\,543 & 2\,539 & 2\,004 & 55,89\% \\
-445396 & 5\,929 & 2\,716 & 3\,213 & 45,81\% \\
-436647 & 23\,716 & 10\,723 & 12\,993 & 45,21\% \\
-582543 & 35\,574 & 14\,110 & 21\,464 & 39,66\% \\
-\vdots & \vdots & \vdots & \vdots & \vdots \\
-492473 & 5\,929 & 503 & 5\,426 & 8,48\% \\
-\hline
-\end{tabular}
-\end{table}
-
-Suur geograafiline varieerumine klassidevahelises esindatuses peegeldab erinevaid metsatüüpe, maapinnareljeefe ja lamapuidu tegeliku esinemissageduse geograafilist muutumist Eestis. Selle varieerumise arvestamine mudelite treenimisel on oluline, et vältida geograafiat-spetsifiikse kallutatuse tekkimist.
-
-\subsection{Andmete piirangud ja metodoloogilised kaalutlused} \label{andmed-piirangud}
-
-Kuigi andmestik on märkimisväärselt suurte mõõtmetega ja hästi valideeritud, on siiski mitmed olulised piirangud ja metodoloogilised kaalutlused, mida tuleb arvestada:
-
-\subsubsection{Punkt-tiheduse piirangud}
-
-Maa-ameti lennukipõhise laserskaneerimise andmete punkt-tihedus 1--4 pts/m² on otse selle uuringu motivatsiooni aluseks. Selline hõredate andmete koosseisus:
-
-\begin{itemize}
-    \item Väikesed lamapuidu objektid jäävad sageli tuvastamata, kuna punkt-pilves ei ole piisavalt punkte nende täpseks eristamiseks
-    \item CHM-i genereerimise protsess suurendab müra ja ebatäpsust, eriti tihedalt vegetatsiooniga kaetud aladel
-    \item Maapinna alused puitobjektid (mis on CHM-i perspektiivist madal) nõuavad eriti hoolikast eeltöötlust
-\end{itemize}
-
-\subsubsection{Geograafiline jaotus ja kallutatus}
-
-Andmestiku geograafiline jaotus pole täiesti ühtsustatud:
-
-\begin{itemize}
-    \item Mõned kaardilehed on esindatud 41\,503 märgistusega, teised vaid 3\,900-ga
-    \item Lamapuidu klassi esindatus varieerub 8,48\%-st 55,89\%-ni geograafiliste aladega
-    \item Seose analüüs ja treening/test jaotus tuleb teostada eriti hoolikalt, et vältida geograafia-spetsifiikset üldistusviga
-\end{itemize}
-
-\subsubsection{Ajalist sõltuvus}
-
-Andmestiku ajaline ulatuses 2017--2024 on oluline arvesse võtta:
-
-\begin{itemize}
-    \item Erinevate aastate andmed võivad kajastada erinevaid metsa seisundeid ja lamapuidu kontsentratsiooni
-    \item Märgistamise meetodid ja kriteeriumi võisid muutuda aja jooksul
-    \item Mudeli generaliseerumist tuleb kontrollida ajaliselt valdkonna vahetusel (näiteks andmed ühe aasta kohta treening, teise aasta kohta testimine)
-\end{itemize}
-
-\subsubsection{Märgistamise allikate erinevused}
-
-Kolme erineva märgistamisallikaga andmete ühinemine sisaldab omaid küsimusi:
-
-\begin{itemize}
-    \item Käsimärgistus (2,1\%) on kõrgema lamapuidu esindatusega (36,63\%), mis võib viidata \emph{confirmation bias}'ile -- uurija võib-olla ülekohtust lamapuitu märgistanud
-    \item Automaatne märgistus (92,4\%) võib sisaldada süstemaatilisi vigu, eriti aladel, kus mudeleid treeniti
-    \item Auto-jäetud-vahele objektid (5,5\%) jääv täiesti välja, mis võib esindada ebakindlad juhtumid, millel on iseloomulik kõrgus ja tekstuur
-\end{itemize}
-
-\subsubsection{CHM-i eelóötluse piirangud}
-
-Kõrgusmudelite genereerimine hõredast punkt-pilvest sisaldab omaid kompromisse:
-
-\begin{itemize}
-    \item Max-HAG filtri kasutamine (0--1,5 m) on empiiriliselt valitud ja võib jätta madalad lamapuidu objektid välja
-    \item 0,2 m lahutusvõime on hea tasakaal detailsuse ja computatsiooniliste kulude vahel, kuid võib siiski olla piisavalt kõrge üksikute puidujupetega seoses
-    \item Gaussi-sujumise rakendamine harmoniseeritud konveieris muudab andmeid ja võib pehmendada märgiliste objektide piire
-\end{itemize}
-
-Neid piiranguid arvestades on andmestik siiski tervikuna kasulik ja korrektne ressurss lamapuidu tuvastamise modelleerimisel Eestis käesoleva tasandi hõredate ALS-andmete piirangutes.
