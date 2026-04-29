@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CDW Brush Labeler</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://unpkg.com/konva@9.3.6/konva.min.js"></script>
+</head>
+<body>
+  <header id="app-header">
+    <div class="brand">CDW Brush Labeler</div>
+    <nav>
+      <button id="nav-queue" class="active">Queue</button>
+      <button id="nav-browser">All tiles</button>
+      <button id="nav-labeler" disabled>Labeler</button>
+    </nav>
+    <div id="queue-progress"></div>
+    <div id="status-indicator"></div>
+  </header>
+
+  <!-- View 1: Queue browser (ranked by CWD likelihood) -->
+  <section id="queue-view">
+    <div id="filter-bar">
+      <label>Location:
+        <select id="queue-grid-select"><option value="">all</option></select>
+      </label>
+      <label>Year:
+        <select id="queue-year-select"><option value="">all</option></select>
+      </label>
+      <label>Product:
+        <select id="queue-product-select"><option value="">all</option></select>
+      </label>
+      <label>Status:
+        <select id="queue-status-select">
+          <option value="">all</option>
+          <option value="unlabeled" selected>unlabeled</option>
+          <option value="labeled">labeled</option>
+          <option value="needs-review">needs-review</option>
+        </select>
+      </label>
+      <label>Show:
+        <select id="queue-limit">
+          <option value="200">200</option>
+          <option value="500" selected>500</option>
+          <option value="1000">1000</option>
+          <option value="2000">all</option>
+        </select>
+      </label>
+      <button id="queue-refresh">Refresh</button>
+      <span id="queue-count"></span>
+    </div>
+    <div id="queue-grid"></div>
+  </section>
+
+  <!-- View 2: Full raster browser -->
+  <section id="browser-view" hidden>
+    <div id="filter-bar">
+      <label>Location:
+        <select id="grid-select"><option value="">(all)</option></select>
+      </label>
+      <label>Year:
+        <select id="year-select"><option value="">(all)</option></select>
+      </label>
+      <label>Product:
+        <select id="product-select"><option value="">(all)</option></select>
+      </label>
+      <label>Raster:
+        <select id="raster-select"><option value="">(all)</option></select>
+      </label>
+      <label>Status:
+        <select id="status-select">
+          <option value="">all</option>
+          <option value="unlabeled">unlabeled</option>
+          <option value="labeled">labeled</option>
+          <option value="needs-review">needs-review</option>
+        </select>
+      </label>
+      <button id="refresh-btn">Refresh</button>
+      <span id="browser-count"></span>
+    </div>
+    <div id="tile-grid"></div>
+  </section>
+
+  <!-- View 3: Labeler -->
+  <section id="label-view" hidden>
+    <aside id="label-sidebar">
+      <div class="panel">
+        <h4>Tile</h4>
+        <div class="kv" id="info-tile"></div>
+        <div class="kv" id="info-raster"></div>
+        <div class="kv" id="info-year"></div>
+        <div class="kv" id="info-status"></div>
+        <div class="kv" id="info-score"></div>
+        <div class="kv" id="info-cnn"></div>
+        <div class="kv" id="info-rowcol"></div>
+      </div>
+
+      <div class="panel">
+        <h4>Year <span class="hint">(w/s)</span></h4>
+        <div id="year-strip"></div>
+      </div>
+
+      <div class="panel">
+        <h4>Product <span class="hint">(a/d)</span></h4>
+        <div id="product-strip"></div>
+      </div>
+
+      <div class="panel">
+        <h4>Layers</h4>
+        <label id="layer-chm-row"><input type="checkbox" id="toggle-chm" checked /> CHM (base)</label>
+        <label id="layer-smooth-row"><input type="checkbox" id="toggle-smooth" /> Gaussian smooth <span class="hint">(g)</span></label>
+        <label><input type="checkbox" id="toggle-hillshade" /> Hillshade</label>
+        <label><input type="checkbox" id="toggle-ortho" /> Orthophoto <span class="hint">(o)</span></label>
+        <label><input type="checkbox" id="toggle-heatmap" /> Heatmap <span class="hint">(h)</span></label>
+        <label><input type="checkbox" id="toggle-mask" checked /> Mask</label>
+        <label>Mask α <input type="range" id="mask-alpha" min="0" max="100" value="70" /></label>
+      </div>
+
+      <div class="panel">
+        <h4>Brush</h4>
+        <label>Class
+          <select id="brush-class">
+            <option value="cwd">CWD (1)</option>
+            <option value="bg">Background (2)</option>
+            <option value="erase">Erase (3)</option>
+          </select>
+        </label>
+        <label>Size <input type="range" id="brush-size" min="2" max="120" value="4" /><span id="brush-size-val">4</span>px</label>
+        <div class="row">
+          <button id="undo-btn" title="Ctrl+Z">Undo</button>
+          <button id="clear-btn">Clear</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4>Actions</h4>
+        <div class="row">
+          <button id="predict-btn" title="h">Predict</button>
+          <button id="save-btn" title="Ctrl+S">Save</button>
+          <button id="label-all-bg-btn" title="b">Mark all BG</button>
+        </div>
+        <label><input type="checkbox" id="auto-save" checked /> auto-save</label>
+        <label><input type="checkbox" id="review-flag" /> needs review</label>
+      </div>
+
+      <div class="panel">
+        <h4>Neighbors</h4>
+        <div class="neighbor-grid" id="neighbor-grid"></div>
+      </div>
+
+      <div class="panel shortcuts">
+        <h4>Shortcuts</h4>
+        <div>1/2/3 class · [/] brush · Ctrl+wheel brush</div>
+        <div>w/s year · a/d product · g Gaussian · o ortho · h heatmap mode</div>
+        <div>wheel zoom main map</div>
+        <div>n next · p prev · ↓ skip</div>
+        <div>Ctrl+Z undo · Ctrl+S save · Esc back</div>
+        <div>b label all → mark all shown tiles as background (no CWD)</div>
+      </div>
+
+      <div class="panel nav-panel" id="sidebar-nav-panel">
+        <h4>Navigation</h4>
+        <div class="row">
+          <button id="prev-btn" title="p">← Prev</button>
+          <button id="next-btn" title="n">Next →</button>
+          <button id="skip-btn" title="↓">Skip</button>
+        </div>
+        <button id="back-btn">Back to queue</button>
+      </div>
+    </aside>
+
+    <div id="sidebar-resizer" aria-hidden="true"></div>
+
+    <main id="canvas-container">
+      <div id="stage-wrap">
+        <div id="context-wrap">
+          <div id="context-grid"></div>
+        </div>
+        <div id="stage"></div>
+        <div id="tile-corners" aria-hidden="true">
+          <span class="corner tl"></span>
+          <span class="corner tr"></span>
+          <span class="corner bl"></span>
+          <span class="corner br"></span>
+        </div>
+        <div id="notice"></div>
+      </div>
+    </main>
+  </section>
+
+  <script src="/static/app.js" type="module"></script>
+</body>
+</html>
