@@ -20,10 +20,10 @@ def create_sample_chm(
     output_raster: str = "examples/data/sample_chm_tile.tif",
     tile_size: int = 500,  # pixels
     start_x: int = 1000,
-    start_y: int = 1000
+    start_y: int = 1000,
 ):
     """Extract small tile from large CHM raster.
-    
+
     Args:
         input_raster: Path to large input CHM
         output_raster: Path to output sample tile
@@ -32,27 +32,29 @@ def create_sample_chm(
         start_y: Starting Y pixel coordinate
     """
     print(f"Creating sample CHM tile from {input_raster}...")
-    
+
     with rasterio.open(input_raster) as src:
         # Create window
         window = Window(start_x, start_y, tile_size, tile_size)
-        
+
         # Read data
         data = src.read(window=window)
-        
+
         # Update profile for output
         profile = src.profile.copy()
-        profile.update({
-            'height': tile_size,
-            'width': tile_size,
-            'transform': rasterio.windows.transform(window, src.transform)
-        })
-        
+        profile.update(
+            {
+                "height": tile_size,
+                "width": tile_size,
+                "transform": rasterio.windows.transform(window, src.transform),
+            }
+        )
+
         # Write output
         os.makedirs(os.path.dirname(output_raster), exist_ok=True)
-        with rasterio.open(output_raster, 'w', **profile) as dst:
+        with rasterio.open(output_raster, "w", **profile) as dst:
             dst.write(data)
-        
+
         # Get file size
         size_mb = os.path.getsize(output_raster) / (1024 * 1024)
         print(f"✓ Created {output_raster} ({size_mb:.2f} MB)")
@@ -62,26 +64,25 @@ def create_sample_chm(
 
 
 def copy_sample_labels(
-    input_gpkg: str = "lamapuit.gpkg",
-    output_gpkg: str = "examples/data/lamapuit_labels.gpkg"
+    input_gpkg: str = "lamapuit.gpkg", output_gpkg: str = "examples/data/lamapuit_labels.gpkg"
 ):
     """Copy small label GeoPackage to examples.
-    
+
     Args:
         input_gpkg: Path to input labels
         output_gpkg: Path to output labels
     """
     print(f"\nCopying sample labels from {input_gpkg}...")
-    
+
     # Read labels
     gdf = gpd.read_file(input_gpkg)
-    
+
     # Create output directory
     os.makedirs(os.path.dirname(output_gpkg), exist_ok=True)
-    
+
     # Copy file
     shutil.copy2(input_gpkg, output_gpkg)
-    
+
     size_mb = os.path.getsize(output_gpkg) / (1024 * 1024)
     print(f"✓ Copied {output_gpkg} ({size_mb:.2f} MB)")
     print(f"  Features: {len(gdf)}")
@@ -90,7 +91,7 @@ def copy_sample_labels(
 
 def create_data_readme():
     """Create README for examples/data directory."""
-    
+
     readme_content = """# Example Data
 
 This folder contains small sample datasets for testing the CDW detection pipeline.
@@ -198,34 +199,34 @@ You are free to:
 Under the following terms:
 - Attribution required
 """
-    
+
     output_path = "examples/data/README.md"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    
-    with open(output_path, 'w', encoding='utf-8') as f:
+
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(readme_content)
-    
+
     print(f"\n✓ Created {output_path}")
 
 
 def main():
     """Create all sample data files."""
-    
+
     print("=" * 70)
     print("Creating Sample Data for GitHub Repository")
     print("=" * 70)
-    
+
     # Check if input files exist
     if not os.path.exists("merged041225.tif"):
         print("❌ Error: merged041225.tif not found!")
         print("   Place the CHM raster in the current directory first.")
         return
-    
+
     if not os.path.exists("lamapuit.gpkg"):
         print("❌ Error: lamapuit.gpkg not found!")
         print("   Place the label GeoPackage in the current directory first.")
         return
-    
+
     try:
         # Create sample CHM tile
         create_sample_chm(
@@ -233,18 +234,17 @@ def main():
             output_raster="examples/data/sample_chm_tile.tif",
             tile_size=500,  # 100x100m at 0.2m resolution
             start_x=1000,
-            start_y=1000
+            start_y=1000,
         )
-        
+
         # Copy sample labels
         copy_sample_labels(
-            input_gpkg="lamapuit.gpkg",
-            output_gpkg="examples/data/lamapuit_labels.gpkg"
+            input_gpkg="lamapuit.gpkg", output_gpkg="examples/data/lamapuit_labels.gpkg"
         )
-        
+
         # Create README
         create_data_readme()
-        
+
         print("\n" + "=" * 70)
         print("✓ SUCCESS - Sample data created!")
         print("=" * 70)
@@ -258,10 +258,11 @@ def main():
         print("  2. Update examples/data/README.md with actual Zenodo DOI")
         print("  3. Add to Git: git add examples/")
         print("  4. Commit: git commit -m 'Add sample data for testing'")
-        
+
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
 
 

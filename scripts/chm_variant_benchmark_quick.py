@@ -186,14 +186,24 @@ def load_tile(tile_path: Path, channels: int, tile_size: int = 128) -> np.ndarra
         return None
 
 
-def load_labels(csv_path: Path, sample_size: int = 2000) -> Dict[str, int]:
+def load_labels(csv_path: Path, sample_size: int = 2000, split_filter: str = None) -> Dict[str, int]:
     """Load labels from CSV and aggregate to tile level.
+
+    Args:
+        csv_path: Path to labels CSV
+        sample_size: Unused (kept for compatibility)
+        split_filter: If 'val', 'test', 'train', or 'buffer', filter to only that split
 
     Returns dict: raster_basename -> binary label (1 if any chunk is 'cdw', 0 otherwise)
     """
     logger.info(f"Loading labels from {csv_path.name}...")
     df = pd.read_csv(csv_path)
     logger.debug(f"  Total chunk rows: {len(df)}")
+
+    # Filter by split if specified
+    if split_filter and 'split' in df.columns:
+        df = df[df['split'] == split_filter]
+        logger.info(f"  Filtered to {split_filter} split: {len(df)} chunks")
 
     # Aggregate chunks to tile level: 1 if any chunk has 'cdw', else 0
     tile_labels = {}
@@ -503,11 +513,11 @@ def main():
         logger.error("No variants found! Check data/chm_variants/")
         return
 
-    # Load labels
+    # Load labels (validation set only)
     labels_file = REPO_ROOT / "data" / "chm_variants" / "labels_canonical_with_splits.csv"
     if labels_file.exists():
-        labels = load_labels(labels_file, sample_size=N_TEST_TILES)
-        logger.info(f"✓ Loaded {len(labels)} tile labels from {labels_file.name}")
+        labels = load_labels(labels_file, sample_size=N_TEST_TILES, split_filter='val')
+        logger.info(f"✓ Loaded {len(labels)} tile labels from validation set in {labels_file.name}")
     else:
         logger.warning(f"Labels file not found: {labels_file}")
         labels = {}
