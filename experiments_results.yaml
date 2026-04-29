@@ -1,0 +1,84 @@
+experiments:
+- config:
+    batch: 16
+    epochs: 200
+    lr0: 0.01
+    model: yolo11n-seg.pt
+    name: exp1_baseline_nano
+    weight_decay: 0.001
+  elapsed_minutes: 1.9324613054593405
+  name: exp1_baseline_nano
+  success: true
+- config:
+    batch: 8
+    epochs: 200
+    lr0: 0.01
+    model: yolo11m-seg.pt
+    name: exp2_medium
+    weight_decay: 0.001
+  elapsed_minutes: 7.628269171714782
+  name: exp2_medium
+  success: true
+- config:
+    batch: 12
+    epochs: 200
+    lr0: 0.01
+    model: yolo11s-seg.pt
+    name: exp3_small
+    weight_decay: 0.001
+  elapsed_minutes: 3.644516205787659
+  name: exp3_small
+  success: true
+- config:
+    batch: 12
+    epochs: 200
+    lr0: 0.005
+    model: yolo11s-seg.pt
+    name: exp4_low_lr
+    weight_decay: 0.001
+  elapsed_minutes: 3.540787732601166
+  name: exp4_low_lr
+  success: true
+- config:
+    batch: 12
+    dropout: 0.2
+    epochs: 200
+    lr0: 0.01
+    model: yolo11s-seg.pt
+    name: exp5_high_reg
+    weight_decay: 0.005
+  elapsed_minutes: 2.103356695175171
+  name: exp5_high_reg
+  success: true
+- config:
+    batch: 12
+    copy_paste: 0.3
+    epochs: 200
+    erasing: 0.6
+    lr0: 0.01
+    mixup: 0.3
+    model: yolo11s-seg.pt
+    name: exp6_aggressive_aug
+    weight_decay: 0.001
+  elapsed_minutes: 2.9494039257367453
+  name: exp6_aggressive_aug
+  success: true
+- config:
+    batch: 12
+    copy_paste: 0.05
+    epochs: 200
+    erasing: 0.2
+    lr0: 0.01
+    mixup: 0.05
+    model: yolo11s-seg.pt
+    name: exp7_conservative_aug
+    weight_decay: 0.001
+  elapsed_minutes: 3.1492040157318115
+  name: exp7_conservative_aug
+  success: true
+summary:
+  failed: 0
+  successful: 7
+  total: 7
+  total_time_hours: 0.4157999842034446
+timestamp: '2026-01-28T22:12:12.584584'
