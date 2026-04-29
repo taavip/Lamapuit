@@ -1,0 +1,47 @@
+{
+  "ranked_csv": "ranked_for_manual_masks_lineaware.csv",
+  "labels_glob": "output/onboarding_labels_v2_drop13/*_labels.csv",
+  "allowed_sources": [
+    "manual"
+  ],
+  "positive_labels": [
+    "cdw"
+  ],
+  "negative_labels": [
+    "no_cdw"
+  ],
+  "dedupe_by_key": true,
+  "max_ranked": 0,
+  "label_stats": {
+    "label_files": 100,
+    "label_rows_total": 580136,
+    "label_rows_source_filtered": 567959,
+    "label_rows_label_filtered": 0,
+    "label_rows_key_invalid": 0,
+    "label_rows_kept": 12177,
+    "label_rows_replaced": 0
+  },
+  "rank_stats": {
+    "rank_rows_total": 128,
+    "rank_rows_key_invalid": 0,
+    "rank_rows_kept": 124,
+    "rank_rows_dedup_dropped": 4
+  },
+  "matched_count": 5,
+  "unmatched_count": 119,
+  "coverage": 0.04032258064516129,
+  "positive_count": 1,
+  "negative_count": 4,
+  "prevalence": 0.2,
+  "average_precision": 1.0,
+  "roc_auc": 1.0,
+  "topk_metrics": [
+    {
+      "k": 5.0,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "lift_at_k": 1.0,
+      "ndcg_at_k": 1.0
+    }
+  ]
+}
