@@ -1,0 +1,1287 @@
+{
+  "methodology": {
+    "description": "Point density calculated from LAZ file sizes using compression ratio (0.42) and LAS header record length. Captures actual variation in point distribution across files.",
+    "compression_ratio": 0.42,
+    "header_size_bytes": 375,
+    "raster_size_m": 655.0,
+    "raster_area_m2": 429025.0
+  },
+  "measured_overall_stats": {
+    "total_files": 119,
+    "total_estimated_points": 2666270746,
+    "total_area_km2": 51.053975,
+    "avg_density_pts_m2": 52.22454756950854,
+    "min_density_pts_m2": 18.399727288619545,
+    "max_density_pts_m2": 122.44175281160771,
+    "std_dev": 18.086975702427623
+  },
+  "maa_amet_official_specs": {
+    "Tiheasustusalade kaardistamine (Urban)": 18.0,
+    "Pildistamise prioriteet (Image)": 3.5,
+    "\u00dcle-eestiline kaardistamine (National)": 2.1,
+    "Metsandusliku kaardistamine (Forestry)": 0.8
+  },
+  "by_year": [
+    {
+      "year": 2017,
+      "file_count": 11,
+      "min_density": 21.81,
+      "avg_density": 29.31,
+      "max_density": 34.14,
+      "total_points_millions": 138.3
+    },
+    {
+      "year": 2018,
+      "file_count": 17,
+      "min_density": 32.31,
+      "avg_density": 41.26,
+      "max_density": 51.38,
+      "total_points_millions": 300.9
+    },
+    {
+      "year": 2019,
+      "file_count": 13,
+      "min_density": 28.47,
+      "avg_density": 51.7,
+      "max_density": 71.77,
+      "total_points_millions": 288.3
+    },
+    {
+      "year": 2020,
+      "file_count": 18,
+      "min_density": 35.64,
+      "avg_density": 53.55,
+      "max_density": 71.22,
+      "total_points_millions": 413.5
+    },
+    {
+      "year": 2021,
+      "file_count": 14,
+      "min_density": 21.56,
+      "avg_density": 55.96,
+      "max_density": 81.92,
+      "total_points_millions": 336.1
+    },
+    {
+      "year": 2022,
+      "file_count": 26,
+      "min_density": 18.4,
+      "avg_density": 59.72,
+      "max_density": 122.44,
+      "total_points_millions": 666.1
+    },
+    {
+      "year": 2023,
+      "file_count": 12,
+      "min_density": 42.05,
+      "avg_density": 58.74,
+      "max_density": 77.89,
+      "total_points_millions": 302.4
+    },
+    {
+      "year": 2024,
+      "file_count": 8,
+      "min_density": 51.62,
+      "avg_density": 64.26,
+      "max_density": 76.39,
+      "total_points_millions": 220.6
+    }
+  ],
+  "verification": {
+    "source_category": "Tiheasustusalade kaardistamine (Urban)",
+    "measured_avg_density": 52.22454756950854,
+    "note": "Variation across files reflects actual LAZ data distribution, not estimation artifact"
+  },
+  "all_files": [
+    {
+      "filename": "401675_2022_madal.laz",
+      "mapsheet": 401675,
+      "year": 2022,
+      "file_size_mb": 276.6,
+      "record_length": 46,
+      "estimated_points": 14317263,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 33.37
+    },
+    {
+      "filename": "401676_2022_madal.laz",
+      "mapsheet": 401676,
+      "year": 2022,
+      "file_size_mb": 213.0,
+      "record_length": 46,
+      "estimated_points": 11027226,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 25.7
+    },
+    {
+      "filename": "401677_2022_madal.laz",
+      "mapsheet": 401677,
+      "year": 2022,
+      "file_size_mb": 244.1,
+      "record_length": 46,
+      "estimated_points": 12636267,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 29.45
+    },
+    {
+      "filename": "401678_2022_madal.laz",
+      "mapsheet": 401678,
+      "year": 2022,
+      "file_size_mb": 254.5,
+      "record_length": 46,
+      "estimated_points": 13172661,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 30.7
+    },
+    {
+      "filename": "436646_2018_madal.laz",
+      "mapsheet": 436646,
+      "year": 2018,
+      "file_size_mb": 279.4,
+      "record_length": 38,
+      "estimated_points": 17507813,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 40.81
+    },
+    {
+      "filename": "436646_2020_madal.laz",
+      "mapsheet": 436646,
+      "year": 2020,
+      "file_size_mb": 425.1,
+      "record_length": 42,
+      "estimated_points": 24099413,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 56.17
+    },
+    {
+      "filename": "436646_2022_madal.laz",
+      "mapsheet": 436646,
+      "year": 2022,
+      "file_size_mb": 823.6,
+      "record_length": 46,
+      "estimated_points": 42629657,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 99.36
+    },
+    {
+      "filename": "436646_2024_madal.laz",
+      "mapsheet": 436646,
+      "year": 2024,
+      "file_size_mb": 501.3,
+      "record_length": 46,
+      "estimated_points": 25949086,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 60.48
+    },
+    {
+      "filename": "436647_2018_madal.laz",
+      "mapsheet": 436647,
+      "year": 2018,
+      "file_size_mb": 344.0,
+      "record_length": 38,
+      "estimated_points": 21555437,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 50.24
+    },
+    {
+      "filename": "436647_2020_madal.laz",
+      "mapsheet": 436647,
+      "year": 2020,
+      "file_size_mb": 500.7,
+      "record_length": 42,
+      "estimated_points": 28383696,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 66.16
+    },
+    {
+      "filename": "436647_2022_madal.laz",
+      "mapsheet": 436647,
+      "year": 2022,
+      "file_size_mb": 1014.9,
+      "record_length": 46,
+      "estimated_points": 52530573,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 122.44
+    },
+    {
+      "filename": "436647_2024_madal.laz",
+      "mapsheet": 436647,
+      "year": 2024,
+      "file_size_mb": 587.2,
+      "record_length": 46,
+      "estimated_points": 30391092,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 70.84
+    },
+    {
+      "filename": "436648_2018_madal.laz",
+      "mapsheet": 436648,
+      "year": 2018,
+      "file_size_mb": 284.9,
+      "record_length": 38,
+      "estimated_points": 17853456,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 41.61
+    },
+    {
+      "filename": "436648_2020_madal.laz",
+      "mapsheet": 436648,
+      "year": 2020,
+      "file_size_mb": 445.2,
+      "record_length": 42,
+      "estimated_points": 25238720,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 58.83
+    },
+    {
+      "filename": "436648_2022_madal.laz",
+      "mapsheet": 436648,
+      "year": 2022,
+      "file_size_mb": 853.7,
+      "record_length": 46,
+      "estimated_points": 44189028,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 103.0
+    },
+    {
+      "filename": "436648_2024_madal.laz",
+      "mapsheet": 436648,
+      "year": 2024,
+      "file_size_mb": 508.4,
+      "record_length": 46,
+      "estimated_points": 26315161,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 61.34
+    },
+    {
+      "filename": "437646_2018_madal.laz",
+      "mapsheet": 437646,
+      "year": 2018,
+      "file_size_mb": 284.5,
+      "record_length": 38,
+      "estimated_points": 17826864,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 41.55
+    },
+    {
+      "filename": "437646_2020_madal.laz",
+      "mapsheet": 437646,
+      "year": 2020,
+      "file_size_mb": 398.9,
+      "record_length": 42,
+      "estimated_points": 22612617,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 52.71
+    },
+    {
+      "filename": "437646_2024_madal.laz",
+      "mapsheet": 437646,
+      "year": 2024,
+      "file_size_mb": 538.2,
+      "record_length": 46,
+      "estimated_points": 27857455,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 64.93
+    },
+    {
+      "filename": "437647_2018_madal.laz",
+      "mapsheet": 437647,
+      "year": 2018,
+      "file_size_mb": 242.7,
+      "record_length": 38,
+      "estimated_points": 15207841,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 35.45
+    },
+    {
+      "filename": "437647_2020_madal.laz",
+      "mapsheet": 437647,
+      "year": 2020,
+      "file_size_mb": 332.6,
+      "record_length": 42,
+      "estimated_points": 18853679,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 43.95
+    },
+    {
+      "filename": "437647_2022_madal.laz",
+      "mapsheet": 437647,
+      "year": 2022,
+      "file_size_mb": 933.9,
+      "record_length": 46,
+      "estimated_points": 48338813,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 112.67
+    },
+    {
+      "filename": "437647_2024_madal.laz",
+      "mapsheet": 437647,
+      "year": 2024,
+      "file_size_mb": 427.9,
+      "record_length": 46,
+      "estimated_points": 22147424,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 51.62
+    },
+    {
+      "filename": "437648_2018_madal.laz",
+      "mapsheet": 437648,
+      "year": 2018,
+      "file_size_mb": 319.6,
+      "record_length": 38,
+      "estimated_points": 20024976,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 46.68
+    },
+    {
+      "filename": "437648_2020_madal.laz",
+      "mapsheet": 437648,
+      "year": 2020,
+      "file_size_mb": 507.1,
+      "record_length": 42,
+      "estimated_points": 28745896,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 67.0
+    },
+    {
+      "filename": "437648_2024_madal.laz",
+      "mapsheet": 437648,
+      "year": 2024,
+      "file_size_mb": 588.4,
+      "record_length": 46,
+      "estimated_points": 30456314,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 70.99
+    },
+    {
+      "filename": "445396_2022_madal.laz",
+      "mapsheet": 445396,
+      "year": 2022,
+      "file_size_mb": 563.9,
+      "record_length": 46,
+      "estimated_points": 29188766,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 68.04
+    },
+    {
+      "filename": "451397_2022_madal.laz",
+      "mapsheet": 451397,
+      "year": 2022,
+      "file_size_mb": 285.9,
+      "record_length": 46,
+      "estimated_points": 14800373,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 34.5
+    },
+    {
+      "filename": "470383_2022_madal.laz",
+      "mapsheet": 470383,
+      "year": 2022,
+      "file_size_mb": 228.4,
+      "record_length": 46,
+      "estimated_points": 11819571,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 27.55
+    },
+    {
+      "filename": "492473_2022_madal.laz",
+      "mapsheet": 492473,
+      "year": 2022,
+      "file_size_mb": 363.7,
+      "record_length": 46,
+      "estimated_points": 18826018,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 43.88
+    },
+    {
+      "filename": "494475_2022_madal.laz",
+      "mapsheet": 494475,
+      "year": 2022,
+      "file_size_mb": 280.6,
+      "record_length": 46,
+      "estimated_points": 14521306,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 33.85
+    },
+    {
+      "filename": "538424_2019_madal.laz",
+      "mapsheet": 538424,
+      "year": 2019,
+      "file_size_mb": 195.0,
+      "record_length": 38,
+      "estimated_points": 12216338,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 28.47
+    },
+    {
+      "filename": "538424_2021_madal.laz",
+      "mapsheet": 538424,
+      "year": 2021,
+      "file_size_mb": 287.3,
+      "record_length": 46,
+      "estimated_points": 14869096,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 34.66
+    },
+    {
+      "filename": "579543_2017_madal.laz",
+      "mapsheet": 579543,
+      "year": 2017,
+      "file_size_mb": 149.4,
+      "record_length": 38,
+      "estimated_points": 9358630,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 21.81
+    },
+    {
+      "filename": "579543_2018_madal.laz",
+      "mapsheet": 579543,
+      "year": 2018,
+      "file_size_mb": 221.2,
+      "record_length": 38,
+      "estimated_points": 13859679,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 32.31
+    },
+    {
+      "filename": "579543_2019_madal.laz",
+      "mapsheet": 579543,
+      "year": 2019,
+      "file_size_mb": 238.6,
+      "record_length": 38,
+      "estimated_points": 14950706,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 34.85
+    },
+    {
+      "filename": "579543_2020_madal.laz",
+      "mapsheet": 579543,
+      "year": 2020,
+      "file_size_mb": 269.7,
+      "record_length": 42,
+      "estimated_points": 15291901,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 35.64
+    },
+    {
+      "filename": "579543_2021_madal.laz",
+      "mapsheet": 579543,
+      "year": 2021,
+      "file_size_mb": 329.9,
+      "record_length": 46,
+      "estimated_points": 17075472,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 39.8
+    },
+    {
+      "filename": "579543_2022_madal.laz",
+      "mapsheet": 579543,
+      "year": 2022,
+      "file_size_mb": 365.7,
+      "record_length": 46,
+      "estimated_points": 18927509,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 44.12
+    },
+    {
+      "filename": "579543_2023_madal.laz",
+      "mapsheet": 579543,
+      "year": 2023,
+      "file_size_mb": 348.5,
+      "record_length": 46,
+      "estimated_points": 18039272,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 42.05
+    },
+    {
+      "filename": "580535_2017_madal.laz",
+      "mapsheet": 580535,
+      "year": 2017,
+      "file_size_mb": 209.0,
+      "record_length": 38,
+      "estimated_points": 13093554,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 30.52
+    },
+    {
+      "filename": "580535_2018_madal.laz",
+      "mapsheet": 580535,
+      "year": 2018,
+      "file_size_mb": 278.3,
+      "record_length": 38,
+      "estimated_points": 17436211,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 40.64
+    },
+    {
+      "filename": "580535_2019_madal.laz",
+      "mapsheet": 580535,
+      "year": 2019,
+      "file_size_mb": 366.8,
+      "record_length": 38,
+      "estimated_points": 22982068,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 53.57
+    },
+    {
+      "filename": "580535_2020_madal.laz",
+      "mapsheet": 580535,
+      "year": 2020,
+      "file_size_mb": 387.3,
+      "record_length": 42,
+      "estimated_points": 21957138,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 51.18
+    },
+    {
+      "filename": "580535_2021_madal.laz",
+      "mapsheet": 580535,
+      "year": 2021,
+      "file_size_mb": 476.1,
+      "record_length": 46,
+      "estimated_points": 24640508,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 57.43
+    },
+    {
+      "filename": "580535_2022_madal.laz",
+      "mapsheet": 580535,
+      "year": 2022,
+      "file_size_mb": 534.8,
+      "record_length": 46,
+      "estimated_points": 27683040,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 64.53
+    },
+    {
+      "filename": "580535_2023_madal.laz",
+      "mapsheet": 580535,
+      "year": 2023,
+      "file_size_mb": 465.9,
+      "record_length": 46,
+      "estimated_points": 24113357,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 56.21
+    },
+    {
+      "filename": "580536_2017_madal.laz",
+      "mapsheet": 580536,
+      "year": 2017,
+      "file_size_mb": 186.1,
+      "record_length": 38,
+      "estimated_points": 11660708,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 27.18
+    },
+    {
+      "filename": "580536_2018_madal.laz",
+      "mapsheet": 580536,
+      "year": 2018,
+      "file_size_mb": 240.4,
+      "record_length": 38,
+      "estimated_points": 15059721,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 35.1
+    },
+    {
+      "filename": "580536_2019_madal.laz",
+      "mapsheet": 580536,
+      "year": 2019,
+      "file_size_mb": 310.7,
+      "record_length": 38,
+      "estimated_points": 19469915,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 45.38
+    },
+    {
+      "filename": "580536_2020_madal.laz",
+      "mapsheet": 580536,
+      "year": 2020,
+      "file_size_mb": 324.5,
+      "record_length": 42,
+      "estimated_points": 18397833,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 42.88
+    },
+    {
+      "filename": "580536_2021_madal.laz",
+      "mapsheet": 580536,
+      "year": 2021,
+      "file_size_mb": 409.3,
+      "record_length": 46,
+      "estimated_points": 21183982,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 49.38
+    },
+    {
+      "filename": "580536_2022_madal.laz",
+      "mapsheet": 580536,
+      "year": 2022,
+      "file_size_mb": 453.5,
+      "record_length": 46,
+      "estimated_points": 23472783,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 54.71
+    },
+    {
+      "filename": "580536_2023_madal.laz",
+      "mapsheet": 580536,
+      "year": 2023,
+      "file_size_mb": 402.9,
+      "record_length": 46,
+      "estimated_points": 20851497,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 48.6
+    },
+    {
+      "filename": "580537_2017_madal.laz",
+      "mapsheet": 580537,
+      "year": 2017,
+      "file_size_mb": 216.1,
+      "record_length": 38,
+      "estimated_points": 13537894,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 31.56
+    },
+    {
+      "filename": "580537_2018_madal.laz",
+      "mapsheet": 580537,
+      "year": 2018,
+      "file_size_mb": 283.1,
+      "record_length": 38,
+      "estimated_points": 17740225,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 41.35
+    },
+    {
+      "filename": "580537_2019_madal.laz",
+      "mapsheet": 580537,
+      "year": 2019,
+      "file_size_mb": 367.0,
+      "record_length": 38,
+      "estimated_points": 22998018,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 53.61
+    },
+    {
+      "filename": "580537_2020_madal.laz",
+      "mapsheet": 580537,
+      "year": 2020,
+      "file_size_mb": 367.7,
+      "record_length": 42,
+      "estimated_points": 20843605,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 48.58
+    },
+    {
+      "filename": "580537_2021_madal.laz",
+      "mapsheet": 580537,
+      "year": 2021,
+      "file_size_mb": 496.2,
+      "record_length": 46,
+      "estimated_points": 25683612,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 59.87
+    },
+    {
+      "filename": "580537_2022_madal.laz",
+      "mapsheet": 580537,
+      "year": 2022,
+      "file_size_mb": 525.4,
+      "record_length": 46,
+      "estimated_points": 27192228,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 63.38
+    },
+    {
+      "filename": "580537_2023_madal.laz",
+      "mapsheet": 580537,
+      "year": 2023,
+      "file_size_mb": 465.7,
+      "record_length": 46,
+      "estimated_points": 24103535,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 56.18
+    },
+    {
+      "filename": "580538_2017_madal.laz",
+      "mapsheet": 580538,
+      "year": 2017,
+      "file_size_mb": 191.9,
+      "record_length": 38,
+      "estimated_points": 12025404,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 28.03
+    },
+    {
+      "filename": "580538_2018_madal.laz",
+      "mapsheet": 580538,
+      "year": 2018,
+      "file_size_mb": 267.3,
+      "record_length": 38,
+      "estimated_points": 16748530,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 39.04
+    },
+    {
+      "filename": "580538_2019_madal.laz",
+      "mapsheet": 580538,
+      "year": 2019,
+      "file_size_mb": 335.9,
+      "record_length": 38,
+      "estimated_points": 21043918,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 49.05
+    },
+    {
+      "filename": "580538_2020_madal.laz",
+      "mapsheet": 580538,
+      "year": 2020,
+      "file_size_mb": 363.6,
+      "record_length": 42,
+      "estimated_points": 20610777,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 48.04
+    },
+    {
+      "filename": "580538_2021_madal.laz",
+      "mapsheet": 580538,
+      "year": 2021,
+      "file_size_mb": 479.3,
+      "record_length": 46,
+      "estimated_points": 24810901,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 57.83
+    },
+    {
+      "filename": "580538_2022_madal.laz",
+      "mapsheet": 580538,
+      "year": 2022,
+      "file_size_mb": 527.0,
+      "record_length": 46,
+      "estimated_points": 27278947,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 63.58
+    },
+    {
+      "filename": "580538_2023_madal.laz",
+      "mapsheet": 580538,
+      "year": 2023,
+      "file_size_mb": 476.6,
+      "record_length": 46,
+      "estimated_points": 24668250,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 57.5
+    },
+    {
+      "filename": "580539_2017_madal.laz",
+      "mapsheet": 580539,
+      "year": 2017,
+      "file_size_mb": 218.4,
+      "record_length": 38,
+      "estimated_points": 13684910,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 31.9
+    },
+    {
+      "filename": "580539_2018_madal.laz",
+      "mapsheet": 580539,
+      "year": 2018,
+      "file_size_mb": 307.8,
+      "record_length": 38,
+      "estimated_points": 19284400,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 44.95
+    },
+    {
+      "filename": "580539_2019_madal.laz",
+      "mapsheet": 580539,
+      "year": 2019,
+      "file_size_mb": 383.2,
+      "record_length": 38,
+      "estimated_points": 24010884,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 55.97
+    },
+    {
+      "filename": "580539_2020_madal.laz",
+      "mapsheet": 580539,
+      "year": 2020,
+      "file_size_mb": 419.4,
+      "record_length": 42,
+      "estimated_points": 23777623,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 55.42
+    },
+    {
+      "filename": "580539_2021_madal.laz",
+      "mapsheet": 580539,
+      "year": 2021,
+      "file_size_mb": 536.1,
+      "record_length": 46,
+      "estimated_points": 27746620,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 64.67
+    },
+    {
+      "filename": "580539_2022_madal.laz",
+      "mapsheet": 580539,
+      "year": 2022,
+      "file_size_mb": 592.9,
+      "record_length": 46,
+      "estimated_points": 30688254,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 71.53
+    },
+    {
+      "filename": "580539_2023_madal.laz",
+      "mapsheet": 580539,
+      "year": 2023,
+      "file_size_mb": 535.8,
+      "record_length": 46,
+      "estimated_points": 27734582,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 64.65
+    },
+    {
+      "filename": "580540_2017_madal.laz",
+      "mapsheet": 580540,
+      "year": 2017,
+      "file_size_mb": 179.7,
+      "record_length": 38,
+      "estimated_points": 11261499,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 26.25
+    },
+    {
+      "filename": "580540_2018_madal.laz",
+      "mapsheet": 580540,
+      "year": 2018,
+      "file_size_mb": 239.4,
+      "record_length": 38,
+      "estimated_points": 15002843,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 34.97
+    },
+    {
+      "filename": "580540_2019_madal.laz",
+      "mapsheet": 580540,
+      "year": 2019,
+      "file_size_mb": 310.7,
+      "record_length": 38,
+      "estimated_points": 19469622,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 45.38
+    },
+    {
+      "filename": "580540_2020_madal.laz",
+      "mapsheet": 580540,
+      "year": 2020,
+      "file_size_mb": 330.5,
+      "record_length": 42,
+      "estimated_points": 18737888,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 43.68
+    },
+    {
+      "filename": "580540_2021_madal.laz",
+      "mapsheet": 580540,
+      "year": 2021,
+      "file_size_mb": 452.6,
+      "record_length": 46,
+      "estimated_points": 23425684,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 54.6
+    },
+    {
+      "filename": "580540_2022_madal.laz",
+      "mapsheet": 580540,
+      "year": 2022,
+      "file_size_mb": 472.8,
+      "record_length": 46,
+      "estimated_points": 24471799,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 57.04
+    },
+    {
+      "filename": "580540_2023_madal.laz",
+      "mapsheet": 580540,
+      "year": 2023,
+      "file_size_mb": 432.6,
+      "record_length": 46,
+      "estimated_points": 22389116,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 52.19
+    },
+    {
+      "filename": "580543_2017_madal.laz",
+      "mapsheet": 580543,
+      "year": 2017,
+      "file_size_mb": 197.9,
+      "record_length": 38,
+      "estimated_points": 12400118,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 28.9
+    },
+    {
+      "filename": "580543_2018_madal.laz",
+      "mapsheet": 580543,
+      "year": 2018,
+      "file_size_mb": 252.4,
+      "record_length": 38,
+      "estimated_points": 15812496,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 36.86
+    },
+    {
+      "filename": "580543_2019_madal.laz",
+      "mapsheet": 580543,
+      "year": 2019,
+      "file_size_mb": 354.1,
+      "record_length": 38,
+      "estimated_points": 22185789,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 51.71
+    },
+    {
+      "filename": "580543_2020_madal.laz",
+      "mapsheet": 580543,
+      "year": 2020,
+      "file_size_mb": 363.4,
+      "record_length": 42,
+      "estimated_points": 20598636,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 48.01
+    },
+    {
+      "filename": "580543_2021_madal.laz",
+      "mapsheet": 580543,
+      "year": 2021,
+      "file_size_mb": 505.9,
+      "record_length": 46,
+      "estimated_points": 26187379,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 61.04
+    },
+    {
+      "filename": "580543_2022_madal.laz",
+      "mapsheet": 580543,
+      "year": 2022,
+      "file_size_mb": 549.6,
+      "record_length": 46,
+      "estimated_points": 28445231,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 66.3
+    },
+    {
+      "filename": "580543_2023_madal.laz",
+      "mapsheet": 580543,
+      "year": 2023,
+      "file_size_mb": 460.9,
+      "record_length": 46,
+      "estimated_points": 23857826,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 55.61
+    },
+    {
+      "filename": "581543_2017_madal.laz",
+      "mapsheet": 581543,
+      "year": 2017,
+      "file_size_mb": 233.8,
+      "record_length": 38,
+      "estimated_points": 14646653,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 34.14
+    },
+    {
+      "filename": "581543_2018_madal.laz",
+      "mapsheet": 581543,
+      "year": 2018,
+      "file_size_mb": 351.8,
+      "record_length": 38,
+      "estimated_points": 22043446,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 51.38
+    },
+    {
+      "filename": "581543_2019_madal.laz",
+      "mapsheet": 581543,
+      "year": 2019,
+      "file_size_mb": 425.6,
+      "record_length": 38,
+      "estimated_points": 26665721,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 62.15
+    },
+    {
+      "filename": "581543_2020_madal.laz",
+      "mapsheet": 581543,
+      "year": 2020,
+      "file_size_mb": 468.4,
+      "record_length": 42,
+      "estimated_points": 26553805,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 61.89
+    },
+    {
+      "filename": "581543_2021_madal.laz",
+      "mapsheet": 581543,
+      "year": 2021,
+      "file_size_mb": 597.1,
+      "record_length": 46,
+      "estimated_points": 30906030,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 72.04
+    },
+    {
+      "filename": "581543_2022_madal.laz",
+      "mapsheet": 581543,
+      "year": 2022,
+      "file_size_mb": 604.7,
+      "record_length": 46,
+      "estimated_points": 31300371,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 72.96
+    },
+    {
+      "filename": "581543_2023_madal.laz",
+      "mapsheet": 581543,
+      "year": 2023,
+      "file_size_mb": 551.6,
+      "record_length": 46,
+      "estimated_points": 28550533,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 66.55
+    },
+    {
+      "filename": "582543_2017_madal.laz",
+      "mapsheet": 582543,
+      "year": 2017,
+      "file_size_mb": 205.5,
+      "record_length": 38,
+      "estimated_points": 12876507,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 30.01
+    },
+    {
+      "filename": "582543_2018_madal.laz",
+      "mapsheet": 582543,
+      "year": 2018,
+      "file_size_mb": 308.9,
+      "record_length": 38,
+      "estimated_points": 19351864,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 45.11
+    },
+    {
+      "filename": "582543_2019_madal.laz",
+      "mapsheet": 582543,
+      "year": 2019,
+      "file_size_mb": 390.6,
+      "record_length": 38,
+      "estimated_points": 24471066,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 57.04
+    },
+    {
+      "filename": "582543_2020_madal.laz",
+      "mapsheet": 582543,
+      "year": 2020,
+      "file_size_mb": 445.0,
+      "record_length": 42,
+      "estimated_points": 25225455,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 58.8
+    },
+    {
+      "filename": "582543_2021_madal.laz",
+      "mapsheet": 582543,
+      "year": 2021,
+      "file_size_mb": 515.1,
+      "record_length": 46,
+      "estimated_points": 26659175,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 62.14
+    },
+    {
+      "filename": "582543_2022_madal.laz",
+      "mapsheet": 582543,
+      "year": 2022,
+      "file_size_mb": 538.4,
+      "record_length": 46,
+      "estimated_points": 27865869,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 64.95
+    },
+    {
+      "filename": "582543_2023_madal.laz",
+      "mapsheet": 582543,
+      "year": 2023,
+      "file_size_mb": 513.1,
+      "record_length": 46,
+      "estimated_points": 26560176,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 61.91
+    },
+    {
+      "filename": "594728_2021_madal.laz",
+      "mapsheet": 594728,
+      "year": 2021,
+      "file_size_mb": 178.7,
+      "record_length": 46,
+      "estimated_points": 9249717,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 21.56
+    },
+    {
+      "filename": "594728_2022_tava.laz",
+      "mapsheet": 594728,
+      "year": 2022,
+      "file_size_mb": 152.5,
+      "record_length": 46,
+      "estimated_points": 7893943,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 18.4
+    },
+    {
+      "filename": "601546_2019_madal.laz",
+      "mapsheet": 601546,
+      "year": 2019,
+      "file_size_mb": 491.4,
+      "record_length": 38,
+      "estimated_points": 30791177,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 71.77
+    },
+    {
+      "filename": "601546_2020_madal.laz",
+      "mapsheet": 601546,
+      "year": 2020,
+      "file_size_mb": 539.0,
+      "record_length": 42,
+      "estimated_points": 30553460,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 71.22
+    },
+    {
+      "filename": "601546_2021_madal.laz",
+      "mapsheet": 601546,
+      "year": 2021,
+      "file_size_mb": 679.0,
+      "record_length": 46,
+      "estimated_points": 35143917,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 81.92
+    },
+    {
+      "filename": "601546_2022_madal.laz",
+      "mapsheet": 601546,
+      "year": 2022,
+      "file_size_mb": 698.6,
+      "record_length": 46,
+      "estimated_points": 36157959,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 84.28
+    },
+    {
+      "filename": "601546_2023_madal.laz",
+      "mapsheet": 601546,
+      "year": 2023,
+      "file_size_mb": 645.6,
+      "record_length": 46,
+      "estimated_points": 33417043,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 77.89
+    },
+    {
+      "filename": "601546_2024_madal.laz",
+      "mapsheet": 601546,
+      "year": 2024,
+      "file_size_mb": 633.2,
+      "record_length": 46,
+      "estimated_points": 32774374,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 76.39
+    },
+    {
+      "filename": "602546_2017_madal.laz",
+      "mapsheet": 602546,
+      "year": 2017,
+      "file_size_mb": 219.7,
+      "record_length": 38,
+      "estimated_points": 13766567,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 32.09
+    },
+    {
+      "filename": "602546_2018_madal.laz",
+      "mapsheet": 602546,
+      "year": 2018,
+      "file_size_mb": 297.0,
+      "record_length": 38,
+      "estimated_points": 18611034,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 43.38
+    },
+    {
+      "filename": "602546_2019_madal.laz",
+      "mapsheet": 602546,
+      "year": 2019,
+      "file_size_mb": 432.0,
+      "record_length": 38,
+      "estimated_points": 27067640,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 63.09
+    },
+    {
+      "filename": "602546_2020_madal.laz",
+      "mapsheet": 602546,
+      "year": 2020,
+      "file_size_mb": 406.1,
+      "record_length": 42,
+      "estimated_points": 23020184,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 53.66
+    },
+    {
+      "filename": "602546_2021_madal.laz",
+      "mapsheet": 602546,
+      "year": 2021,
+      "file_size_mb": 551.0,
+      "record_length": 46,
+      "estimated_points": 28519201,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 66.47
+    },
+    {
+      "filename": "602546_2022_madal.laz",
+      "mapsheet": 602546,
+      "year": 2022,
+      "file_size_mb": 516.5,
+      "record_length": 46,
+      "estimated_points": 26733801,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 62.31
+    },
+    {
+      "filename": "602546_2023_madal.laz",
+      "mapsheet": 602546,
+      "year": 2023,
+      "file_size_mb": 543.8,
+      "record_length": 46,
+      "estimated_points": 28146847,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 65.61
+    },
+    {
+      "filename": "602546_2024_madal.laz",
+      "mapsheet": 602546,
+      "year": 2024,
+      "file_size_mb": 476.7,
+      "record_length": 46,
+      "estimated_points": 24672788,
+      "raster_area_m2": 429025.0,
+      "density_pts_m2": 57.51
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+{
+  "global_balance": {
+    "cdw": 165357,
+    "no_cdw": 414779,
+    "cdw_percent": 28.503144090351228,
+    "no_cdw_percent": 71.49685590964877,
+    "imbalance_ratio": 2.5083848884382975
+  },
+  "per_area_balance": {
+    "494475": {
+      "cdw": 2539,
+      "no_cdw": 2004,
+      "total": 4543,
+      "cdw_percent": 55.89,
+      "imbalance_ratio": 0.79
+    },
+    "445396": {
+      "cdw": 2716,
+      "no_cdw": 3213,
+      "total": 5929,
+      "cdw_percent": 45.81,
+      "imbalance_ratio": 1.18
+    },
+    "436647": {
+      "cdw": 10723,
+      "no_cdw": 12993,
+      "total": 23716,
+      "cdw_percent": 45.21,
+      "imbalance_ratio": 1.21
+    },
+    "582543": {
+      "cdw": 14110,
+      "no_cdw": 21464,
+      "total": 35574,
+      "cdw_percent": 39.66,
+      "imbalance_ratio": 1.52
+    },
+    "436648": {
+      "cdw": 8782,
+      "no_cdw": 14934,
+      "total": 23716,
+      "cdw_percent": 37.03,
+      "imbalance_ratio": 1.7
+    },
+    "601546": {
+      "cdw": 12828,
+      "no_cdw": 22746,
+      "total": 35574,
+      "cdw_percent": 36.06,
+      "imbalance_ratio": 1.77
+    },
+    "581543": {
+      "cdw": 14866,
+      "no_cdw": 26631,
+      "total": 41497,
+      "cdw_percent": 35.82,
+      "imbalance_ratio": 1.79
+    },
+    "437648": {
+      "cdw": 5450,
+      "no_cdw": 11743,
+      "total": 17193,
+      "cdw_percent": 31.7,
+      "imbalance_ratio": 2.15
+    },
+    "580543": {
+      "cdw": 13143,
+      "no_cdw": 28360,
+      "total": 41503,
+      "cdw_percent": 31.67,
+      "imbalance_ratio": 2.16
+    },
+    "580539": {
+      "cdw": 12798,
+      "no_cdw": 28705,
+      "total": 41503,
+      "cdw_percent": 30.84,
+      "imbalance_ratio": 2.24
+    },
+    "580537": {
+      "cdw": 12494,
+      "no_cdw": 29009,
+      "total": 41503,
+      "cdw_percent": 30.1,
+      "imbalance_ratio": 2.32
+    },
+    "436646": {
+      "cdw": 6771,
+      "no_cdw": 16945,
+      "total": 23716,
+      "cdw_percent": 28.55,
+      "imbalance_ratio": 2.5
+    },
+    "437646": {
+      "cdw": 4440,
+      "no_cdw": 13347,
+      "total": 17787,
+      "cdw_percent": 24.96,
+      "imbalance_ratio": 3.01
+    },
+    "580538": {
+      "cdw": 10331,
+      "no_cdw": 31172,
+      "total": 41503,
+      "cdw_percent": 24.89,
+      "imbalance_ratio": 3.02
+    },
+    "580535": {
+      "cdw": 10279,
+      "no_cdw": 31224,
+      "total": 41503,
+      "cdw_percent": 24.77,
+      "imbalance_ratio": 3.04
+    },
+    "401677": {
+      "cdw": 954,
+      "no_cdw": 2973,
+      "total": 3927,
+      "cdw_percent": 24.29,
+      "imbalance_ratio": 3.12
+    },
+    "401676": {
+      "cdw": 1019,
+      "no_cdw": 3216,
+      "total": 4235,
+      "cdw_percent": 24.06,
+      "imbalance_ratio": 3.16
+    },
+    "580536": {
+      "cdw": 9622,
+      "no_cdw": 31881,
+      "total": 41503,
+      "cdw_percent": 23.18,
+      "imbalance_ratio": 3.31
+    },
+    "437647": {
+      "cdw": 3417,
+      "no_cdw": 14911,
+      "total": 18328,
+      "cdw_percent": 18.64,
+      "imbalance_ratio": 4.36
+    },
+    "451397": {
+      "cdw": 728,
+      "no_cdw": 3507,
+      "total": 4235,
+      "cdw_percent": 17.19,
+      "imbalance_ratio": 4.82
+    },
+    "579543": {
+      "cdw": 2935,
+      "no_cdw": 20781,
+      "total": 23716,
+      "cdw_percent": 12.38,
+      "imbalance_ratio": 7.08
+    },
+    "580540": {
+      "cdw": 3909,
+      "no_cdw": 37594,
+      "total": 41503,
+      "cdw_percent": 9.42,
+      "imbalance_ratio": 9.62
+    },
+    "492473": {
+      "cdw": 503,
+      "no_cdw": 5426,
+      "total": 5929,
+      "cdw_percent": 8.48,
+      "imbalance_ratio": 10.79
+    }
+  },
+  "per_year_balance": {
+    "2017": {
+      "cdw": 7782,
+      "no_cdw": 39644,
+      "total": 47426,
+      "cdw_percent": 16.41,
+      "imbalance_ratio": 5.09
+    },
+    "2018": {
+      "cdw": 19120,
+      "no_cdw": 75744,
+      "total": 94864,
+      "cdw_percent": 20.16,
+      "imbalance_ratio": 3.96
+    },
+    "2019": {
+      "cdw": 20818,
+      "no_cdw": 44401,
+      "total": 65219,
+      "cdw_percent": 31.92,
+      "imbalance_ratio": 2.13
+    },
+    "2020": {
+      "cdw": 33932,
+      "no_cdw": 66861,
+      "total": 100793,
+      "cdw_percent": 33.67,
+      "imbalance_ratio": 1.97
+    },
+    "2021": {
+      "cdw": 19363,
+      "no_cdw": 39927,
+      "total": 59290,
+      "cdw_percent": 32.66,
+      "imbalance_ratio": 2.06
+    },
+    "2022": {
+      "cdw": 35601,
+      "no_cdw": 82132,
+      "total": 117733,
+      "cdw_percent": 30.24,
+      "imbalance_ratio": 2.31
+    },
+    "2023": {
+      "cdw": 18919,
+      "no_cdw": 40371,
+      "total": 59290,
+      "cdw_percent": 31.91,
+      "imbalance_ratio": 2.13
+    },
+    "2024": {
+      "cdw": 9822,
+      "no_cdw": 25699,
+      "total": 35521,
+      "cdw_percent": 27.65,
+      "imbalance_ratio": 2.62
+    }
+  },
+  "per_source_balance": {
+    "manual": {
+      "cdw": 4461,
+      "no_cdw": 7716,
+      "total": 12177,
+      "cdw_percent": 36.63
+    },
+    "auto": {
+      "cdw": 160896,
+      "no_cdw": 375226,
+      "total": 536122,
+      "cdw_percent": 30.01
+    },
+    "auto_skip": {
+      "cdw": 0,
+      "no_cdw": 31837,
+      "total": 31837,
+      "cdw_percent": 0.0
+    }
+  }
+}

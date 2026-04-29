@@ -1,0 +1,1962 @@
+{
+  "coverage_by_year": [
+    {
+      "year": 2017,
+      "total_tiles": 47426,
+      "unique_rasters": 8,
+      "unique_mapsheets": 8,
+      "avg_tiles_per_raster": 5928.25,
+      "cdw_tiles": 7782,
+      "cdw_percentage": 16.40872095475056
+    },
+    {
+      "year": 2018,
+      "total_tiles": 94864,
+      "unique_rasters": 16,
+      "unique_mapsheets": 16,
+      "avg_tiles_per_raster": 5929.0,
+      "cdw_tiles": 19120,
+      "cdw_percentage": 20.155169505818858
+    },
+    {
+      "year": 2019,
+      "total_tiles": 65219,
+      "unique_rasters": 11,
+      "unique_mapsheets": 11,
+      "avg_tiles_per_raster": 5929.0,
+      "cdw_tiles": 20818,
+      "cdw_percentage": 31.920145969732747
+    },
+    {
+      "year": 2020,
+      "total_tiles": 100793,
+      "unique_rasters": 17,
+      "unique_mapsheets": 17,
+      "avg_tiles_per_raster": 5929.0,
+      "cdw_tiles": 33932,
+      "cdw_percentage": 33.66503626243886
+    },
+    {
+      "year": 2021,
+      "total_tiles": 59290,
+      "unique_rasters": 10,
+      "unique_mapsheets": 10,
+      "avg_tiles_per_raster": 5929.0,
+      "cdw_tiles": 19363,
+      "cdw_percentage": 32.65812109967954
+    },
+    {
+      "year": 2022,
+      "total_tiles": 117733,
+      "unique_rasters": 21,
+      "unique_mapsheets": 21,
+      "avg_tiles_per_raster": 5606.333333333333,
+      "cdw_tiles": 35601,
+      "cdw_percentage": 30.23876058539237
+    },
+    {
+      "year": 2023,
+      "total_tiles": 59290,
+      "unique_rasters": 10,
+      "unique_mapsheets": 10,
+      "avg_tiles_per_raster": 5929.0,
+      "cdw_tiles": 18919,
+      "cdw_percentage": 31.909259571597232
+    },
+    {
+      "year": 2024,
+      "total_tiles": 35521,
+      "unique_rasters": 7,
+      "unique_mapsheets": 7,
+      "avg_tiles_per_raster": 5074.428571428572,
+      "cdw_tiles": 9822,
+      "cdw_percentage": 27.651248557191522
+    }
+  ],
+  "coverage_by_area_type": [
+    {
+      "area_type": "madal",
+      "total_tiles": 580136,
+      "unique_rasters": 100,
+      "years_covered": [
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "year_range": "2017-2024",
+      "cdw_tiles": 165357,
+      "cdw_percentage": 28.503144090351228
+    }
+  ],
+  "mapsheet_year_coverage": [
+    {
+      "mapsheet": 401676,
+      "year": 2022,
+      "tiles": 4235,
+      "rasters": 1,
+      "cdw_tiles": 1019,
+      "cdw_percentage": 24.061393152302244
+    },
+    {
+      "mapsheet": 401677,
+      "year": 2022,
+      "tiles": 3927,
+      "rasters": 1,
+      "cdw_tiles": 954,
+      "cdw_percentage": 24.29335370511841
+    },
+    {
+      "mapsheet": 436646,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1433,
+      "cdw_percentage": 24.169337156350142
+    },
+    {
+      "mapsheet": 436646,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2115,
+      "cdw_percentage": 35.672120087704506
+    },
+    {
+      "mapsheet": 436646,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1942,
+      "cdw_percentage": 32.754258728284704
+    },
+    {
+      "mapsheet": 436646,
+      "year": 2024,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1281,
+      "cdw_percentage": 21.605667060212514
+    },
+    {
+      "mapsheet": 436647,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2779,
+      "cdw_percentage": 46.871310507674146
+    },
+    {
+      "mapsheet": 436647,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 3174,
+      "cdw_percentage": 53.53347950750548
+    },
+    {
+      "mapsheet": 436647,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2811,
+      "cdw_percentage": 47.411030527913645
+    },
+    {
+      "mapsheet": 436647,
+      "year": 2024,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1959,
+      "cdw_percentage": 33.040984989036936
+    },
+    {
+      "mapsheet": 436648,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2108,
+      "cdw_percentage": 35.55405633327711
+    },
+    {
+      "mapsheet": 436648,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2678,
+      "cdw_percentage": 45.16781919379322
+    },
+    {
+      "mapsheet": 436648,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2306,
+      "cdw_percentage": 38.89357395850902
+    },
+    {
+      "mapsheet": 436648,
+      "year": 2024,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1690,
+      "cdw_percentage": 28.503963568898634
+    },
+    {
+      "mapsheet": 437646,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1062,
+      "cdw_percentage": 17.91195817169843
+    },
+    {
+      "mapsheet": 437646,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2106,
+      "cdw_percentage": 35.520323832012146
+    },
+    {
+      "mapsheet": 437646,
+      "year": 2024,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1272,
+      "cdw_percentage": 21.453870804520154
+    },
+    {
+      "mapsheet": 437647,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 989,
+      "cdw_percentage": 16.68072187552707
+    },
+    {
+      "mapsheet": 437647,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1296,
+      "cdw_percentage": 21.858660819699782
+    },
+    {
+      "mapsheet": 437647,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1017,
+      "cdw_percentage": 17.152976893236634
+    },
+    {
+      "mapsheet": 437647,
+      "year": 2024,
+      "tiles": 541,
+      "rasters": 1,
+      "cdw_tiles": 115,
+      "cdw_percentage": 21.256931608133087
+    },
+    {
+      "mapsheet": 437648,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1647,
+      "cdw_percentage": 27.778714791701805
+    },
+    {
+      "mapsheet": 437648,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2393,
+      "cdw_percentage": 40.36093776353517
+    },
+    {
+      "mapsheet": 437648,
+      "year": 2024,
+      "tiles": 5335,
+      "rasters": 1,
+      "cdw_tiles": 1410,
+      "cdw_percentage": 26.429240862230554
+    },
+    {
+      "mapsheet": 445396,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2716,
+      "cdw_percentage": 45.80873671782763
+    },
+    {
+      "mapsheet": 451397,
+      "year": 2022,
+      "tiles": 4235,
+      "rasters": 1,
+      "cdw_tiles": 728,
+      "cdw_percentage": 17.1900826446281
+    },
+    {
+      "mapsheet": 492473,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 503,
+      "cdw_percentage": 8.483724068139653
+    },
+    {
+      "mapsheet": 494475,
+      "year": 2022,
+      "tiles": 4543,
+      "rasters": 1,
+      "cdw_tiles": 2539,
+      "cdw_percentage": 55.88817961699318
+    },
+    {
+      "mapsheet": 579543,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 322,
+      "cdw_percentage": 5.430932703659977
+    },
+    {
+      "mapsheet": 579543,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 910,
+      "cdw_percentage": 15.348288075560802
+    },
+    {
+      "mapsheet": 579543,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 833,
+      "cdw_percentage": 14.049586776859504
+    },
+    {
+      "mapsheet": 579543,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 870,
+      "cdw_percentage": 14.673638050261427
+    },
+    {
+      "mapsheet": 580535,
+      "year": 2017,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1138,
+      "cdw_percentage": 19.193793219767247
+    },
+    {
+      "mapsheet": 580535,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1000,
+      "cdw_percentage": 16.866250632484398
+    },
+    {
+      "mapsheet": 580535,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1658,
+      "cdw_percentage": 27.964243548659134
+    },
+    {
+      "mapsheet": 580535,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1721,
+      "cdw_percentage": 29.02681733850565
+    },
+    {
+      "mapsheet": 580535,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1739,
+      "cdw_percentage": 29.33040984989037
+    },
+    {
+      "mapsheet": 580535,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1505,
+      "cdw_percentage": 25.38370720188902
+    },
+    {
+      "mapsheet": 580535,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1518,
+      "cdw_percentage": 25.602968460111317
+    },
+    {
+      "mapsheet": 580536,
+      "year": 2017,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 855,
+      "cdw_percentage": 14.420644290774161
+    },
+    {
+      "mapsheet": 580536,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 776,
+      "cdw_percentage": 13.088210490807894
+    },
+    {
+      "mapsheet": 580536,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1661,
+      "cdw_percentage": 28.014842300556587
+    },
+    {
+      "mapsheet": 580536,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1604,
+      "cdw_percentage": 27.053466014504977
+    },
+    {
+      "mapsheet": 580536,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1705,
+      "cdw_percentage": 28.7569573283859
+    },
+    {
+      "mapsheet": 580536,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1499,
+      "cdw_percentage": 25.282509698094113
+    },
+    {
+      "mapsheet": 580536,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1522,
+      "cdw_percentage": 25.670433462641256
+    },
+    {
+      "mapsheet": 580537,
+      "year": 2017,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1022,
+      "cdw_percentage": 17.237308146399055
+    },
+    {
+      "mapsheet": 580537,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 999,
+      "cdw_percentage": 16.849384381851916
+    },
+    {
+      "mapsheet": 580537,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2187,
+      "cdw_percentage": 36.88649013324338
+    },
+    {
+      "mapsheet": 580537,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2173,
+      "cdw_percentage": 36.6503626243886
+    },
+    {
+      "mapsheet": 580537,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2056,
+      "cdw_percentage": 34.677011300387925
+    },
+    {
+      "mapsheet": 580537,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2031,
+      "cdw_percentage": 34.255355034575814
+    },
+    {
+      "mapsheet": 580537,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2026,
+      "cdw_percentage": 34.17102378141339
+    },
+    {
+      "mapsheet": 580538,
+      "year": 2017,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 792,
+      "cdw_percentage": 13.358070500927644
+    },
+    {
+      "mapsheet": 580538,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 770,
+      "cdw_percentage": 12.987012987012987
+    },
+    {
+      "mapsheet": 580538,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1935,
+      "cdw_percentage": 32.636194973857314
+    },
+    {
+      "mapsheet": 580538,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1833,
+      "cdw_percentage": 30.915837409343904
+    },
+    {
+      "mapsheet": 580538,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1726,
+      "cdw_percentage": 29.111148591668073
+    },
+    {
+      "mapsheet": 580538,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1621,
+      "cdw_percentage": 27.34019227525721
+    },
+    {
+      "mapsheet": 580538,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1654,
+      "cdw_percentage": 27.896778546129195
+    },
+    {
+      "mapsheet": 580539,
+      "year": 2017,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1211,
+      "cdw_percentage": 20.425029515938608
+    },
+    {
+      "mapsheet": 580539,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1151,
+      "cdw_percentage": 19.413054477989544
+    },
+    {
+      "mapsheet": 580539,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2302,
+      "cdw_percentage": 38.82610895597909
+    },
+    {
+      "mapsheet": 580539,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2290,
+      "cdw_percentage": 38.62371394838927
+    },
+    {
+      "mapsheet": 580539,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2070,
+      "cdw_percentage": 34.9131388092427
+    },
+    {
+      "mapsheet": 580539,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1836,
+      "cdw_percentage": 30.966436161241354
+    },
+    {
+      "mapsheet": 580539,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1938,
+      "cdw_percentage": 32.68679372575477
+    },
+    {
+      "mapsheet": 580540,
+      "year": 2017,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 257,
+      "cdw_percentage": 4.334626412548491
+    },
+    {
+      "mapsheet": 580540,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 209,
+      "cdw_percentage": 3.5250463821892395
+    },
+    {
+      "mapsheet": 580540,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 622,
+      "cdw_percentage": 10.490807893405297
+    },
+    {
+      "mapsheet": 580540,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 629,
+      "cdw_percentage": 10.608871647832688
+    },
+    {
+      "mapsheet": 580540,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 692,
+      "cdw_percentage": 11.671445437679203
+    },
+    {
+      "mapsheet": 580540,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 725,
+      "cdw_percentage": 12.228031708551189
+    },
+    {
+      "mapsheet": 580540,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 775,
+      "cdw_percentage": 13.071344240175408
+    },
+    {
+      "mapsheet": 580543,
+      "year": 2017,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1195,
+      "cdw_percentage": 20.155169505818858
+    },
+    {
+      "mapsheet": 580543,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1113,
+      "cdw_percentage": 18.772136953955137
+    },
+    {
+      "mapsheet": 580543,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2261,
+      "cdw_percentage": 38.13459268004723
+    },
+    {
+      "mapsheet": 580543,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2164,
+      "cdw_percentage": 36.49856636869624
+    },
+    {
+      "mapsheet": 580543,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2159,
+      "cdw_percentage": 36.41423511553381
+    },
+    {
+      "mapsheet": 580543,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2073,
+      "cdw_percentage": 34.96373756114016
+    },
+    {
+      "mapsheet": 580543,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2178,
+      "cdw_percentage": 36.734693877551024
+    },
+    {
+      "mapsheet": 581543,
+      "year": 2017,
+      "tiles": 5923,
+      "rasters": 1,
+      "cdw_tiles": 1312,
+      "cdw_percentage": 22.15093702515617
+    },
+    {
+      "mapsheet": 581543,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1237,
+      "cdw_percentage": 20.8635520323832
+    },
+    {
+      "mapsheet": 581543,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2438,
+      "cdw_percentage": 41.119919041996965
+    },
+    {
+      "mapsheet": 581543,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2340,
+      "cdw_percentage": 39.467026480013494
+    },
+    {
+      "mapsheet": 581543,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2535,
+      "cdw_percentage": 42.755945353347954
+    },
+    {
+      "mapsheet": 581543,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2419,
+      "cdw_percentage": 40.79946027997976
+    },
+    {
+      "mapsheet": 581543,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2585,
+      "cdw_percentage": 43.59925788497217
+    },
+    {
+      "mapsheet": 582543,
+      "year": 2018,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 1525,
+      "cdw_percentage": 25.72103221453871
+    },
+    {
+      "mapsheet": 582543,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2586,
+      "cdw_percentage": 43.61612413560466
+    },
+    {
+      "mapsheet": 582543,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2490,
+      "cdw_percentage": 41.99696407488615
+    },
+    {
+      "mapsheet": 582543,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2504,
+      "cdw_percentage": 42.233091583740936
+    },
+    {
+      "mapsheet": 582543,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2378,
+      "cdw_percentage": 40.1079440040479
+    },
+    {
+      "mapsheet": 582543,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2627,
+      "cdw_percentage": 44.30764041153652
+    },
+    {
+      "mapsheet": 601546,
+      "year": 2019,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2258,
+      "cdw_percentage": 38.08399392814977
+    },
+    {
+      "mapsheet": 601546,
+      "year": 2020,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2093,
+      "cdw_percentage": 35.30106257378985
+    },
+    {
+      "mapsheet": 601546,
+      "year": 2021,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2177,
+      "cdw_percentage": 36.717827626918535
+    },
+    {
+      "mapsheet": 601546,
+      "year": 2022,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2109,
+      "cdw_percentage": 35.5709225839096
+    },
+    {
+      "mapsheet": 601546,
+      "year": 2023,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2096,
+      "cdw_percentage": 35.3516613256873
+    },
+    {
+      "mapsheet": 601546,
+      "year": 2024,
+      "tiles": 5929,
+      "rasters": 1,
+      "cdw_tiles": 2095,
+      "cdw_percentage": 35.334795075054814
+    }
+  ],
+  "raster_characteristics": [
+    {
+      "raster_name": "401676_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 401676,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 4235,
+      "cdw_tiles": 1019,
+      "cdw_percentage": 24.061393152302244,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "401677_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 401677,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 3927,
+      "cdw_tiles": 954,
+      "cdw_percentage": 24.29335370511841,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436646_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436646,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1433,
+      "cdw_percentage": 24.169337156350142,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436646_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436646,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2115,
+      "cdw_percentage": 35.672120087704506,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436646_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436646,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1942,
+      "cdw_percentage": 32.754258728284704,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436646_2024_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436646,
+      "year": 2024,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1281,
+      "cdw_percentage": 21.605667060212514,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436647_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436647,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2779,
+      "cdw_percentage": 46.871310507674146,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436647_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436647,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 3174,
+      "cdw_percentage": 53.53347950750548,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436647_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436647,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2811,
+      "cdw_percentage": 47.411030527913645,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436647_2024_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436647,
+      "year": 2024,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1959,
+      "cdw_percentage": 33.040984989036936,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436648_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436648,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2108,
+      "cdw_percentage": 35.55405633327711,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436648_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436648,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2678,
+      "cdw_percentage": 45.16781919379322,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436648_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436648,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2306,
+      "cdw_percentage": 38.89357395850902,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "436648_2024_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 436648,
+      "year": 2024,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1690,
+      "cdw_percentage": 28.503963568898634,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437646_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437646,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1062,
+      "cdw_percentage": 17.91195817169843,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437646_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437646,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2106,
+      "cdw_percentage": 35.520323832012146,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437646_2024_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437646,
+      "year": 2024,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1272,
+      "cdw_percentage": 21.453870804520154,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437647_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437647,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 989,
+      "cdw_percentage": 16.68072187552707,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437647_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437647,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1296,
+      "cdw_percentage": 21.858660819699782,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437647_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437647,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1017,
+      "cdw_percentage": 17.152976893236634,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437647_2024_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437647,
+      "year": 2024,
+      "area_type": "madal",
+      "total_tiles": 541,
+      "cdw_tiles": 115,
+      "cdw_percentage": 21.256931608133087,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437648_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437648,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1647,
+      "cdw_percentage": 27.778714791701805,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437648_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437648,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2393,
+      "cdw_percentage": 40.36093776353517,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "437648_2024_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 437648,
+      "year": 2024,
+      "area_type": "madal",
+      "total_tiles": 5335,
+      "cdw_tiles": 1410,
+      "cdw_percentage": 26.429240862230554,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "445396_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 445396,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2716,
+      "cdw_percentage": 45.80873671782763,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "451397_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 451397,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 4235,
+      "cdw_tiles": 728,
+      "cdw_percentage": 17.1900826446281,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "492473_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 492473,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 503,
+      "cdw_percentage": 8.483724068139653,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "494475_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 494475,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 4543,
+      "cdw_tiles": 2539,
+      "cdw_percentage": 55.88817961699318,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "579543_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 579543,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 322,
+      "cdw_percentage": 5.430932703659977,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "579543_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 579543,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 910,
+      "cdw_percentage": 15.348288075560802,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "579543_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 579543,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 833,
+      "cdw_percentage": 14.049586776859504,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "579543_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 579543,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 870,
+      "cdw_percentage": 14.673638050261427,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580535_2017_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580535,
+      "year": 2017,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1138,
+      "cdw_percentage": 19.193793219767247,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580535_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580535,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1000,
+      "cdw_percentage": 16.866250632484398,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580535_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580535,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1658,
+      "cdw_percentage": 27.964243548659134,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580535_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580535,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1721,
+      "cdw_percentage": 29.02681733850565,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580535_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580535,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1739,
+      "cdw_percentage": 29.33040984989037,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580535_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580535,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1505,
+      "cdw_percentage": 25.38370720188902,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580535_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580535,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1518,
+      "cdw_percentage": 25.602968460111317,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580536_2017_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580536,
+      "year": 2017,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 855,
+      "cdw_percentage": 14.420644290774161,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580536_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580536,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 776,
+      "cdw_percentage": 13.088210490807894,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580536_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580536,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1661,
+      "cdw_percentage": 28.014842300556587,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580536_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580536,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1604,
+      "cdw_percentage": 27.053466014504977,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580536_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580536,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1705,
+      "cdw_percentage": 28.7569573283859,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580536_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580536,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1499,
+      "cdw_percentage": 25.282509698094113,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580536_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580536,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1522,
+      "cdw_percentage": 25.670433462641256,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580537_2017_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580537,
+      "year": 2017,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1022,
+      "cdw_percentage": 17.237308146399055,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580537_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580537,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 999,
+      "cdw_percentage": 16.849384381851916,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580537_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580537,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2187,
+      "cdw_percentage": 36.88649013324338,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580537_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580537,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2173,
+      "cdw_percentage": 36.6503626243886,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580537_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580537,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2056,
+      "cdw_percentage": 34.677011300387925,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580537_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580537,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2031,
+      "cdw_percentage": 34.255355034575814,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580537_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580537,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2026,
+      "cdw_percentage": 34.17102378141339,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580538_2017_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580538,
+      "year": 2017,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 792,
+      "cdw_percentage": 13.358070500927644,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580538_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580538,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 770,
+      "cdw_percentage": 12.987012987012987,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580538_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580538,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1935,
+      "cdw_percentage": 32.636194973857314,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580538_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580538,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1833,
+      "cdw_percentage": 30.915837409343904,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580538_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580538,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1726,
+      "cdw_percentage": 29.111148591668073,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580538_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580538,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1621,
+      "cdw_percentage": 27.34019227525721,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580538_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580538,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1654,
+      "cdw_percentage": 27.896778546129195,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580539_2017_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580539,
+      "year": 2017,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1211,
+      "cdw_percentage": 20.425029515938608,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580539_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580539,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1151,
+      "cdw_percentage": 19.413054477989544,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580539_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580539,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2302,
+      "cdw_percentage": 38.82610895597909,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580539_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580539,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2290,
+      "cdw_percentage": 38.62371394838927,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580539_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580539,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2070,
+      "cdw_percentage": 34.9131388092427,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580539_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580539,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1836,
+      "cdw_percentage": 30.966436161241354,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580539_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580539,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1938,
+      "cdw_percentage": 32.68679372575477,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580540_2017_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580540,
+      "year": 2017,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 257,
+      "cdw_percentage": 4.334626412548491,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580540_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580540,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 209,
+      "cdw_percentage": 3.5250463821892395,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580540_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580540,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 622,
+      "cdw_percentage": 10.490807893405297,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580540_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580540,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 629,
+      "cdw_percentage": 10.608871647832688,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580540_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580540,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 692,
+      "cdw_percentage": 11.671445437679203,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580540_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580540,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 725,
+      "cdw_percentage": 12.228031708551189,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580540_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580540,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 775,
+      "cdw_percentage": 13.071344240175408,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580543_2017_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580543,
+      "year": 2017,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1195,
+      "cdw_percentage": 20.155169505818858,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580543_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580543,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1113,
+      "cdw_percentage": 18.772136953955137,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580543_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580543,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2261,
+      "cdw_percentage": 38.13459268004723,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580543_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580543,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2164,
+      "cdw_percentage": 36.49856636869624,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580543_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580543,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2159,
+      "cdw_percentage": 36.41423511553381,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580543_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580543,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2073,
+      "cdw_percentage": 34.96373756114016,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "580543_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 580543,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2178,
+      "cdw_percentage": 36.734693877551024,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "581543_2017_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 581543,
+      "year": 2017,
+      "area_type": "madal",
+      "total_tiles": 5923,
+      "cdw_tiles": 1312,
+      "cdw_percentage": 22.15093702515617,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "581543_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 581543,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1237,
+      "cdw_percentage": 20.8635520323832,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "581543_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 581543,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2438,
+      "cdw_percentage": 41.119919041996965,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "581543_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 581543,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2340,
+      "cdw_percentage": 39.467026480013494,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "581543_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 581543,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2535,
+      "cdw_percentage": 42.755945353347954,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "581543_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 581543,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2419,
+      "cdw_percentage": 40.79946027997976,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "581543_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 581543,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2585,
+      "cdw_percentage": 43.59925788497217,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "582543_2018_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 582543,
+      "year": 2018,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 1525,
+      "cdw_percentage": 25.72103221453871,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "582543_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 582543,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2586,
+      "cdw_percentage": 43.61612413560466,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "582543_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 582543,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2490,
+      "cdw_percentage": 41.99696407488615,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "582543_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 582543,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2504,
+      "cdw_percentage": 42.233091583740936,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "582543_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 582543,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2378,
+      "cdw_percentage": 40.1079440040479,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "582543_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 582543,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2627,
+      "cdw_percentage": 44.30764041153652,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "601546_2019_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 601546,
+      "year": 2019,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2258,
+      "cdw_percentage": 38.08399392814977,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "601546_2020_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 601546,
+      "year": 2020,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2093,
+      "cdw_percentage": 35.30106257378985,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "601546_2021_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 601546,
+      "year": 2021,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2177,
+      "cdw_percentage": 36.717827626918535,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "601546_2022_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 601546,
+      "year": 2022,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2109,
+      "cdw_percentage": 35.5709225839096,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "601546_2023_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 601546,
+      "year": 2023,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2096,
+      "cdw_percentage": 35.3516613256873,
+      "tile_size": 128
+    },
+    {
+      "raster_name": "601546_2024_madal_chm_max_hag_20cm.tif",
+      "mapsheet": 601546,
+      "year": 2024,
+      "area_type": "madal",
+      "total_tiles": 5929,
+      "cdw_tiles": 2095,
+      "cdw_percentage": 35.334795075054814,
+      "tile_size": 128
+    }
+  ],
+  "point_density_inference": {
+    "note": "Point densities are from Maa-amet ALS-IV specification: 1-4 pts/m\u00b2",
+    "actual_point_density_range": "1-4 pts/m\u00b2",
+    "source": "Maa- ja Ruumiamet ALS-IV program",
+    "chm_resolution": "0.2 m",
+    "average_points_per_tile_128px": "~819 points (at 2.5 pts/m\u00b2 avg \u00d7 25.6m \u00d7 25.6m)",
+    "coverage_by_year": {
+      "rasters": {
+        "2017": 8,
+        "2018": 16,
+        "2019": 11,
+        "2020": 17,
+        "2021": 10,
+        "2022": 21,
+        "2023": 10,
+        "2024": 7
+      },
+      "mapsheets": {
+        "2017": 8,
+        "2018": 16,
+        "2019": 11,
+        "2020": 17,
+        "2021": 10,
+        "2022": 21,
+        "2023": 10,
+        "2024": 7
+      }
+    }
+  },
+  "summary": {
+    "dataset_composition": {
+      "total_tiles": 580136,
+      "total_rasters": 100,
+      "total_mapsheets": 23,
+      "years_covered": [
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "year_range": "2017-2024"
+    },
+    "point_cloud_specs": {
+      "source": "Maa- ja Ruumiamet (Estonian Land Board)",
+      "program": "ALS-IV (2017-2024)",
+      "point_density_pts_per_m2": "1-4",
+      "chm_resolution_m": 0.2,
+      "tile_size_pixels": 128,
+      "tile_size_meters": 25.6,
+      "estimated_points_per_tile": 819
+    },
+    "coverage_stats": {
+      "year_with_most_data": 2022,
+      "year_with_least_data": 2024,
+      "consistent_mapsheets": 4.3478260869565215,
+      "avg_rasters_per_year": 12.5
+    }
+  }
+}

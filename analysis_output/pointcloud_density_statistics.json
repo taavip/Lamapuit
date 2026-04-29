@@ -1,0 +1,377 @@
+{
+  "overall_statistics": {
+    "dataset": "Complete Dataset",
+    "total_tiles": 580136,
+    "coverage_area_m2": 380197928.9600001,
+    "coverage_area_km2": 380.19792896000007,
+    "num_years": 8,
+    "year_range": "2017-2024",
+    "num_mapsheets": 23,
+    "num_rasters": 100,
+    "points_per_tile_min": 655,
+    "points_per_tile_avg": 1638,
+    "points_per_tile_max": 2621,
+    "total_points_min": 379989080,
+    "total_points_avg": 950262768,
+    "total_points_max": 1520536456,
+    "density_pts_per_m2_min": 0.9994506835937498,
+    "density_pts_per_m2_avg": 2.4993896484374996,
+    "density_pts_per_m2_max": 3.999328613281249,
+    "cdw_tiles": 165357,
+    "cdw_percentage": 28.503144090351228,
+    "background_tiles": 414779,
+    "background_percentage": 71.49685590964877
+  },
+  "density_by_year": [
+    {
+      "year": 2017,
+      "num_tiles": 47426,
+      "num_rasters": 8,
+      "coverage_area_m2": 31081103.360000007,
+      "coverage_area_km2": 31.081103360000007,
+      "total_points_min": 31064030,
+      "total_points_avg": 77683788,
+      "total_points_max": 124303546,
+      "density_pts_per_m2_min": 0.9994506835937498,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.999328613281249,
+      "cdw_tiles": 7782,
+      "cdw_percentage": 16.40872095475056
+    },
+    {
+      "year": 2018,
+      "num_tiles": 94864,
+      "num_rasters": 16,
+      "coverage_area_m2": 62170071.040000014,
+      "coverage_area_km2": 62.17007104000001,
+      "total_points_min": 62135920,
+      "total_points_avg": 155387232,
+      "total_points_max": 248638544,
+      "density_pts_per_m2_min": 0.9994506835937498,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.999328613281249,
+      "cdw_tiles": 19120,
+      "cdw_percentage": 20.155169505818858
+    },
+    {
+      "year": 2019,
+      "num_tiles": 65219,
+      "num_rasters": 11,
+      "coverage_area_m2": 42741923.84000001,
+      "coverage_area_km2": 42.74192384000001,
+      "total_points_min": 42718445,
+      "total_points_avg": 106828722,
+      "total_points_max": 170938999,
+      "density_pts_per_m2_min": 0.9994506835937498,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.999328613281249,
+      "cdw_tiles": 20818,
+      "cdw_percentage": 31.920145969732747
+    },
+    {
+      "year": 2020,
+      "num_tiles": 100793,
+      "num_rasters": 17,
+      "coverage_area_m2": 66055700.48000001,
+      "coverage_area_km2": 66.05570048000001,
+      "total_points_min": 66019415,
+      "total_points_avg": 165098934,
+      "total_points_max": 264178453,
+      "density_pts_per_m2_min": 0.9994506835937498,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.999328613281249,
+      "cdw_tiles": 33932,
+      "cdw_percentage": 33.66503626243886
+    },
+    {
+      "year": 2021,
+      "num_tiles": 59290,
+      "num_rasters": 10,
+      "coverage_area_m2": 38856294.400000006,
+      "coverage_area_km2": 38.8562944,
+      "total_points_min": 38834950,
+      "total_points_avg": 97117020,
+      "total_points_max": 155399090,
+      "density_pts_per_m2_min": 0.9994506835937499,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.9993286132812496,
+      "cdw_tiles": 19363,
+      "cdw_percentage": 32.65812109967954
+    },
+    {
+      "year": 2022,
+      "num_tiles": 117733,
+      "num_rasters": 21,
+      "coverage_area_m2": 77157498.88000001,
+      "coverage_area_km2": 77.15749888,
+      "total_points_min": 77115115,
+      "total_points_avg": 192846654,
+      "total_points_max": 308578193,
+      "density_pts_per_m2_min": 0.9994506835937499,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.9993286132812496,
+      "cdw_tiles": 35601,
+      "cdw_percentage": 30.23876058539237
+    },
+    {
+      "year": 2023,
+      "num_tiles": 59290,
+      "num_rasters": 10,
+      "coverage_area_m2": 38856294.400000006,
+      "coverage_area_km2": 38.8562944,
+      "total_points_min": 38834950,
+      "total_points_avg": 97117020,
+      "total_points_max": 155399090,
+      "density_pts_per_m2_min": 0.9994506835937499,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.9993286132812496,
+      "cdw_tiles": 18919,
+      "cdw_percentage": 31.909259571597232
+    },
+    {
+      "year": 2024,
+      "num_tiles": 35521,
+      "num_rasters": 7,
+      "coverage_area_m2": 23279042.560000006,
+      "coverage_area_km2": 23.279042560000008,
+      "total_points_min": 23266255,
+      "total_points_avg": 58183398,
+      "total_points_max": 93100541,
+      "density_pts_per_m2_min": 0.9994506835937498,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.999328613281249,
+      "cdw_tiles": 9822,
+      "cdw_percentage": 27.651248557191522
+    }
+  ],
+  "density_by_cdw_class": [
+    {
+      "class": "CWD (lamapuit)",
+      "num_tiles": 165357,
+      "percentage_of_total": 28.503144090351228,
+      "coverage_area_m2": 108368363.52000003,
+      "coverage_area_km2": 108.36836352000003,
+      "total_points_min": 108308835,
+      "total_points_avg": 270854766,
+      "total_points_max": 433400697,
+      "density_pts_per_m2_min": 0.9994506835937498,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.999328613281249
+    },
+    {
+      "class": "Background (no_cdw)",
+      "num_tiles": 414779,
+      "percentage_of_total": 71.49685590964877,
+      "coverage_area_m2": 271829565.44000006,
+      "coverage_area_km2": 271.82956544000007,
+      "total_points_min": 271680245,
+      "total_points_avg": 679408002,
+      "total_points_max": 1087135759,
+      "density_pts_per_m2_min": 0.9994506835937498,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.999328613281249
+    }
+  ],
+  "density_by_area_type": [
+    {
+      "area_type": "madal",
+      "num_tiles": 580136,
+      "num_years_covered": 8,
+      "year_range": "2017-2024",
+      "coverage_area_km2": 380.19792896000007,
+      "total_points_min": 379989080,
+      "total_points_avg": 950262768,
+      "total_points_max": 1520536456,
+      "density_pts_per_m2_min": 0.9994506835937498,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "density_pts_per_m2_max": 3.999328613281249,
+      "cdw_percentage": 28.503144090351228
+    }
+  ],
+  "density_by_mapsheet": [
+    {
+      "mapsheet": 580537,
+      "num_tiles": 41503,
+      "num_years": 7,
+      "coverage_area_km2": 27.199406080000006,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 30.103847914608583
+    },
+    {
+      "mapsheet": 580539,
+      "num_tiles": 41503,
+      "num_years": 7,
+      "coverage_area_km2": 27.199406080000006,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 30.83632508493362
+    },
+    {
+      "mapsheet": 580540,
+      "num_tiles": 41503,
+      "num_years": 7,
+      "coverage_area_km2": 27.199406080000006,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 9.418596246054502
+    },
+    {
+      "mapsheet": 580543,
+      "num_tiles": 41503,
+      "num_years": 7,
+      "coverage_area_km2": 27.199406080000006,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 31.667590294677492
+    },
+    {
+      "mapsheet": 580538,
+      "num_tiles": 41503,
+      "num_years": 7,
+      "coverage_area_km2": 27.199406080000006,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 24.892176469170902
+    },
+    {
+      "mapsheet": 580536,
+      "num_tiles": 41503,
+      "num_years": 7,
+      "coverage_area_km2": 27.199406080000006,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 23.18386622653784
+    },
+    {
+      "mapsheet": 580535,
+      "num_tiles": 41503,
+      "num_years": 7,
+      "coverage_area_km2": 27.199406080000006,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 24.766884321615304
+    },
+    {
+      "mapsheet": 581543,
+      "num_tiles": 41497,
+      "num_years": 7,
+      "coverage_area_km2": 27.195473920000005,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 35.82427645371955
+    },
+    {
+      "mapsheet": 582543,
+      "num_tiles": 35574,
+      "num_years": 6,
+      "coverage_area_km2": 23.313776640000004,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 39.66379940405914
+    },
+    {
+      "mapsheet": 601546,
+      "num_tiles": 35574,
+      "num_years": 6,
+      "coverage_area_km2": 23.313776640000004,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 36.060043852251646
+    },
+    {
+      "mapsheet": 579543,
+      "num_tiles": 23716,
+      "num_years": 4,
+      "coverage_area_km2": 15.542517760000003,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 12.375611401585427
+    },
+    {
+      "mapsheet": 436647,
+      "num_tiles": 23716,
+      "num_years": 4,
+      "coverage_area_km2": 15.542517760000003,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 45.21420138303255
+    },
+    {
+      "mapsheet": 436648,
+      "num_tiles": 23716,
+      "num_years": 4,
+      "coverage_area_km2": 15.542517760000003,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 37.0298532636195
+    },
+    {
+      "mapsheet": 436646,
+      "num_tiles": 23716,
+      "num_years": 4,
+      "coverage_area_km2": 15.542517760000003,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 28.550345758137965
+    },
+    {
+      "mapsheet": 437647,
+      "num_tiles": 18328,
+      "num_years": 4,
+      "coverage_area_km2": 12.011438080000001,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 18.64360541248363
+    },
+    {
+      "mapsheet": 437646,
+      "num_tiles": 17787,
+      "num_years": 3,
+      "coverage_area_km2": 11.656888320000002,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 24.96205093607691
+    },
+    {
+      "mapsheet": 437648,
+      "num_tiles": 17193,
+      "num_years": 3,
+      "coverage_area_km2": 11.267604480000003,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 31.6989472459722
+    },
+    {
+      "mapsheet": 492473,
+      "num_tiles": 5929,
+      "num_years": 1,
+      "coverage_area_km2": 3.8856294400000007,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 8.483724068139653
+    },
+    {
+      "mapsheet": 445396,
+      "num_tiles": 5929,
+      "num_years": 1,
+      "coverage_area_km2": 3.8856294400000007,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 45.80873671782763
+    },
+    {
+      "mapsheet": 494475,
+      "num_tiles": 4543,
+      "num_years": 1,
+      "coverage_area_km2": 2.9773004800000002,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 55.88817961699318
+    },
+    {
+      "mapsheet": 401676,
+      "num_tiles": 4235,
+      "num_years": 1,
+      "coverage_area_km2": 2.7754496000000004,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 24.061393152302244
+    },
+    {
+      "mapsheet": 451397,
+      "num_tiles": 4235,
+      "num_years": 1,
+      "coverage_area_km2": 2.7754496000000004,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 17.1900826446281
+    },
+    {
+      "mapsheet": 401677,
+      "num_tiles": 3927,
+      "num_years": 1,
+      "coverage_area_km2": 2.5735987200000006,
+      "density_pts_per_m2_avg": 2.4993896484374996,
+      "cdw_percentage": 24.29335370511841
+    }
+  ]
+}

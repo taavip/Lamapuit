@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-04-27T19:54:33.902024",
+  "analyses": {
+    "data_validation": {
+      "status": "completed",
+      "output": "/home/tpipar/project/Lamapuit/analysis_output/data_validation_report.json"
+    },
+    "class_distribution": {
+      "status": "completed",
+      "output_results": "/home/tpipar/project/Lamapuit/analysis_output/class_distribution_results.json",
+      "output_visualization": "/home/tpipar/project/Lamapuit/analysis_output/class_distribution_analysis.png"
+    },
+    "spatial_analysis": {
+      "status": "failed",
+      "error": "name 'sns' is not defined"
+    },
+    "split_validation": {
+      "status": "failed",
+      "error": "division by zero"
+    }
+  },
+  "summary": {
+    "total_analyses": 4,
+    "completed": 2,
+    "failed": 2
+  }
+}
