@@ -53,3 +53,4 @@ dependencies:
     - pytest-xdist>=3.0  # Parallel testing
     - black>=23.0
     - ruff>=0.1
+    - captum>=0.7

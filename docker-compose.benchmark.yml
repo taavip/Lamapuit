@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/workspace
     working_dir: /workspace
-    command: bash -lc "source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect && python scripts/chm_variant_benchmark_quick.py --output output/chm_variant_benchmark --device cuda"
+    command: bash -lc "source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect && python scripts/chm_variant_benchmark_v2.py --output output/chm_variant_benchmark_v2_retry --device cuda"
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     deploy:

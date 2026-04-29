@@ -1,0 +1,36 @@
+services:
+  labeler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cdw-detect:labeler
+    working_dir: /workspace
+    # Install labeler deps on start (in case the image pre-dates environment.yml update),
+    # then launch uvicorn with auto-reload against the mounted source.
+    command: >
+      bash -c "
+        /opt/conda/envs/cwd-detect/bin/pip install --quiet 'fastapi>=0.110' 'uvicorn[standard]>=0.27' 'python-multipart>=0.0.9' &&
+        exec /opt/conda/envs/cwd-detect/bin/uvicorn labeler.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./labeler:/workspace/labeler
+      - ./src:/workspace/src:ro
+      - ./scripts:/workspace/scripts:ro
+      - ./chm_max_hag:/workspace/chm_max_hag:ro
+      - ./output:/workspace/output
+      - ./runs:/workspace/runs:ro
+      - ./data/chm_variants:/workspace/data/chm_variants:ro
+      - ./data/lamapuit/chm_max_hag_13_drop:/workspace/data/chm_variants/baseline_chm_20cm:ro
+      - ./ranked_for_manual_masks_lineaware.csv:/workspace/ranked_for_manual_masks_lineaware.csv:ro
+    environment:
+      - CHM_DIR=/workspace/output/chm_dataset_harmonized_0p8m_raw_gauss
+      - MASK_DIR=/workspace/output/manual_masks
+      - MODEL_PATH=/workspace/runs/cdw_detect/train/weights/best.pt
+      - CLASSIFIER_MODEL_PATH=/workspace/output/tile_labels/ensemble_model.pt
+      - QUEUE_MODEL_PATH=/workspace/output/tile_labels/ensemble_model.pt
+      - QUEUE_MODEL_REFINE_K=2000
+      - CHIP_SIZE=256
+      - QUEUE_TOP_N=2000
+      - PYTHONPATH=/workspace/src:/workspace
