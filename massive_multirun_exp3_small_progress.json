@@ -1,0 +1,314 @@
+[
+  {
+    "run": 0,
+    "seed": 8270,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 1,
+    "seed": 1860,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 2,
+    "seed": 6390,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 3,
+    "seed": 6191,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 4,
+    "seed": 6734,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 5,
+    "seed": 7265,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 6,
+    "seed": 1466,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 7,
+    "seed": 5426,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 8,
+    "seed": 6578,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 9,
+    "seed": 9322,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 10,
+    "seed": 2685,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 11,
+    "seed": 1769,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 12,
+    "seed": 7949,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 13,
+    "seed": 3433,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 14,
+    "seed": 6311,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 15,
+    "seed": 6051,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 16,
+    "seed": 7420,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 17,
+    "seed": 2184,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 18,
+    "seed": 5555,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 19,
+    "seed": 4385,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 20,
+    "seed": 7396,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 21,
+    "seed": 9666,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 22,
+    "seed": 3558,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 23,
+    "seed": 8849,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 24,
+    "seed": 3047,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 25,
+    "seed": 3747,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 26,
+    "seed": 1189,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 27,
+    "seed": 3734,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 28,
+    "seed": 4005,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 29,
+    "seed": 5658,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 30,
+    "seed": 2899,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 31,
+    "seed": 8734,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 32,
+    "seed": 2267,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 33,
+    "seed": 2528,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 34,
+    "seed": 4556,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 35,
+    "seed": 4890,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 36,
+    "seed": 9838,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 37,
+    "seed": 6393,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 38,
+    "seed": 9792,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 39,
+    "seed": 9433,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 40,
+    "seed": 8513,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 41,
+    "seed": 3612,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 42,
+    "seed": 8041,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 43,
+    "seed": 7235,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 44,
+    "seed": 6486,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 45,
+    "seed": 8099,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 46,
+    "seed": 1775,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 47,
+    "seed": 9226,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 48,
+    "seed": 4152,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 49,
+    "seed": 2585,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 50,
+    "seed": 4943,
+    "config": "exp3_small",
+    "success": false
+  },
+  {
+    "run": 51,
+    "seed": 8555,
+    "config": "exp3_small",
+    "success": false
+  }
+]
