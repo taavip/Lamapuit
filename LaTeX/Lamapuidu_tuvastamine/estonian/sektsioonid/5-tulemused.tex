@@ -5,7 +5,7 @@ Selles peatükis esitatakse lamapuidu tuvastamise lõpliku mudeli kvantitatiivse
 
 \subsection{Mudeli sooritus ja valideerimine}
 
-Neljamudeline ansambel, mis treeniti lekkekontrolliga "E07" ruumilise jagamise alusel (67\,290 treeningmärgistust), saavutas hoidmata testandmestikul (56\,521 märgistust) äärmiselt kõrged tulemused. Mudel saavutas F1-skooriks $0,9819$ ning ROC AUC väärtuseks $0,9885$. Tulemused kinnitavad metoodikas kirjeldatud mitmeastmelise treening- ja valideerimisstrateegia efektiivsust, mis tagas mudeli stabiilse generalisatsiooni ja vältis naaberalade autokorrelatsioonist tulenevat leket.
+Neljamudeline ansambel, mis treeniti lekkekontrolliga  ruumilise jagamise alusel (67\,290 treeningmärgistust), saavutas kasutamata testandmestikul (56\,521 märgistust) äärmiselt kõrged tulemused. Mudel saavutas F1-skooriks $0,9819$ ning ROC AUC väärtuseks $0,9885$. Tulemused kinnitavad metoodikas kirjeldatud mitmeastmelise treening- ja valideerimisstrateegia efektiivsust, mis tagas mudeli stabiilse generalisatsiooni ja vältis naaberalade autokorrelatsioonist tulenevat leket.
 
 \begin{figure}[h!]
 \centering
@@ -20,9 +20,9 @@ Ansambli lähenemine aitas eeskätt vähendada valepositiivseid ennustusi raskes
 
 \subsection{Punktipilve tiheduse mõju}
 
-Kuna töö lähteülesanne keskendus lamapuidu tuvastamisele operatiivsetel lennutingimustel (keskmiselt 1--4 pts/m$^2$), on kriitilise tähtsusega mõista, millistel tihedusastmetel mudeli sooritus hakkab degradeeruma. Eesti metsaoludes jagunevad analüüsitud alad suuresti kolme eeltöödeldud tihedusklassi asukohtadesse. 
+Kuna töö lähteülesanne keskendus lamapuidu tuvastamisele operatiivsetel lennutingimustel (keskmiselt 4--8 pts/m$^2$), on kriitilise tähtsusega mõista, millistel tihedusastmetel mudeli sooritus hakkab degradeeruma. Eesti metsaoludes jagunevad analüüsitud alad suuresti kolme eeltöödeldud tihedusklassi asukohtadesse. 
 
-Järgnev tabel (Tabel~\ref{tab:density-effect}) jaotab F1-skoori ja tagasikutse (ingl \textit{recall}) kolme peamise punktipilve tihedusklassi vahel analüüsitud valimis. (Märkus: numbrid lisatakse skripti analüüsi tulemusel).
+Järgnev tabel (Tabel~\ref{tab:density-effect}) jaotab F1-skoori ja saagis (ingl \textit{recall}) kolme peamise punktipilve tihedusklassi vahel analüüsitud valimis. (Märkus: numbrid lisatakse skripti analüüsi tulemusel).
 
 \begin{table}[h!]
 \centering
@@ -30,11 +30,11 @@ Järgnev tabel (Tabel~\ref{tab:density-effect}) jaotab F1-skoori ja tagasikutse 
 \label{tab:density-effect}
 \begin{tabular}{lccc}
 \hline
-\textbf{Tihedus} & \textbf{Alade arv (kiipides)} & \textbf{F1-skoor} & \textbf{Tagasikutse (Recall)} \\
+\textbf{Tihedus} & \textbf{Alade arv } & \textbf{F1-skoor} & \textbf{Saagis (Recall)} \\
 \hline
-1--2 pts/m$^2$ &  &  &  \\
-2--3 pts/m$^2$ &  &  &  \\
-3--4 pts/m$^2$ &  &  &  \\
+18--20 pts/m$^2$ &  &  &  \\
+20--30 pts/m$^2$ &  &  &  \\
+30--100+ pts/m$^2$ &  &  &  \\
 \hline
 \end{tabular}
 \end{table}

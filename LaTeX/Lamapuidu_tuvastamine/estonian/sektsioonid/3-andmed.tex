@@ -1,28 +1,21 @@
 \section{Andmed ja andmete ettevalmistus}
 \label{andmed}
 
-Uurimistöös lähtuti Eesti topograafilisest andmestikust, kasutades lamapuidu kaardistamiseks Maa- ja Ruumiameti aerolaserskaneerimise (LiDAR) andmeid. Eduka masinõppemudeli treenimiseks vajaliku andmestiku loomine nõudis sihipärast uuringuala valikut, LiDAR-punktipilvedest spetsiifiliste võrastiku kõrgusmudelite (CHM) arvutamist ning visuaalset sildistamistööriista tõeväärtusandmete (ingl \textit{ground truth}) kogumiseks.
+Uurimistöös lähtuti Eesti avaandmetest, kasutades lamapuidu kaardistamiseks Maa- ja Ruumiameti aerolaserskaneerimise (ALS) andmeid. Väga hea masinõppemudeli treenimiseks vajaliku andmestiku loomine vajab sihipärast uuringuala valikut, LiDAR-punktipilvedest madala taimkatte kõrgusmudelite (CHM) arvutamist ning ruumiandmete sildistamise tööriista kasutamist tõeste andmete (ingl \textit{ground truth}) kogumiseks.
 
 \subsection{Aerolaserskaneerimine (LiDAR)}
 
 LiDAR (Light Detection and Ranging) põhineb aktiivsel kaugseirel: sensor saadab välja lühikesi laserimpulsse, mõõdab impulsi teekonna aega ja arvutab tagasipeegeldunud signaali põhjal objekti kauguse. Kui sama põhimõtet rakendatakse suurel hulgal impulssidel, tekib punktipilv, mille tihedus sõltub lennukõrgusest, lennukiirusest, impulsside sagedusest ning maapinna ja taimkatte struktuurist. Madalam lennukõrgus ja aeglasem lennu trajektoor annavad üldjuhul tihedama punktipilve, kõrgem lend aga suurema katvuse väiksema detailsusega.
 
-Lamapuidu tuvastamise seisukohalt on oluline, et punktipilv sisaldaks piisavalt maapinnalähedasi tagasitulekuid, kuid samal ajal ei muutuks maapinna reljeef ja madal taimestik liiga mürarikkaks. Seetõttu ei piisa lamapuidu puhul ainult punktide olemasolust, vaid oluline on ka nende ruumiline kontsentratsioon ja kõrgusnormaliseerimine.
+Lamapuidu tuvastamise seisukohalt on oluline, et punktipilv sisaldaks piisavalt maapinnalähedasi tagasipeegeldusi, kuid samal ajal ei muutuks maapinna reljeef ja madal taimestik liiga mürarikkaks. Seetõttu ei piisa lamapuidu puhul ainult punktide olemasolust, vaid oluline on ka nende ruumiline kontsentratsioon ja fenoloogiline aastaaeg andmete kogumisel.
 
-\begin{figure}[h!]
-\centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.1.} Skemaatiline vaade: lennuki kõrguse mõju punktipilve tihedusele (madallend vs tavalend).\
-Placeholder}}
-\caption{Lennukõrguse mõju LiDAR-punktipilve tihedusele.}
-\label{fig:lidar-flight-height}
-\end{figure}
 
-\subsection{Maa- ja Ruumiameti andmekogum}
 
-Magistritöö aluseks on Maa- ja Ruumiameti aerolaserskaneerimise andmestik aastatest 2017--2024. Andmeid koguti mitme lennukategooria kaudu, mille punktitihedus ja katvuse eesmärk erinevad. Töö kontekstis on oluline eristada riiklikke baaskaardistamise lende ja tihedamaid lähilende, sest just nende erinevus määrab, kas lähteandmestik sobib referentsiks või operatiivseks tootmiseks.
+\subsection{Maa- ja Ruumiameti aerolaserskaneerimise kõrguspunktid}
 
-Maa- ja Ruumiameti töötlusloogika sisaldab tavaliselt maapinna mudeli eemaldamist, kõrgusnormaliseerimist ning kvaliteedikontrolli, et punktipilvest saaks tekitada võrreldavaid CHM-kihte. Antud uuringus kasutati eelkõige tihedamat lähilendu referentsi ja filtreerimise lähtekohana ning seejärel kanti valim üle madalama, operatiivse tihedusega tingimustesse.
+Magistritöö aluseks on Maa- ja Ruumiameti aerolaserskaneerimise (ALS) andmestik aastatest 2017--2024. Andmeid on kogutud mitmel erineva metoodikaga, mille punktitihedus ja katvuse eesmärk erinevad. Töö kontekstis on oluline eristada riiklikke baaskaardi tootmise lende ja täpsemaid tiheasustusalade kaardistuslende, sest just nende erinevus määrab, kas andmestik sobib antud töös kasutamiseks. Antud töös ei sobinud kasutada suvel toimuvad metsanduslennud sest maapinniani jõudvaid punkte vähe tänu kõrgele lennukõrgusele, lehtedele ja alustaimestikule.
+
+Maa- ja Ruumiameti töötlusloogika sisaldab tavaliselt punktide sidumist, punktide klassifitseerimist ning kvaliteedikontrolli, et punktipilvest saaks tekitada erinevaid tooteid. Antud töös kasutati eelkõige tihedamat madallendude andmestikku.
 
 \begin{table}[h!]
 \centering
@@ -32,9 +25,9 @@ Maa- ja Ruumiameti töötlusloogika sisaldab tavaliselt maapinna mudeli eemaldam
 \hline
 \textbf{Lennu liik} & \textbf{Lennukõrgus} & \textbf{Punktitihedus} & \textbf{Otstarve} & \textbf{Ajaline aken} \\
 \hline
-Tiheasustuse / lähilend & u 1200 m & 18 p/m$^2$ & Referents ja tihe katvus & Kevad \\
-Pildistamise prioriteet & u 2000 m & 3,5 p/m$^2$ & Pildipõhine kaardistus & Kevad \\
-Üle-eestiline baaskaardistus & u 2600 m & 2,1 p/m$^2$ & Riiklik seire & Kevad \\
+Tiheasustuse / madallend & u 1200 m & 18 p/m$^2$ & tiheasustusalad & Kevad \\
+Pildistamise prioriteet & u 2000 m & 3,5 p/m$^2$ &  & Kevad \\
+Üle-eestiline baaskaardistus & u 2600 m & 2,1 p/m$^2$ & Põhikaardi tootmine & Kevad \\
 Metsanduslik lend & u 3100 m & 0,8 p/m$^2$ & Metsanduslik inventuur & Suvi \\
 \hline
 \end{tabular}
@@ -43,7 +36,7 @@ Metsanduslik lend & u 3100 m & 0,8 p/m$^2$ & Metsanduslik inventuur & Suvi \\
 \begin{figure}[h!]
 \centering
 \fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.2.} Maa- ja Ruumiameti andmekogum: võrdlus madallendude ja riiklike baaskaardistamise lendude vahel.\
+\textbf{Joonis 3.1.} Maa- ja Ruumiameti andmekogum: võrdlus madallendude ja riiklike baaskaardistamise lendude vahel.\
 Placeholder}}
 \caption{Maa- ja Ruumiameti lennukategooriate võrdlus.}
 \label{fig:mara-flights}
@@ -51,14 +44,14 @@ Placeholder}}
 
 \subsection{Uuringuala ja valimi moodustamine}
 
-Uuringuala valik tehti kahes etapis. Esmalt kasutati Tartu lähedasi metsi ja tihedama punktiloendiga alasid, et kontrollida, kas CHM-i ja märgistamise töövoog töötab hästi väiksemal, kuid kvaliteetsel referentsalal. Seejärel laiendati valim üle Eesti nii, et hõlmatud oleksid erinevad metsatüübid, eri aastad ja erineva punktitihedusega kaardilehed.
+Uuringuala valik tehti kahes etapis. Esmalt kasutati Tartu lähedasi metsi ja tihedama punktitihedusega alasid, et arendada ja kontrollida, kas madala taimkatte kõrgusmudeli ja sidistamise töövoog töötab hästi väiksemal, kuid kvaliteetsel referentsalal. Seejärel laiendati valim üle Eesti nii, et hõlmatud oleksid erinevad metsatüübid, eri aastad ja erineva punktitihedusega kaardilehed.
 
-Lõplik valim koosneb 29 valitud kaardilehest, mille kogupindala on 119 km$^2$. Valim on koostatud nii, et see kataks erinevaid metsa- ja maastikutüüpe ning sisaldaks nii tihedamaid kui ka hõredamaid ALSi olukordi. See võimaldab hiljem kontrollida, kui hästi töövoog üldistub piirkondadele, mida ei kasutata ainult referentsalana.
+Lõplik valim koosneb 29 valitud kaardilehe (1:2000) asukohast, mille kogupindala on 119 km$^2$. Ekspertvalim on koostatud nii, et see kataks erinevaid metsa- ja maastikutüüpe ning sisaldaks nii tihedamaid kui ka hõredamaid ALSi olukordi ning ka erinevat reljeefi. See võimaldab hiljem kontrollida, kui hästi tulemused üldistuvad kogu eestile.
 
 \begin{figure}[h!]
 \centering
 \fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.3.} Eesti kaart 29 valitud kaardilehega, värvuskoodiga vastavalt metsatüübile või lennuaastale.\
+\textbf{Joonis 3.2.} Eesti kaart 29 valitud kaardilehega, värvus vastavalt  punktitihedusele.\
 Placeholder}}
 \caption{Uuringuala valim ja kaardilehtede jaotus.}
 \label{fig:study-area}
@@ -72,16 +65,25 @@ Placeholder}}
 \hline
 \textbf{Kaardileht} & \textbf{Aasta} & \textbf{Keskmine punktitihedus} & \textbf{Domineeriv metsatüüp} \\
 \hline
-\textit{Täidetakse analüüsiskriptiga} & 2017--2024 & 1--4 pts/m$^2$ & Looduslik / majandusmets \\
+\textit{Täidetakse skriptiga} & 2017--2024 & 1--4 pts/m$^2$ & Looduslik / majandusmets \\
 \hline
 \end{tabular}
 \end{table}
 
 \subsection{CHM ja eeltöötlus}
 
-Lamapuidu märgistamise jaoks tekitati Canopy Height Model (CHM) järgmise töövoo järgi: punktipilvest eemaldati maapind, arvutati kõrgus maapinnast (HAG), filtreeriti välja punktid kõrgusvahemikust 0--1,3 m ning rasteriseeriti tulem 20 cm piksliga. 1,3 m piir on siin teadlik kompromiss: see jätab välja kõrgema ja tõenäolisemalt elusa taimestiku ning vähendab müra, kuid hoiab alles valdava osa lamapuiduga seotud maapinnalähedastest struktuuridest.
+Lamapuidu märgistamise jaoks tekitati taimkattemudel ( Canopy Height Model -- CHM) järgmise töövoo järgi: punktipilvest maapinnamudel, arvutati kõrgus maapinnast (Height Above Ground -- HAG), filtreeriti välja punktid kõrgusvahemikust 0--1,3 m ning rasteriseeriti maksimaalne kõrgus 20 cm piksliga rastriks. 1,3 m piir on siin kasutatud ka varasemates töödes \cite{jarron_detection_2021, joyce_detection_2019}: see jätab välja kõrgema ja tõenäolisemalt elusa taimestiku ning vähendab müra, kuid hoiab alles valdava osa lamapuiduga seotud maapinnalähedastest struktuuridest ja võimaldab kasutada maksimaalset kõrgus taimkatte mudeli jaoks ilma olulist infot varjamata.
 
-Töövoo keskne valik on mitte klammerdada väärtusi üle 1,3 m, vaid need enne rasteriseerimist eemaldada. Selline \emph{drop-above-threshold} lähenemine hoiab CHM-i semantika lihtsana ja vähendab kõrgema taimestiku mõju. Rasteriseerimisel kasutati igas 20 cm lahtrites maksimaalset kõrgust, mis sobib lineaarsete ja piklike objektide esiletõstmiseks.
+Töövoo keskne valik on eemaldada väärtused üle 1,3 m, enne andmete rasteriseerimist. Selline \emph{drop-above-threshold} lähenemine hoiab CHM-i semantika lihtsana ja vähendab kõrgema taimestiku mõju. Mõju ei kao kuna igihaljad puud vähendavad punktide läbilastvust või tekitavad ka varje kuhu mõõtmistulemused ei ulatu.  Rasteriseerimisel kasutati igas 20 cm lahtrites maksimaalset kõrgust, mis sobib lineaarsete ja piklike objektide esiletõstmiseks.
+
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 3.3.} Okaspuude varjud maapinnale jõudvate punktide peal\
+Placeholder}}
+\caption{Punktipilvede lokaalne tiheduse erinevus sõltuvus metsast ja selle katvusest.}
+\label{fig:study-area}
+\end{figure}
 
 \begin{figure}[h!]
 \centering
@@ -101,18 +103,18 @@ Placeholder}}
 \label{fig:chm-example}
 \end{figure}
 
-Selle töötluse tulemuseks saadud CHM-id on alus nii märgistamisele kui ka mudeli sisendile. Eesmärk ei ole üksnes objektide nähtavaks tegemine, vaid ka erinevate aastate ja alade vahel võrdleva, ühtse kujutise loomine.
+Selle töötluse tulemuseks saadud detailsed ja madalad taimkattemudelid on alus nii sidistamisele kui ka mudeli sisendile. Eesmärk ei ole üksnes objektide nähtavaks tegemine, vaid ka erinevate aastate ja alade vahel võrdleva, ühtse medoodika alusel kujutise loomine.
 
 \subsection{Sildistamise tööriist}
 
-Lamapuidu märgistamiseks töötati välja brauseripõhine sildistamistööriist, mis koondas üheks vaateks mitu ruumilist taustaallikat. Tööriista eesmärk oli vähendada märgistaja sõltuvust ühestainsast kihist ning toetada otsustamist mitme sõltumatu vaatluse põhjal.
+Lamapuidu märgistamiseks töötati välja brauseripõhine sildistamistööriist, mis koondas üheks vaateks mitu ruumilist taustaallikat. Tööriista eesmärk oli vähendada märgistaja sõltuvust ühestainsast andmestiku kihist ning toetada otsustamist mitme erineva vaatluse põhjal.
 
-Tööriistas sai samaaegselt vaadata CHM-i, ortofotot, ajaloolisi taimkattekihte, mudeli soojuskaarti, naaberalade konteksti ning vajadusel ka Street View ja Maa- ja Ruumiameti aerofoto linke. See võimaldas kontrollida, kas nähtav struktuur on tõenäolisemalt lamapuit, känd, kivi või muu maapinnaline objekt.
+Tööriistas sai samaaegselt vaadata taimkatte kõrgusmudelit, ortofotot, ajaloolisi taimkattekihte, mudeli soojuskaarti, naaberalade konteksti ning vajadusel ka Street View ja Maa- ja Ruumiameti aerofotosid. See võimaldas kontrollida, kas nähtav struktuur on tõenäolisemalt lamapuit, känd, kivi või muu maapinnal olev objekt.
 
 \begin{figure}[h!]
 \centering
 \fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.5.} Sildistamise kasutajaliidese ekraanitõmmis, kus on näha CHM, ortofoto, ajalooline vaade ja Street View link.\
+\textbf{Joonis 3.5.} Sildistamise kasutajaliidese ekraanitõmmis, kus on näha CHM, ortofoto, ajalooline vaade .\
 Placeholder}}
 \caption{Sildistamistööriista kasutajaliides ja kontekstivaated.}
 \label{fig:labeling-ui}
@@ -123,9 +125,9 @@ Placeholder}}
 \fbox{\parbox{0.92\linewidth}{\centering
 \textbf{Joonis 3.6.} Mudeli soojuskaardi integratsioon tööriistas: kuidas mudel suunas sildistaja tähelepanu.\
 Placeholder}}
-\caption{Mudeli soojuskaardi kasutamine märgistuse abikihina.}
+\caption{Mudeli soojuskaardi kasutamine sildistamise abikihina.}
 \label{fig:labeling-heatmap}
 \end{figure}
 
-Objektiivsuse tagamiseks ei kasutatud soojuskaarti ainsa otsustajana, vaid abikihina, millele järgnes vajadusel käsitsi kontroll. Selline lähenemine aitab vältida märgistaja pimesi toetumist algoritmile, kuna igat objekti saab kontrollida erinevates vaadetes ja eri lennuaastate lõikes. Mitmekihiline visuaalne analüüs tagas masinõppemudelile kvaliteetse tõeväärtusandmestiku.
+Objektiivsuse tagamiseks ei kasutatud soojuskaarti ainsa otsustajana, vaid abikihina, millele järgnes käsitsi kontroll. Selline lähenemine aitab vältida märgistusvigu ja juhtida märgistaja tähelepanu, kuna igat objekti saab kontrollida erinevates vaadetes ja eri lennuaastate lõikes. Mitmekihiline visuaalne analüüs tagas masinõppemudelile kvaliteetse tõese andmestiku.
 
