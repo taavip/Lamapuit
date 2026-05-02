@@ -1,11 +1,39 @@
 \section{Tulemused}
 \label{tulemused}
 
-Selles peatükis esitatakse lamapuidu tuvastamise lõpliku mudeli kvantitatiivsed tulemused ja veaanalüüs. Peatükk on jagatud nelja ossa: mudeli üldine sooritus testandmestikul, punktipilve tiheduse mõju tuvastustäpsusele, tüüpiliste vigade (valepositiivsed ja valenegatiivsed) analüüs ning CHM-variantide efektiivsuse võrdlus.
+Selles peatükis esitatakse lamapuidu tuvastamise lõpliku mudeli kvantitatiivsed tulemused ja veaanalüüs. Peatükk on jagatud kuude ossa: mudeli otsinguprotsessi tulemused, neljanda ansambli liikme ablatsiooniuuring, mudeli üldine sooritus testandmestikul, punktipilve tiheduse mõju tuvastustäpsusele, tüüpiliste vigade (valepositiivsed ja valenegatiivsed) analüüs ning CHM-variantide efektiivsuse võrdlus.
+
+\subsection{Mudeli otsinguprotsessi tulemused}
+\label{mudeli-otsingu-tulemused}
+
+Metoodikas kirjeldatud kolmeetapiline otsinguprotsess (vt jaotis~\ref{mudeli-valik}) võimaldas süstemaatiliselt põhjendada lõpliku ansamblemudeli arhitektuuri.
+
+Esialgne märgistamisansambel (märts 2026, 15\,850 treeningtiili) saavutas testvalimil (2\,186 tiili) F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987 (Tabel~\ref{tab:initial-ensemble}). Ansambel ületas kõiki üksikmudeleid: parim CNN-Deep-Attn (seeme 44) saavutas valideerimisvalimil F1-skoori 0,9596, EfficientNet-B2 aga 0,9463 -- seejuures andis nelja mudeli TTA-põhine keskmistamine selge lisaväärtuse.
+
+Mudeli otsing V1 (19\,812 tiili, 11 rasterikiht) kinnitas CNN-Deep-Attn perekonna juhtpositsiooni: viie parima mudeli virnaansambel saavutas testvalimil F1-skoori 0,9672 ning pehme hääletus F1-skoori 0,9646, ületades mõlemad parima üksikmudeli (CNN-Deep-Attn-headwide: 0,9644) -- tõendus, et ensamblistrateegia annab selles ülesandes järjekindlalt parema tulemuse kui ükski üksik mudel (Tabel~\ref{tab:model-search-v1}).
+
+Mudeli otsingus V2 (35\,832 tiili, 111 rasterikiht) ilmnes ConvNeXt perekonna üleolek üksikmudelitasandil: TTA-ga ConvNeXt-tiny saavutas ristvalideerimise F1-skoori 0,9233, ületades selgelt kõiki CNN-Deep-Attn variante. Tabel~\ref{tab:model-search-v2} võrdleb V2 esimese etapi tipparhitektuure. Kuna V2 teine etapp jäi pooleli (8/36 eksperimenti) ning ConvNeXt-põhist ansamblit ei testitud, jäi lõplikuks valikuks märtsis 2026 kinnitatud 4-mudeline ansambel, mis lõplikus ümberõppes (67\,290 treeningtiili, ruumiline jagamine E07) saavutas F1-skoori 0,9819 ja ROC AUC väärtuse 0,9885 -- ületades esialgset märgistamisansamblit 1,2 protsendipunkti võrra.
+
+\begin{table}[h!]
+\centering
+\caption{Mudeli otsingu V2 esimese etapi tipptulemused ristvalideerimise F1-skoori järgi (35\,832 tiili, 111 rasterikiht).}
+\label{tab:model-search-v2}
+\begin{tabular}{lllll}
+\hline
+\textbf{Arhitektuur} & \textbf{Kaofunktsioon} & \textbf{Reg.} & \textbf{CV AUC} & \textbf{CV F1} \\
+\hline
+ConvNeXt-tiny  & CE     & MixUp     & 0,9868 & 0,9180 \\
+ConvNeXt-small & CE     & MixUp     & 0,9887 & 0,9178 \\
+EfficientNet-B2 & CE    & MixUp     & 0,9898 & 0,9162 \\
+CNN-Deep-Attn (dropout) & CE & MixUp & 0,9901 & 0,9136 \\
+CNN-Deep-Attn  & CE     & MixUp     & 0,9901 & 0,9126 \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Mudeli sooritus ja valideerimine}
 
-Neljamudeline ansambel, mis treeniti lekkekontrolliga "E07" ruumilise jagamise alusel (67\,290 treeningmärgistust), saavutas hoidmata testandmestikul (56\,521 märgistust) äärmiselt kõrged tulemused. Mudel saavutas F1-skooriks $0,9819$ ning ROC AUC väärtuseks $0,9885$. Tulemused kinnitavad metoodikas kirjeldatud mitmeastmelise treening- ja valideerimisstrateegia efektiivsust, mis tagas mudeli stabiilse generalisatsiooni ja vältis naaberalade autokorrelatsioonist tulenevat leket.
+Neljamudeline ansambel, mis treeniti lekkekontrolliga  ruumilise jagamise alusel (67\,290 treeningmärgistust), saavutas kasutamata testandmestikul (56\,521 märgistust) äärmiselt kõrged tulemused. Mudel saavutas F1-skooriks $0,9819$ ning ROC AUC väärtuseks $0,9885$. Tulemused kinnitavad metoodikas kirjeldatud mitmeastmelise treening- ja valideerimisstrateegia efektiivsust, mis tagas mudeli stabiilse generalisatsiooni ja vältis naaberalade autokorrelatsioonist tulenevat leket.
 
 \begin{figure}[h!]
 \centering
@@ -20,9 +48,9 @@ Ansambli lähenemine aitas eeskätt vähendada valepositiivseid ennustusi raskes
 
 \subsection{Punktipilve tiheduse mõju}
 
-Kuna töö lähteülesanne keskendus lamapuidu tuvastamisele operatiivsetel lennutingimustel (keskmiselt 1--4 pts/m$^2$), on kriitilise tähtsusega mõista, millistel tihedusastmetel mudeli sooritus hakkab degradeeruma. Eesti metsaoludes jagunevad analüüsitud alad suuresti kolme eeltöödeldud tihedusklassi asukohtadesse. 
+Kuna töö lähteülesanne keskendus lamapuidu tuvastamisele operatiivsetel lennutingimustel (keskmiselt 4--8 pts/m$^2$), on kriitilise tähtsusega mõista, millistel tihedusastmetel mudeli sooritus hakkab degradeeruma. Eesti metsaoludes jagunevad analüüsitud alad suuresti kolme eeltöödeldud tihedusklassi asukohtadesse. 
 
-Järgnev tabel (Tabel~\ref{tab:density-effect}) jaotab F1-skoori ja tagasikutse (ingl \textit{recall}) kolme peamise punktipilve tihedusklassi vahel analüüsitud valimis. (Märkus: numbrid lisatakse skripti analüüsi tulemusel).
+Järgnev tabel (Tabel~\ref{tab:density-effect}) jaotab F1-skoori ja saagis (ingl \textit{recall}) kolme peamise punktipilve tihedusklassi vahel analüüsitud valimis. (Märkus: numbrid lisatakse skripti analüüsi tulemusel).
 
 \begin{table}[h!]
 \centering
@@ -30,11 +58,11 @@ Järgnev tabel (Tabel~\ref{tab:density-effect}) jaotab F1-skoori ja tagasikutse 
 \label{tab:density-effect}
 \begin{tabular}{lccc}
 \hline
-\textbf{Tihedus} & \textbf{Alade arv (kiipides)} & \textbf{F1-skoor} & \textbf{Tagasikutse (Recall)} \\
+\textbf{Tihedus} & \textbf{Alade arv } & \textbf{F1-skoor} & \textbf{Saagis (Recall)} \\
 \hline
-1--2 pts/m$^2$ &  &  &  \\
-2--3 pts/m$^2$ &  &  &  \\
-3--4 pts/m$^2$ &  &  &  \\
+18--20 pts/m$^2$ &  &  &  \\
+20--30 pts/m$^2$ &  &  &  \\
+30--100+ pts/m$^2$ &  &  &  \\
 \hline
 \end{tabular}
 \end{table}
