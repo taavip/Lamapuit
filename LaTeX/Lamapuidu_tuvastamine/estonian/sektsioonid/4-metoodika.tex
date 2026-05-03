@@ -25,21 +25,34 @@ Lõpliku ansamblemudeli arhitektuuri valik tugineb kolmeetapilisele otsinguprots
 
 \paragraph{Mudeli arhitektuuride otsing V1.}
 
-Paralleelselt märgistusprotsessiga viidi läbi laiapõhjaline arhitektuuride võrdlusotsing (V1), kus 19\,812 märgistuse andmestikul (11 rasterikiht, klass-suhe no\_cdw:cdw $\approx 5{,}49$) testiti üle 25 arhitektuuri- ja regulariseerimiskonfiguratsiooni. Parimate tulemustega viiemudelilise pehme hääletuse ansamblil saavutati testvalimil F1-skoor 0,9646, virnamudelil (\textit{stacking}) 0,9672 -- mõlemad kõrgemad kui parim üksik mudel (CNN-Deep-Attn-headwide: 0,9644). V1 otsing kinnitas CNN-Deep-Attn arhitektuuri domineerimise ning ansamblistrateegia efektiivsuse (Tabel~\ref{tab:model-search-v1}).
+Paralleelselt märgistusprotsessiga viidi läbi laiapõhjaline arhitektuuride võrdlusotsing (V1), kus 19\,812 märgistuse andmestikul (11 rasterikiht, klass-suhe no\_cdw:cdw $\approx 5{,}49$) hinnati kokku 35 treeningkatset 16 arhitektuuris. Testitud arhitektuurid jagunesid kahte rühma: (1) neli kohandatavat \textbf{CNN-Deep-Attn} varianti ning (2) 12 \textbf{ImageNeti eelõpitud} arhitektuuri. Lisaks varieeriti kaofunktsioone (ristentroopia, fokaalne), andmesuurendust (MixUp, MixUp+SWA) ning testiaegse augmentatsiooni (\textit{TTA}) kasutamist.
+
+\textbf{CNN-Deep-Attn arhitektuur} koosneb neljast järjestikusest \textit{AttnBlock}-plokist, mille kanalite arv kasvab järgmiselt: $1 \to 32 \to 64 \to 128 \to 256$. Iga plokk sisaldab: kahte $3\times3$ konvolutsiooni BatchNorm-normaliseerimise ja ReLU aktivatsiooniga; \textit{Squeeze-Excitation} (SE) tähelepanumehhanismi, mis arvutab kanali globaalsest keskväärtusest kaalumisevektori, millega rõhutatakse diskriminatiivsemaid filtreid; jääkühendit ($1\times1$ konvolutsioon dimensioonide kohandamiseks, muidu identteisendus); ning $2\times2$ maksimumpuuli ruumilise mõõdme poolitamiseks. Klassifikaatorkiht koosneb AdaptiveAvgPool2d(4)$\to$Flatten$\to$Linear(4096,~$h$)$\to$ReLU$\to$Dropout(0{,}5)$\to$Linear($h$,~2). Kolme põhivarianti eristab peidetud kihi laius $h$: \textbf{regular} ($h{=}512$, baastase), \textbf{headlight} ($h{=}256$, vähem parameetreid, väiksem ülesobitamise risk) ja \textbf{headwide} ($h{=}768$, suurem representatsioonivõimekus). Eelõpitud mudelite hulka kuulusid ConvNeXt-tiny/-small, EfficientNet-B0/-B2/-B4, DenseNet-121, Swin-T, ResNet-18/-34/-50, MobileNet-V3-Large ja RegNetY-004; neis asendati RGB-sisend 1-kanalise CHM-sisendiga (RGB-kaalude keskmistamine) ja selgroole rakendati 10$\times$ väiksemat õppimiskiirust kui klassifikaatorile.
+
+Parimate tulemustega viiemudelilise pehme hääletuse ansamblil saavutati testvalimil F1-skoor 0,9646, virnamudelil (\textit{stacking}) 0,9672 -- mõlemad kõrgemad kui parim üksik mudel (CNN-Deep-Attn-headwide: 0,9644). V1 otsing kinnitas CNN-Deep-Attn arhitektuuri domineerimise ning ansamblistrateegia efektiivsuse (Tabel~\ref{tab:model-search-v1}).
 
 \begin{table}[h!]
 \centering
-\caption{Mudeli otsingu V1 tipptulemused testvalimil (2\,186 tiili, 11 rasterikiht).}
+\caption{Mudeli otsingu V1 tulemusnäitajad (19\,812 treeningtiili, 11 rasterikiht). Testvalimi tulemused põhinevad 2\,186 tiilil; ${}^{\dagger}$ tähistab 5-kordse ristvalideerimise keskmist (mudelit ei hinnatud eraldi testvalimil).}
 \label{tab:model-search-v1}
 \begin{tabular}{lllll}
 \hline
 \textbf{Mudel / ansambel} & \textbf{AUC} & \textbf{F1} & \textbf{Täpsus} & \textbf{Tagasikutse} \\
+\hline
+\multicolumn{5}{l}{\textit{Testvalimi tulemused}} \\
 \hline
 Virnaansambel (top-5)       & 0,9982 & 0,9672 & 0,9789 & 0,9558 \\
 Pehme hääletus (top-5)      & 0,9982 & 0,9646 & 0,9646 & 0,9646 \\
 CNN-Deep-Attn-headwide      & 0,9977 & 0,9644 & 0,9701 & 0,9587 \\
 CNN-Deep-Attn               & 0,9973 & 0,9630 & 0,9673 & 0,9587 \\
 CNN-Deep-Attn-headlight     & 0,9974 & 0,9614 & 0,9672 & 0,9558 \\
+\hline
+\multicolumn{5}{l}{\textit{Parimad alternatiivarhitektuurid, ristvalideerimine (${}^{\dagger}$)}} \\
+\hline
+ConvNeXt-small${}^{\dagger}$  & 0,9922 & 0,9546 & 0,9677 & 0,9420 \\
+ConvNeXt-tiny${}^{\dagger}$   & 0,9935 & 0,9523 & 0,9626 & 0,9427 \\
+EfficientNet-B2${}^{\dagger}$ & 0,9953 & 0,9493 & 0,9546 & 0,9440 \\
+DenseNet-121${}^{\dagger}$    & 0,9912 & 0,9454 & 0,9640 & 0,9276 \\
 \hline
 \end{tabular}
 \end{table}
@@ -94,12 +107,6 @@ ConvNeXt-small  & Kaalutud hääletus        & $0{,}9855 \pm 0{,}0038$ & [0,9839
 \hline
 \end{tabular}
 \end{table}
-
-\paragraph{Tulemused ja järeldus.}
-
-Tabelist~\ref{tab:ensemble-comparison-v2} nähtub, et kõik täiustatud agregeerimismeetodid edestavad statistiliselt oluliselt lihtsat pehmet hääletust ($p<0{,}01$ kõikidel kandidaatidel). Parima üldise tulemuse saavutas \textbf{EfficientNet-B2 koos kaalutud hääletusega}: F1-skoor $0{,}9866 \pm 0{,}0042$, 95\% usaldusvahemik [0,9849; 0,9883], AUC $0{,}9810$. Kandidaatide ristvõrdlusel parima meetodi (LR virnaansambli) raames edestas EfficientNet-B2 ConvNeXt-tiny mudelit statistiliselt oluliselt ($\Delta F1 = +0{,}0029$, $p<0{,}001$) ning ConvNeXt-small mudelit ($\Delta F1 = +0{,}0008$, $p=0{,}008$).
-
-Need tulemused võimaldavad kahte olulist järeldust. \textbf{Esiteks} kinnitavad nad empiiriliselt, et  valitud EfficientNet-B2 on tõepoolest parim valik neljandaks ansambli liikmeks -- arhitektuurne mitmekesisus ja ImageNeti eelõpe kannavad praktikas tulemust ConvNeXt alternatiividest paremini, kuigi ConvNeXt mudelid suudavad üksikmudelitasandil edestada CNN-Deep-Attn variante. \textbf{Teiseks} näitavad nad, et lõpliku tuvastusahela tootmisversioonis on otstarbekas asendada lihtne pehme hääletus kaalutud hääletuse või logistilise regressiooni virnaansambliga (mõlemad annavad praktiliselt sama tulemuse, kuid kaalutud hääletus on tõlgendatavam ja arvutuslikult lihtsam), mis annab F1-skoorile umbes $+0{,}004$ punkti suuruse paranduse usaldusväärsel statistilisel alusel ($p<0{,}001$).
 
 \paragraph{Esialgne märgistamisansambel }
 
