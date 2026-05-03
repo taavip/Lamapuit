@@ -24,6 +24,8 @@ Esialgse mudeli arvutatud klassi aktiveerimiskaardid (ingl \textit{class activat
 Lõpliku ansamblemudeli arhitektuuri valik tugineb kolmeetapilisele otsinguprotsessile: esialgne märgistamisansambel, laiapõhjaline arhitektuuride võrdlusotsing ning lõplik ümberõpe ruumiliselt stratifitseeritud andmestikul.
 
 \paragraph{Mudeli arhitektuuride otsing V1.}
+% Expanded: detailed explanation of 35 experiments covering 16 architectures
+% CNN-Deep-Attn variants (regular/headlight/headwide) + 12 pretrained models
 
 Paralleelselt märgistusprotsessiga viidi läbi laiapõhjaline arhitektuuride võrdlusotsing (V1), kus 19\,812 märgistuse andmestikul (11 rasterikiht, klass-suhe no\_cdw:cdw $\approx 5{,}49$) hinnati kokku 35 treeningkatset 16 arhitektuuris. Testitud arhitektuurid jagunesid kahte rühma: (1) neli kohandatavat \textbf{CNN-Deep-Attn} varianti ning (2) 12 \textbf{ImageNeti eelõpitud} arhitektuuri. Lisaks varieeriti kaofunktsioone (ristentroopia, fokaalne), andmesuurendust (MixUp, MixUp+SWA) ning testiaegse augmentatsiooni (\textit{TTA}) kasutamist.
 
@@ -33,6 +35,8 @@ Parimate tulemustega viiemudelilise pehme hääletuse ansamblil saavutati testva
 
 \begin{table}[h!]
 \centering
+% Table expanded: added best non-CNN architectures (ConvNeXt, EfficientNet, DenseNet)
+% from V1 CV results to show alternatives to CNN-Deep-Attn family
 \caption{Mudeli otsingu V1 tulemusnäitajad (19\,812 treeningtiili, 11 rasterikiht). Testvalimi tulemused põhinevad 2\,186 tiilil; ${}^{\dagger}$ tähistab 5-kordse ristvalideerimise keskmist (mudelit ei hinnatud eraldi testvalimil).}
 \label{tab:model-search-v1}
 \begin{tabular}{lllll}
@@ -58,7 +62,7 @@ DenseNet-121${}^{\dagger}$    & 0,9912 & 0,9454 & 0,9640 & 0,9276 \\
 \end{table}
 
 
-\paragraph{Ansambli liikme ja agregeerimismeetodi rigorne võrdlusuuring.}
+\paragraph{Masinõppe mudelit, ansamblite ja liitmismeetodite võrdlus.}
 
 Tabelis~\ref{tab:model-search-v1} esitatud V1 tulemused näitasid, et ansamblistrateegia ületab parimat üksikmudelit, kuid jäi vastuseta kaks põhimõttelist küsimust: milline arhitektuur sobib kõige paremini neljanda ansambli liikmena CNN-Deep-Attn~$\times$~3 kõrvale ning milline agregeerimismeetod (lihtne pehme hääletus, kaalutud hääletus või virnaansambel) annab parima tulemuse. Nende küsimuste teaduslikuks vastamiseks viidi läbi V1 katset jätkav rigorne võrdlusuuring, mille metoodika on kavandatud tagamaks tulemuste statistiline usaldusväärsus.
 
