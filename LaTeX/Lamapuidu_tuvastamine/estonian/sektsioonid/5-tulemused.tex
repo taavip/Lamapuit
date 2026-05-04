@@ -100,26 +100,6 @@ Placeholder}}
 
 Ansambli lähenemine aitas eeskätt vähendada valepositiivseid ennustusi raskesti eristatavatel maastikel, näiteks tugeva noorendikuga kaetud raiesmikel, kus üksikmudelid võiksid takerduda spetsiifilisse lokaalsesse müra taha. Nelja mudeli (3$\times$ CNN, 1$\times$ EfficientNet) keskmistatud ennustus silus efektiivselt potentsiaalsed anomaaliad.
 
-\subsection{Punktipilve tiheduse mõju}
-
-Kuna töö lähteülesanne keskendus lamapuidu tuvastamisele operatiivsetel lennutingimustel (keskmiselt 4--8 pts/m$^2$), on kriitilise tähtsusega mõista, millistel tihedusastmetel mudeli sooritus hakkab degradeeruma. Eesti metsaoludes jagunevad analüüsitud alad suuresti kolme eeltöödeldud tihedusklassi asukohtadesse. 
-
-Järgnev tabel (Tabel~\ref{tab:density-effect}) jaotab F1-skoori ja saagis (ingl \textit{recall}) kolme peamise punktipilve tihedusklassi vahel analüüsitud valimis. (Märkus: numbrid lisatakse skripti analüüsi tulemusel).
-
-\begin{table}[h!]
-\centering
-\caption{Mudeli tulemusnäitajad erinevate keskmiste punktipilve tiheduste juures (valimi põhjal).}
-\label{tab:density-effect}
-\begin{tabular}{lccc}
-\hline
-\textbf{Tihedus} & \textbf{Alade arv } & \textbf{F1-skoor} & \textbf{Saagis (Recall)} \\
-\hline
-18--20 pts/m$^2$ &  &  &  \\
-20--30 pts/m$^2$ &  &  &  \\
-30--100+ pts/m$^2$ &  &  &  \\
-\hline
-\end{tabular}
-\end{table}
 
 \subsection{Vigade analüüs}
 
