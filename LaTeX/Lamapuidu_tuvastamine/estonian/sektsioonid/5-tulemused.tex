@@ -8,34 +8,82 @@ Selles peatükis esitatakse lamapuidu tuvastamise lõpliku mudeli kvantitatiivse
 
 Metoodikas kirjeldatud kolmeetapiline otsinguprotsess (vt jaotis~\ref{mudeli-valik}) võimaldas süstemaatiliselt põhjendada lõpliku ansamblemudeli arhitektuuri.
 
-Esialgne märgistamisansambel (märts 2026, 15\,850 treeningtiili) saavutas testvalimil (2\,186 tiili) F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987 (Tabel~\ref{tab:initial-ensemble}). Ansambel ületas kõiki üksikmudeleid: parim CNN-Deep-Attn (seeme 44) saavutas valideerimisvalimil F1-skoori 0,9596, EfficientNet-B2 aga 0,9463 -- seejuures andis nelja mudeli TTA-põhine keskmistamine selge lisaväärtuse.
-
-% V1 results: CNN-Deep-Attn dominance confirmed, ensemble strategy validated
-Mudeli otsing V1 (19\,812 tiili, 11 rasterikiht) kinnitas CNN-Deep-Attn perekonna juhtpositsiooni: viie parima mudeli virnaansambel saavutas testvalimil F1-skoori 0,9672 ning pehme hääletus F1-skoori 0,9646, ületades mõlemad parima üksikmudeli (CNN-Deep-Attn-headwide: 0,9644) -- tõendus, et ensamblistrateegia annab selles ülesandes järjekindlalt parema tulemuse kui ükski üksik mudel (Tabel~\ref{tab:model-search-v1}).
-
-% Ensemble comparison results: rigorous evaluation of 4th member + aggregation method
-% 5×5 repeated CV with threshold tuning and Wilcoxon significance testing
-% Winner: EfficientNet-B2 + weighted voting (F1=0.9866)
-Metoodikas kirjeldatud rigorne võrdlusuuring neljanda ansambli liikme ja agregeerimismeetodi valikuks (vt Tabel~\ref{tab:ensemble-comparison-v2}) näitas, et kõik täiustatud agregeerimismeetodid edestavad statistiliselt oluliselt lihtsat pehmet hääletust ($p<0{,}01$ kõigil kandidaatidel). Parima üldise tulemuse saavutas \textbf{EfficientNet-B2 koos kaalutud hääletusega}: F1-skoor $0{,}9866 \pm 0{,}0042$, 95\% usaldusvahemik [0,9849; 0,9883], AUC $0{,}9810$. Kandidaatide ristvõrdlusel edestas EfficientNet-B2 ConvNeXt-tiny mudelit statistiliselt oluliselt ($\Delta F1 = +0{,}0029$, $p<0{,}001$) ning ConvNeXt-small mudelit ($\Delta F1 = +0{,}0008$, $p=0{,}008$). Need tulemused kinnitavad empiiriliselt EfficientNet-B2 sobivust neljandaks ansambli liikmeks ning näitavad, et lõpliku tuvastusahela tootmisversioonis on otstarbekas asendada lihtne pehme hääletus kaalutud hääletusega, mis annab F1-skoorile umbes $+0{,}004$ punkti paranduse usaldusväärsel statistilisel alusel ($p<0{,}001$). Kaalutud hääletus on logistilise regressiooni virnaansambliga praktiliselt samaväärne ($\Delta F1 < 0{,}001$), kuid arvutuslikult lihtsam ja tõlgendatavam.
-
-Mudeli otsingus V2 (35\,832 tiili, 111 rasterikiht) ilmnes ConvNeXt perekonna üleolek üksikmudelitasandil: TTA-ga ConvNeXt-tiny saavutas ristvalideerimise F1-skoori 0,9233, ületades selgelt kõiki CNN-Deep-Attn variante. Tabel~\ref{tab:model-search-v2} võrdleb V2 esimese etapi tipparhitektuure. Kuna V2 teine etapp jäi pooleli (8/36 eksperimenti) ning ConvNeXt-põhist ansamblit ei testitud, jäi lõplikuks valikuks märtsis 2026 kinnitatud 4-mudeline ansambel, mis lõplikus ümberõppes (67\,290 treeningtiili, ruumiline jagamine E07) saavutas F1-skoori 0,9819 ja ROC AUC väärtuse 0,9885 -- ületades esialgset märgistamisansamblit 1,2 protsendipunkti võrra.
+Esialgne märgistamisansambel (märts 2026, 15\,850 treeningtiili) saavutas testvalimil (2\,186 tiili) F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987. Ansambel ületas kõiki üksikmudeleid: parim CNN-Deep-Attn (seeme 44) saavutas valideerimisvalimil F1-skoori 0,9596, EfficientNet-B2 aga 0,9463 -- seejuures andis nelja mudeli TTA-põhine keskmistamine selge lisaväärtuse (Tabel~\ref{tab:initial-ensemble}).
 
 \begin{table}[h!]
 \centering
-\caption{Mudeli otsingu V2 esimese etapi tipptulemused ristvalideerimise F1-skoori järgi (35\,832 tiili, 111 rasterikiht).}
-\label{tab:model-search-v2}
-\begin{tabular}{lllll}
+\caption{Esialgse märgistamisansambli üksikmudelite tulemusnäitajad valideerimisvalimil.}
+\label{tab:initial-ensemble}
+\begin{tabular}{llll}
 \hline
-\textbf{Arhitektuur} & \textbf{Kaofunktsioon} & \textbf{Reg.} & \textbf{CV AUC} & \textbf{CV F1} \\
+\textbf{Mudel} & \textbf{Val AUC} & \textbf{Val F1} & \textbf{Otsustuslävi} \\
 \hline
-ConvNeXt-tiny  & CE     & MixUp     & 0,9868 & 0,9180 \\
-ConvNeXt-small & CE     & MixUp     & 0,9887 & 0,9178 \\
-EfficientNet-B2 & CE    & MixUp     & 0,9898 & 0,9162 \\
-CNN-Deep-Attn (dropout) & CE & MixUp & 0,9901 & 0,9136 \\
-CNN-Deep-Attn  & CE     & MixUp     & 0,9901 & 0,9126 \\
+CNN-Deep-Attn (seeme 42) & 0,9969 & 0,9580 & 0,87 \\
+CNN-Deep-Attn (seeme 43) & 0,9972 & 0,9570 & 0,81 \\
+CNN-Deep-Attn (seeme 44) & 0,9974 & 0,9596 & 0,83 \\
+EfficientNet-B2           & 0,9963 & 0,9463 & 0,72 \\
+\hline
+\textbf{Ansambel (TTA)}   & \textbf{0,9987} & \textbf{0,9701} & \textbf{0,68} \\
 \hline
 \end{tabular}
 \end{table}
+
+Mudeli otsing V1 (19\,812 tiili, 11 rasterikiht) kinnitas CNN-Deep-Attn perekonna juhtpositsiooni: viie parima mudeli virnaansambel saavutas testvalimil F1-skoori 0,9672 ning pehme hääletus F1-skoori 0,9646, ületades mõlemad parima üksikmudeli (CNN-Deep-Attn-headwide: 0,9644) -- tõendus, et ensamblistrateegia annab selles ülesandes järjekindlalt parema tulemuse kui ükski üksik mudel (Tabel~\ref{tab:model-search-v1}).
+
+\begin{table}[h!]
+\centering
+\caption{Mudeli otsingu V1 tulemusnäitajad (19\,812 treeningtiili, 11 rasterikiht). Testvalimi tulemused põhinevad 2\,186 tiilil; ${}^{\dagger}$ tähistab 5-kordse ristvalideerimise keskmist (mudelit ei hinnatud eraldi testvalimil).}
+\label{tab:model-search-v1}
+\begin{tabular}{lllll}
+\hline
+\textbf{Mudel / ansambel} & \textbf{AUC} & \textbf{F1} & \textbf{Täpsus} & \textbf{Tagasikutse} \\
+\hline
+\multicolumn{5}{l}{\textit{Testvalimi tulemused}} \\
+\hline
+Virnaansambel (top-5)       & 0,9982 & 0,9672 & 0,9789 & 0,9558 \\
+Pehme hääletus (top-5)      & 0,9982 & 0,9646 & 0,9646 & 0,9646 \\
+CNN-Deep-Attn-headwide      & 0,9977 & 0,9644 & 0,9701 & 0,9587 \\
+CNN-Deep-Attn               & 0,9973 & 0,9630 & 0,9673 & 0,9587 \\
+CNN-Deep-Attn-headlight     & 0,9974 & 0,9614 & 0,9672 & 0,9558 \\
+\hline
+\multicolumn{5}{l}{\textit{Parimad alternatiivarhitektuurid, ristvalideerimine (${}^{\dagger}$)}} \\
+\hline
+ConvNeXt-small${}^{\dagger}$  & 0,9922 & 0,9546 & 0,9677 & 0,9420 \\
+ConvNeXt-tiny${}^{\dagger}$   & 0,9935 & 0,9523 & 0,9626 & 0,9427 \\
+EfficientNet-B2${}^{\dagger}$ & 0,9953 & 0,9493 & 0,9546 & 0,9440 \\
+DenseNet-121${}^{\dagger}$    & 0,9912 & 0,9454 & 0,9640 & 0,9276 \\
+\hline
+\end{tabular}
+\end{table}
+
+Metoodikas kirjeldatud rigorne võrdlusuuring neljanda ansambli liikme ja agregeerimismeetodi valikuks näitas, et kõik täiustatud agregeerimismeetodid edestavad statistiliselt oluliselt lihtsat pehmet hääletust ($p<0{,}01$ kõigil kandidaatidel). Parima üldise tulemuse saavutas \textbf{EfficientNet-B2 koos kaalutud hääletusega}: F1-skoor $0{,}9866 \pm 0{,}0042$, 95\% usaldusvahemik [0,9849; 0,9883], AUC $0{,}9810$ (Tabel~\ref{tab:ensemble-methods-comparison}). Kandidaatide ristvõrdlusel edestas EfficientNet-B2 ConvNeXt-tiny mudelit statistiliselt oluliselt ($\Delta F1 = +0{,}0029$, $p<0{,}001$) ning ConvNeXt-small mudelit ($\Delta F1 = +0{,}0008$, $p=0{,}008$). Need tulemused kinnitavad empiiriliselt EfficientNet-B2 sobivust neljandaks ansambli liikmeks ning näitavad, et lõpliku tuvastusahela tootmisversioonis on otstarbekas asendada lihtne pehme hääletus kaalutud hääletusega, mis annab F1-skoorile umbes $+0{,}004$ punkti paranduse usaldusväärsel statistilisel alusel ($p<0{,}001$). Kaalutud hääletus on logistilise regressiooni virnaansambliga praktiliselt samaväärne ($\Delta F1 < 0{,}001$), kuid arvutuslikult lihtsam ja tõlgendatavam.
+
+\begin{table}[h!]
+\centering
+\caption{Ansambli agregeerimismeetodite rigorne võrdlus 5$\times$5 ristvalideerimisel (25 hindamist meetodi kohta). Kõik täiustatud meetodid edestavad lihtsat pehmet hääletust statistiliselt olulisel määral (paaritud Wilcoxoni test).}
+\label{tab:ensemble-methods-comparison}
+\begin{tabular}{llcccc}
+\hline
+\textbf{Kandidaat} & \textbf{Meetod} & \textbf{F1 (keskm. $\pm$ std)} & \textbf{F1 95\% UV} & \textbf{AUC} & \textbf{$p$ vs lihtne} \\
+\hline
+EfficientNet-B2 & Pehme hääletus           & $0{,}9824 \pm 0{,}0049$ & [0,9804; 0,9843] & 0,9761 & --- \\
+EfficientNet-B2 & Pehme h. (häälest.~lävi) & $0{,}9837 \pm 0{,}0045$ & [0,9819; 0,9855] & 0,9761 & 0,0011 ** \\
+EfficientNet-B2 & \textbf{Kaalutud hääletus} & $\mathbf{0{,}9866 \pm 0{,}0042}$ & \textbf{[0,9849; 0,9883]} & \textbf{0,9810} & $\mathbf{<0{,}0001}$ *** \\
+EfficientNet-B2 & Virnaansambel (LR)       & $0{,}9865 \pm 0{,}0040$ & [0,9849; 0,9881] & 0,9810 & $<0{,}0001$ *** \\
+EfficientNet-B2 & Virnaansambel (MLP)      & $0{,}9855 \pm 0{,}0045$ & [0,9837; 0,9873] & 0,9802 & $<0{,}0001$ *** \\
+\hline
+ConvNeXt-tiny   & Pehme hääletus           & $0{,}9821 \pm 0{,}0047$ & [0,9802; 0,9839] & 0,9754 & --- \\
+ConvNeXt-tiny   & Virnaansambel (LR)       & $0{,}9836 \pm 0{,}0042$ & [0,9819; 0,9853] & 0,9778 & 0,0002 *** \\
+ConvNeXt-tiny   & Virnaansambel (MLP)      & $0{,}9840 \pm 0{,}0041$ & [0,9824; 0,9857] & 0,9772 & 0,0014 ** \\
+\hline
+ConvNeXt-small  & Pehme hääletus           & $0{,}9807 \pm 0{,}0048$ & [0,9788; 0,9825] & 0,9757 & --- \\
+ConvNeXt-small  & Virnaansambel (LR)       & $0{,}9857 \pm 0{,}0038$ & [0,9842; 0,9872] & 0,9789 & $<0{,}0001$ *** \\
+ConvNeXt-small  & Kaalutud hääletus        & $0{,}9855 \pm 0{,}0038$ & [0,9839; 0,9870] & 0,9789 & $<0{,}0001$ *** \\
+\hline
+\end{tabular}
+\end{table}
+
+Märtsis 2026 kinnitatud 4-mudeline ansambel (kolm CNN-Deep-Attn, üks EfficientNet-B2), mille treenimiseks kasutati 67\,290 märgistust ruumiline jagamisel (E07), saavutas lõplikus ümberõppes F1-skoori 0,9819 ja ROC AUC väärtuse 0,9885 -- ületades esialgset märgistamisansamblit 1,2 protsendipunkti võrra.
 
 \subsection{Mudeli sooritus ja valideerimine}
 

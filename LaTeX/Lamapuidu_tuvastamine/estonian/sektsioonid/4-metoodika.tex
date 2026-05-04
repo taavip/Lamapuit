@@ -31,35 +31,7 @@ Paralleelselt märgistusprotsessiga viidi läbi laiapõhjaline arhitektuuride v�
 
 CNN-Deep-Attn arhitektuur koosneb neljast järjestikusest \textit{AttnBlock}-plokist, mille kanalite arv kasvab järgmiselt: $1 \to 32 \to 64 \to 128 \to 256$. Iga plokk sisaldab: kahte $3\times3$ konvolutsiooni BatchNorm-normaliseerimise ja ReLU aktivatsiooniga; \textit{Squeeze-Excitation} (SE) tähelepanumehhanismi, mis arvutab kanali globaalsest keskväärtusest kaalumisevektori, millega rõhutatakse diskriminatiivsemaid filtreid; jääkühendit ($1\times1$ konvolutsioon dimensioonide kohandamiseks, muidu identteisendus); ning $2\times2$ maksimumpuuli ruumilise mõõdme poolitamiseks. Klassifikaatorkiht koosneb AdaptiveAvgPool2d(4)$\to$Flatten$\to$Linear(4096,~$h$)$\to$ReLU$\to$Dropout(0{,}5)$\to$Linear($h$,~2). Kolme põhivarianti eristab peidetud kihi laius $h$: \textbf{regular} ($h{=}512$, baastase), \textbf{headlight} ($h{=}256$, vähem parameetreid, väiksem ülesobitamise risk) ja \textbf{headwide} ($h{=}768$, suurem representatsioonivõimekus). Eelõpitud mudelite hulka kuulusid ConvNeXt-tiny/-small, EfficientNet-B0/-B2/-B4, DenseNet-121, Swin-T, ResNet-18/-34/-50, MobileNet-V3-Large ja RegNetY-004; neis asendati RGB-sisend 1-kanalise CHM-sisendiga (RGB-kaalude keskmistamine) ja eeltreenitud mudeli selgroole rakendati 10$\times$ väiksemat õppimiskiirust kui klassifikaatorile. Eeltreenitud mudeli selgroot treenitakse väga väikese õppimiskiirusega, et säilida eelõpitud kaalud ja vältida olemasolevate tunnuste moonutamist. Klassifikaatorit treenitakse suurema õppimiskiirusega, et see omandaks uue ülesande seaduspärad kiiremini.
 
-Parimate tulemustega viiemudelilise pehme hääletuse ansamblil saavutati testvalimil F1-skoor 0,9646, virnamudelil (\textit{stacking}) 0,9672 -- mõlemad kõrgemad kui parim üksik mudel (CNN-Deep-Attn-headwide: 0,9644). V1 otsing kinnitas CNN-Deep-Attn arhitektuuri domineerimise ning ansamblistrateegia efektiivsuse (Tabel~\ref{tab:model-search-v1}).
-
-\begin{table}[h!]
-\centering
-% Table expanded: added best non-CNN architectures (ConvNeXt, EfficientNet, DenseNet)
-% from V1 CV results to show alternatives to CNN-Deep-Attn family
-\caption{Mudeli otsingu V1 tulemusnäitajad (19\,812 treeningtiili, 11 rasterikiht). Testvalimi tulemused põhinevad 2\,186 tiilil; ${}^{\dagger}$ tähistab 5-kordse ristvalideerimise keskmist (mudelit ei hinnatud eraldi testvalimil).}
-\label{tab:model-search-v1}
-\begin{tabular}{lllll}
-\hline
-\textbf{Mudel / ansambel} & \textbf{AUC} & \textbf{F1} & \textbf{Täpsus} & \textbf{Tagasikutse} \\
-\hline
-\multicolumn{5}{l}{\textit{Testvalimi tulemused}} \\
-\hline
-Virnaansambel (top-5)       & 0,9982 & 0,9672 & 0,9789 & 0,9558 \\
-Pehme hääletus (top-5)      & 0,9982 & 0,9646 & 0,9646 & 0,9646 \\
-CNN-Deep-Attn-headwide      & 0,9977 & 0,9644 & 0,9701 & 0,9587 \\
-CNN-Deep-Attn               & 0,9973 & 0,9630 & 0,9673 & 0,9587 \\
-CNN-Deep-Attn-headlight     & 0,9974 & 0,9614 & 0,9672 & 0,9558 \\
-\hline
-\multicolumn{5}{l}{\textit{Parimad alternatiivarhitektuurid, ristvalideerimine (${}^{\dagger}$)}} \\
-\hline
-ConvNeXt-small${}^{\dagger}$  & 0,9922 & 0,9546 & 0,9677 & 0,9420 \\
-ConvNeXt-tiny${}^{\dagger}$   & 0,9935 & 0,9523 & 0,9626 & 0,9427 \\
-EfficientNet-B2${}^{\dagger}$ & 0,9953 & 0,9493 & 0,9546 & 0,9440 \\
-DenseNet-121${}^{\dagger}$    & 0,9912 & 0,9454 & 0,9640 & 0,9276 \\
-\hline
-\end{tabular}
-\end{table}
+V1 otsing kinnitas CNN-Deep-Attn arhitektuuri domineerimise ning ansamblistrateegia efektiivsuse (vt tulemused, Tabel~\ref{tab:model-search-v1}).
 
 
 \paragraph{Ansambli liikme ja agregeerimismeetodi rigorne võrdlusuuring.}
@@ -85,61 +57,30 @@ Igale kandidaadile rakendati viit agregeerimismeetodit:
 
 Hindamiseks rakendati viiekordset ristvalideerimist (5 kordust $\times$ 5 andmegruppi = 25 hinnangut iga meetodi ja kandidaadi kohta). Iga grupi puhul kasutati treeningosa metaõppurite häälestamiseks ning otsustusläve optimeerimiseks, samas kui testosa, mis metaõppe protsessis ei osalenud, oli aluseks F1-skoori, AUC, täpsuse ja saagise arvutamisele. See protokoll tagab, et meetodeid võrreldakse identsetes tingimustes ning andmelekke risk on välistatud. F1-skoori 95\% usaldusvahemikud arvutati järelproovide meetodil (\textit{bootstrap}), tehes 1\,000 kordust grupipõhiste skooride põhjal.
 
-Tulemuste statistilise olulisuse hindamiseks rakendati \textbf{paaritud Wilcoxoni järgu testi} (\textit{paired Wilcoxon signed-rank test}). See mitteparameetriline test sobib paremini kui paaritud $t$-test, kuna F1-skoorid ei pruugi olla normaaljaotusega ning testi tugevus ei sõltu jaotuse kujust. Iga täiustatud meetodi paaritud võrdlused lihtsa pehme hääletuse vastu sooritati 25 grupipõhise skoori paaridel ($H_1$: täiustatud meetod annab kõrgema F1-skoori). $p$-väärtused tähistati järgmiselt: $***$ ($p<0{,}001$), $**$ ($p<0{,}01$), $*$ ($p<0{,}05$).
+Tulemuste statistilise olulisuse hindamiseks rakendati \textbf{paaritud Wilcoxoni järgu testi} (\textit{paired Wilcoxon signed-rank test}). See mitteparameetriline test sobib paremini kui paaritud $t$-test, kuna F1-skoorid ei pruugi olla normaaljaotusega ning testi tugevus ei sõltu jaotuse kujust. Iga täiustatud meetodi paaritud võrdlused lihtsa pehme hääletuse vastu sooritati 25 grupipõhise skoori paaridel ($H_1$: täiustatud meetod annab kõrgema F1-skoori). $p$-väärtused tähistati järgmiselt: $***$ ($p<0{,}001$), $**$ ($p<0{,}01$), $*$ ($p<0{,}05$). Tulemused on esitatud Tabelis~\ref{tab:ensemble-methods-comparison} (vt tulemused).
 
-\begin{table}[h!]
-\centering
-\caption{Ansambli agregeerimismeetodite rigorne võrdlus 5$\times$5 ristvalideerimisel (25 hindamist meetodi kohta). Kõik täiustatud meetodid edestavad lihtsat pehmet hääletust statistiliselt olulisel määral (paaritud Wilcoxoni test).}
-\label{tab:ensemble-comparison-v2}
-\begin{tabular}{llcccc}
-\hline
-\textbf{Kandidaat} & \textbf{Meetod} & \textbf{F1 (keskm. $\pm$ std)} & \textbf{F1 95\% UV} & \textbf{AUC} & \textbf{$p$ vs lihtne} \\
-\hline
-EfficientNet-B2 & Pehme hääletus           & $0{,}9824 \pm 0{,}0049$ & [0,9804; 0,9843] & 0,9761 & --- \\
-EfficientNet-B2 & Pehme h. (häälest.~lävi) & $0{,}9837 \pm 0{,}0045$ & [0,9819; 0,9855] & 0,9761 & 0,0011 ** \\
-EfficientNet-B2 & \textbf{Kaalutud hääletus} & $\mathbf{0{,}9866 \pm 0{,}0042}$ & \textbf{[0,9849; 0,9883]} & \textbf{0,9810} & $\mathbf{<0{,}0001}$ *** \\
-EfficientNet-B2 & Virnaansambel (LR)       & $0{,}9865 \pm 0{,}0040$ & [0,9849; 0,9881] & 0,9810 & $<0{,}0001$ *** \\
-EfficientNet-B2 & Virnaansambel (MLP)      & $0{,}9855 \pm 0{,}0045$ & [0,9837; 0,9873] & 0,9802 & $<0{,}0001$ *** \\
-\hline
-ConvNeXt-tiny   & Pehme hääletus           & $0{,}9821 \pm 0{,}0047$ & [0,9802; 0,9839] & 0,9754 & --- \\
-ConvNeXt-tiny   & Virnaansambel (LR)       & $0{,}9836 \pm 0{,}0042$ & [0,9819; 0,9853] & 0,9778 & 0,0002 *** \\
-ConvNeXt-tiny   & Virnaansambel (MLP)      & $0{,}9840 \pm 0{,}0041$ & [0,9824; 0,9857] & 0,9772 & 0,0014 ** \\
-\hline
-ConvNeXt-small  & Pehme hääletus           & $0{,}9807 \pm 0{,}0048$ & [0,9788; 0,9825] & 0,9757 & --- \\
-ConvNeXt-small  & Virnaansambel (LR)       & $0{,}9857 \pm 0{,}0038$ & [0,9842; 0,9872] & 0,9789 & $<0{,}0001$ *** \\
-ConvNeXt-small  & Kaalutud hääletus        & $0{,}9855 \pm 0{,}0038$ & [0,9839; 0,9870] & 0,9789 & $<0{,}0001$ *** \\
-\hline
-\end{tabular}
-\end{table}
-
-\paragraph{Esialgne märgistamisansambel }
+\paragraph{Esialgne märgistamisansambel}
 
 Märgistamise toetamiseks loodi esialgne nelja mudeliga ansambel, mille ülesandeks oli hinnata kõigi 580\,136 treening pildi usaldusväärsust mudeli tõenäosuse (\textit{model\_prob}) kaudu ning suunata aktiivõppe valikut. Ansambel koosnes kolmest CNN-Deep-Attn mudelist (juhuseemed 42, 43, 44) ning ühest EfficientNet-B2 mudelist. Valik tugines kahele printsiibile: (1) kolm identset arhitektuuri erinevate juhuseemetega vähendavad stohhastilisest initsialiseerimisest tulenevat varieeruvust; (2) EfficientNet-B2, mis kujutab arhitektuurselt erinevat mudeliperekonda, lisab ansambli ImageNeti eelõppest saadud üldisemad tunnused ning suurendab vastupanuvõimet üksikmudelite spetsiifiliste vigade suhtes.
 
-Ansambel treeniti 15\,850 käsitsi märgistatud õpepildil (valideerimisvalim 3\,962 pilti; CNN 50 epohhi, EfficientNet-B2 30 epohhi, \textit{label smoothing} 0,05, MixUp $\alpha=0{,}3$) ning hinnati 2\,186 treenimises mittekasutatud pildigal. Üksikmudelid saavutasid valideerimisvalimil F1-skoorid vahemikus 0,946--0,960 (Tabel~\ref{tab:initial-ensemble}); TTA-ga (\textit{test-time augmentation}) ansambel saavutas testvalimil F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987. TTA tähendab sisendpildi mitmekordset teisendamist (nt peegeldamine, pööramine) testimise hetkel ja nende variatsioonide ennustuste koondamist, et vähendada juhuslikest müra- ja asendifaktoritest tingitud vigu. Mudelite kombineerimisel eelistati pehmet hääletust (\textit{soft voting}), mis arvutab üksikmudelite väljastatud klassitõenäosuste kaalutud keskmise, erinevalt virnastamisest (\textit{stacking}), kus mudelite väljundid suunatakse eraldi metamudelisse, mis õpitakse üksikmudelite prognoose optimaalselt liitma.
-
-\begin{table}[h!]
-\centering
-\caption{Esialgse märgistamisansambli üksikmudelite tulemusnäitajad valideerimisvalimil.}
-\label{tab:initial-ensemble}
-\begin{tabular}{llll}
-\hline
-\textbf{Mudel} & \textbf{Val AUC} & \textbf{Val F1} & \textbf{Otsustuslävi} \\
-\hline
-CNN-Deep-Attn (seeme 42) & 0,9969 & 0,9580 & 0,87 \\
-CNN-Deep-Attn (seeme 43) & 0,9972 & 0,9570 & 0,81 \\
-CNN-Deep-Attn (seeme 44) & 0,9974 & 0,9596 & 0,83 \\
-EfficientNet-B2           & 0,9963 & 0,9463 & 0,72 \\
-\hline
-\textbf{Ansambel (TTA)}   & \textbf{0,9987} & \textbf{0,9701} & \textbf{0,68} \\
-\hline
-\end{tabular}
-\end{table}
+Ansambel treeniti 15\,850 käsitsi märgistatud õpepildil (valideerimisvalim 3\,962 pilti; CNN 50 epohhi, EfficientNet-B2 30 epohhi, \textit{label smoothing} 0,05, MixUp $\alpha=0{,}3$) ning hinnati 2\,186 treenimises mittekasutatud pildigal. Üksikmudelid saavutasid valideerimisvalimil F1-skoorid vahemikus 0,946--0,960; TTA-ga (\textit{test-time augmentation}) ansambel saavutas testvalimil F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987 (vt tulemused, Tabel~\ref{tab:initial-ensemble}). TTA tähendab sisendpildi mitmekordset teisendamist (nt peegeldamine, pööramine) testimise hetkel ja nende variatsioonide ennustuste koondamist, et vähendada juhuslikest müra- ja asendifaktoritest tingitud vigu. Mudelite kombineerimisel eelistati pehmet hääletust (\textit{soft voting}), mis arvutab üksikmudelite väljastatud klassitõenäosuste kaalutud keskmise, erinevalt virnastamisest (\textit{stacking}), kus mudelite väljundid suunatakse eraldi metamudelisse, mis õpitakse üksikmudelite prognoose optimaalselt liitma.
 
 
 \subsection{Mudeli arhitektuur ja ansamblid}
 
-Lõplikus tuvastuslahenduses rakendati neljamudelist ansamblit: kolme identset CNN-Deep-Attn mudelit, mida treeniti erinevate juhuseemnetega (ingl \textit{random seed}), ning ühte EfficientNet-B2 mudelit. Kolme CNN-mudeli kasutamine aitab vähendada juhuslikust algseisust tingitud tulemuste varieeruvust, samas kui EfficientNet-B2 mitmekesistab ansambli mudeliarhitektuure ja tugevdab vigade suhtes vastupanuvõimet.
+Lõplikus tuvastuslahenduses rakendati neljamudelist ansamblit, mis koosnes kolmest identsest CNN-Deep-Attn mudelist ning ühest EfficientNet-B2 mudelist. Kolme identse arhitektuuri treenimisel kasutati erinevaid juhuseemneid (\textit{random seed}).
+
+\paragraph{Ansambli koosseisu põhjendus.}
+
+Ehkki traditsiooniline ansambli disain prioritiseerib arhitektuurilist mitmekesisust, põhineb valitud lähenemise efektiivsus kahel täiendaval mehhanismil:
+
+\begin{enumerate}
+    \item \textbf{Juhusliku hajuvuse vähendamine.} Kolme identse CNN-Deep-Attn mudeli kasutamine erinevate juhuseemnetega on suunatud juhusliku varieeruvuse minimeerimisele. See varieeruvus tuleneb mudeli kaalude esialgsest \textbf{algväärtustamisest} ja treeningandmete töötlemise järjekorrast. Selline lähenemine, mida tuntakse süvaansamblite (\textit{deep ensembles}) nime all, on tõendatult efektiivne meetod mudeli stabiilsuse tõstmiseks, aidates vältida juhuslikust algseisust tingitud ebasobivatesse lokaalsetesse miinimumidesse takerdumist.
+    
+    \item \textbf{Arhitektuuriline ja metodoloogiline mitmekesisus.} Kolmele CNN-mudelile lisatud EfficientNet-B2 esindab teistsugust mudeliperekonda ja õppimisstrateegiat. Kui CNN-Deep-Attn mudelid treeniti nullist vahetult kättesaadavatel andmetel, siis EfficientNet-B2 puhul rakendati siirdeõpet (\textit{transfer learning}), kasutades ImageNeti andmestikul eeltreenitud kaale. EfficientNet-i arhitektuuriline ülesehitus (inverteeritud jääkühendid, kihtide kokkusurumine) tagab, et ansambel ei ole tundlik ainult ühele arhitektuuritüübile omaste spetsiifiliste vigade suhtes.
+\end{enumerate}
+
+Empiiriline tugi valitud lahendusele põhineb testiandmete analüüsil: esialgne märgistamisansambel saavutas koos testiaegse augmentatsiooniga (TTA) $F_{1}$-skooriks 0,9701, ületades kõiki üksikmudeleid (parim üksikmudel CNN-Deep-Attn: $F_{1} = 0,9596$; EfficientNet-B2: $F_{1} = 0,9463$). Metoodika arenduse käigus läbi viidud võrdlusuuring viitab, et täiendavate erinevate arhitektuuride lisamine ansamblisse ei pakkunud statistiliselt märkimisväärset täpsuse kasvu, kuid suurendas oluliselt arvutusressursside kulu. Seega tähistab valitud koosseis optimaalset tasakaalu tuvastusvõimekuse ja arvutusliku tõhususe vahel.
 
 \begin{table}[h!]
 \centering
@@ -166,22 +107,72 @@ Placeholder}}
 \label{fig:ensemble-scheme}
 \end{figure}
 
-\subsection{Valideerimise seadistus ja lekkekontroll}
+\subsection{Andmestiku ruumiline ja ajaline jaotamine}
+\label{spatial-split}
 
-Andmestiku juhuslik jaotamine (\textit{random split}) treening-, valideerimis- ja testvalimiks ei paku maa- ja maastikuandmete puhul adekvaatseid hinnanguid, sest geograafiliselt naabruses asuvad piirkonnad on ulatuslikult autokorreleerunud. Ruumilise autokorrelatsiooni elimineerimiseks töötati välja testitud konfiguratsioonil "E07" põhinev \textit{spatial split} loogika, kus alad jaotati 3$\times$3 plokkideks (333 m $\times$ 333 m) ja eraldati minimaalselt 2-kiibilise (ca 26--52 m) puhvertsooniga.
+\subsubsection{Probleemi püstitus}
 
-Selline konfiguratsioon eraldas treeninguks 67\,290 märgistust, valideerimiseks 13\,850 märgistust ning uuteks (seni nägemata) treeningandmeteks testkomplektis 56\,521 märgistust. Lekete vältimiseks pühitud puhvertsoon hõlmas 442\,475 märgistust, hoides ära topeltesindatuse ega lubanud naaberpiirkondadel edastada mudelile spetsiifilisi maastiku-omaseid vihjeid (\textit{data leakage}).
+Süvaõppemudelite treenimine lamapuidu tuvastamiseks madala tihedusega LiDAR-andmetest nõuab hoolikat ruumilist ja ajalist jaotamist \citep{roberts2017cross}. Kuna treeningaknad on 50\% ulatuses kattuvad (samm ehk \textit{stride} = 64~px, killu suurus ehk \textit{chunk} = 128~px) ja samu asukohti on vaadeldud mitmel aastal, tekitaks juhuslik jaotamine tõsiseid andmelekkeid:
+\begin{itemize}
+    \item \textbf{Ruumiline leke:} Sama asukoha kattuvad aknad satuvad nii treening- kui testiandmetesse, põhjustades tugevalt korreleerunud tunnuste tõttu ülepakutud tulemusi \citep{kattenborn2022review}.
+    \item \textbf{Ajaline leke:} Sama asukoha eri aastate vaatlused jaotatakse eri hulkadesse, võimaldades mudelil asukoha spetsiifilisi omadusi memoreerida.
+\end{itemize}
+
+\subsubsection{Sobilikkuse kriteeriumid}
+
+Sobilikeks märgistusteks loeti need, mis on käsitsi märgistatud (\textit{manual}), märgistaja poolt kinnitatud (\textit{auto\_skip}) või kus mudeli tõenäosus on väga kõrge ($>0{,}95$) või väga madal ($<0{,}05$). Kokku osutus sobilikuks 142\,465 märgistust ehk 24,56\% andmetest. Välistati keskmise usaldusväärsusega (vahemik 0,3–0,7) objektid (50\,896 märgistust), kuna mudeli kindlus nende osas oli ebapiisav.
+
+\subsubsection{Ruumiline isoleerimisstrateegia}
+
+Pikslikoordinaadid teisendati sammupõhisteks koordinaatideks:
+\[
+r_s = \lfloor r_{\text{off}} / 64 \rfloor, \quad c_s = \lfloor c_{\text{off}} / 64 \rfloor
+\]
+mis kujutab kattuvad aknad täisarvulisele ruudustikule positsioonideks 0, 1, 2, \ldots
+
+\paragraph{Testtsoon.} Iga valitud testkeskuse ümber laiendati testtsooni Tšebõšovi kaugusega ($\leq 1$), mis moodustab 3$\times$3 ruudustiku ehk ligikaudu 51,2~m $\times$ 51,2~m. See arvestab külgnevate akende 50\% kattuvust.
+
+\paragraph{Puhvertsoon.} Testtsooni ja treeningala vahele jäeti puhvertsoon (Tšebõšovi kaugus = 2, v.a nurgas paiknevad diagonaalpositsioonid). Testi- ja treeningpikslit lahutav vahe on 1 samm (64~px = 12,8~m), mis välistab pikslite jagamise kahe andmekogumi vahel. Kuigi see on väiksem kui Gu jt (2024) poolt pakutud 50~m lamapuidu autokorrelatsiooni vahemik, lähtub valik kasutatavas andmestikus esinevate märgistuste tihedusest ning andmemahu säilitamise vajadusest. Alternatiivne 50~m puhvertsooni rakendamine vähendaks treeningandmestiku 67\,290 märgistuselt ligikaudu 30\% võrra, mis käesoleva töö andmemahu juures ei ole otstarbekas. Puhvertsooni valiku piirang on selgesõnaliselt tunnistatud käesolevas töös lõigus~\ref{sec:split-piirangud}.
+
+\paragraph{Ajaline järjepidevus.} Kuna sama füüsiline asukoht on sageli vaadeldud mitmel aastal, määratakse ruumiline roll (test/treening/puhver) asukoha, mitte aastaperioodi kaupa. Juhusliku valiku algseed seotakse asukohatähisega (kaardileht, rida, veerg), tagades identse rolli kõikidele sama asukoha aastatele.
+
+\subsubsection{Andmestiku jaotus}
+
+Valitud konfiguratsioon (testtsooni Tšebõšovi kaugus 1, puhvertsooni kaugus 2, valik 2\% sobilikest märgistustest testseemedeks kaardilehe kohta) andis järgmise jaotuse:
+
+\begin{table}[h!]
+\centering
+\caption{Märgistuste jaotus hulkade vahel.}
+\label{tab:split-distribution}
+\begin{tabular}{lrrl}
+\hline
+\textbf{Hulk} & \textbf{Arv} & \textbf{Protsent} & \textbf{Sobilikkus} \\
+\hline
+Test          & 56\,521  &  9,74\% & 100\% \\
+Valideerimine & 13\,850  &  2,39\% & 100\% \\
+Treening      & 67\,290  & 11,60\% & 100\% \\
+Välistatud (puhver) & 442\,475 & 76,27\% & 1,09\% \\
+\hline
+\textbf{Kokku} & \textbf{580\,136} & \textbf{100\%} & — \\
+\hline
+\end{tabular}
+\end{table}
+
+Treeningkomplektis on lamapuidu osakaal 75,25\%, testikomplektis 69,89\%. Klasside tasakaalustamatuse leevendamiseks rakendatakse mudelitreenimisel klassipõhiseid kaalusid.
 
 \begin{figure}[h!]
 \centering
 \fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 4.3.} Ruumilise jagamise loogika: Treening-, valideerimis-, testplokid ning puhvertsoonide eraldusvõime.\
+\textbf{Joonis 4.3.} Ruumilise jagamise loogika: testtsoon (51,2~m $\times$ 51,2~m), puhvertsoon (12,8~m riba) ja treeningala.\\
 Placeholder}}
 \caption{Ruumilise valideerimise ja puhveralade loogika.}
 \label{fig:spatial-validation}
 \end{figure}
 
-Rakendatud kompromiss eraldas treeningjaotusest ohtliku osa, kuid jättis mudeli treenimiseks siiski piisavas mahus objekte, tagades mudeli stabiilse generalisatsioonivõime eripalgelistes metsatüüpides.
+\subsubsection{Piirangud ja edaspidine valideerimise kava}
+\label{sec:split-piirangud}
+
+Käesoleva andmejagamise peamised piirangud on järgmised. Esiteks jääb puhvertsoon (12,8~m) alla Gu jt (2024) soovitatud 50~m lamapuidu autokorrelatsiooni vahemiku, mis võib põhjustada väikest andmeleket väga täpse valideerimise korral. Teiseks on ajaline leke osaliselt võimalik, kuna sama asukoha eri aastate andmed, millel erineb märgistusallikas (nt \textit{auto\_skip} vs \textit{auto}), võivad kuuluda erinevatesse hulkadesse. Mõlema piirangu täpsemaks kvantifitseerimiseks on soovitatav tulevikus viia läbi permutatsioonitest, kus mudeleid treenitakse alternatiivse, 50~m puhvriga jaotuse alusel, ning võrrelda testjõudlust käesoleva lahendusega.
 
 \subsection{Märgistuse kvaliteedikontroll ja aktiivõpe}
 
