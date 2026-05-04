@@ -62,23 +62,23 @@ Metoodikas kirjeldatud rigorne võrdlusuuring neljanda ansambli liikme ja agrege
 \centering
 \caption{Ansambli agregeerimismeetodite rigorne võrdlus 5$\times$5 ristvalideerimisel (25 hindamist meetodi kohta). Kõik täiustatud meetodid edestavad lihtsat pehmet hääletust statistiliselt olulisel määral (paaritud Wilcoxoni test).}
 \label{tab:ensemble-methods-comparison}
-\begin{tabular}{llcccc}
+\begin{tabular}{lllcc}
 \hline
-\textbf{Kandidaat} & \textbf{Meetod} & \textbf{F1 (keskm. $\pm$ std)} & \textbf{F1 95\% UV} & \textbf{AUC} & \textbf{$p$ vs lihtne} \\
+\textbf{Kandidaat} & \textbf{Meetod} & \textbf{F1 95\% UV} & \textbf{AUC} & \textbf{$p$ vs lihtne} \\
 \hline
-EfficientNet-B2 & Pehme hääletus           & $0{,}9824 \pm 0{,}0049$ & [0,9804; 0,9843] & 0,9761 & --- \\
-EfficientNet-B2 & Pehme h. (häälest.~lävi) & $0{,}9837 \pm 0{,}0045$ & [0,9819; 0,9855] & 0,9761 & 0,0011 ** \\
-EfficientNet-B2 & \textbf{Kaalutud hääletus} & $\mathbf{0{,}9866 \pm 0{,}0042}$ & \textbf{[0,9849; 0,9883]} & \textbf{0,9810} & $\mathbf{<0{,}0001}$ *** \\
-EfficientNet-B2 & Virnaansambel (LR)       & $0{,}9865 \pm 0{,}0040$ & [0,9849; 0,9881] & 0,9810 & $<0{,}0001$ *** \\
-EfficientNet-B2 & Virnaansambel (MLP)      & $0{,}9855 \pm 0{,}0045$ & [0,9837; 0,9873] & 0,9802 & $<0{,}0001$ *** \\
+EfficientNet-B2 & Pehme hääletus           & [0,9804; 0,9843] & 0,9761 & --- \\
+EfficientNet-B2 & Pehme h. (häälest.~lävi) & [0,9819; 0,9855] & 0,9761 & 0,0011 ** \\
+EfficientNet-B2 & \textbf{Kaalutud hääletus} & \textbf{[0,9849; 0,9883]} & \textbf{0,9810} & $\mathbf{<0{,}0001}$ *** \\
+EfficientNet-B2 & Virnaansambel (LR)       & [0,9849; 0,9881] & 0,9810 & $<0{,}0001$ *** \\
+EfficientNet-B2 & Virnaansambel (MLP)      & [0,9837; 0,9873] & 0,9802 & $<0{,}0001$ *** \\
 \hline
-ConvNeXt-tiny   & Pehme hääletus           & $0{,}9821 \pm 0{,}0047$ & [0,9802; 0,9839] & 0,9754 & --- \\
-ConvNeXt-tiny   & Virnaansambel (LR)       & $0{,}9836 \pm 0{,}0042$ & [0,9819; 0,9853] & 0,9778 & 0,0002 *** \\
-ConvNeXt-tiny   & Virnaansambel (MLP)      & $0{,}9840 \pm 0{,}0041$ & [0,9824; 0,9857] & 0,9772 & 0,0014 ** \\
+ConvNeXt-tiny   & Pehme hääletus           & [0,9802; 0,9839] & 0,9754 & --- \\
+ConvNeXt-tiny   & Virnaansambel (LR)       & [0,9819; 0,9853] & 0,9778 & 0,0002 *** \\
+ConvNeXt-tiny   & Virnaansambel (MLP)      & [0,9824; 0,9857] & 0,9772 & 0,0014 ** \\
 \hline
-ConvNeXt-small  & Pehme hääletus           & $0{,}9807 \pm 0{,}0048$ & [0,9788; 0,9825] & 0,9757 & --- \\
-ConvNeXt-small  & Virnaansambel (LR)       & $0{,}9857 \pm 0{,}0038$ & [0,9842; 0,9872] & 0,9789 & $<0{,}0001$ *** \\
-ConvNeXt-small  & Kaalutud hääletus        & $0{,}9855 \pm 0{,}0038$ & [0,9839; 0,9870] & 0,9789 & $<0{,}0001$ *** \\
+ConvNeXt-small  & Pehme hääletus           & [0,9788; 0,9825] & 0,9757 & --- \\
+ConvNeXt-small  & Virnaansambel (LR)       & [0,9842; 0,9872] & 0,9789 & $<0{,}0001$ *** \\
+ConvNeXt-small  & Kaalutud hääletus        & [0,9839; 0,9870] & 0,9789 & $<0{,}0001$ *** \\
 \hline
 \end{tabular}
 \end{table}
