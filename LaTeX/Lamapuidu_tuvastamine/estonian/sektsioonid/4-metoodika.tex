@@ -84,14 +84,16 @@ Empiiriline tugi valitud lahendusele põhineb testiandmete analüüsil: esialgne
 
 \begin{table}[h!]
 \centering
+\small
+\setlength{\tabcolsep}{5pt}
 \caption{Kasutatud mudeliarhitektuurid ja peamised treeningparameetrid.}
 \label{tab:model-architectures}
-\begin{tabular}{llll}
+\begin{tabular}{l|l|p{4.5cm}|c}
 \hline
-\textbf{Mudel} & \textbf{Sisend} & \textbf{Spetsiifilised tehnikad} & \textbf{Treeningu pikkus} \\
+\textbf{Mudel} & \textbf{Sisend} & \textbf{Spetsiifilised tehnikad} & \textbf{Pikkus} \\
 \hline
-CNN-Deep-Attn (seeme 42/43/44) & 1-kanaline CHM & Dropout, tähelepanumehhanism, MixUp & 50 epohhi \\
-EfficientNet-B2 & 1-kanaline CHM & ImageNet eeltreening, pehme adapter (ingl \textit{soft adapter}) & 30 epohhi \\
+CNN-Deep-Attn (seeme 42/43/44) & CHM 1-kan. & Dropout, tähelepanu, MixUp & 50 ep. \\
+EfficientNet-B2 & CHM 1-kan. & ImageNet eeltreening, pehme adapter & 30 ep. \\
 \hline
 \end{tabular}
 \end{table}
