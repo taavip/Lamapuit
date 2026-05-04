@@ -1,13 +1,16 @@
 \section{Arutelu}
 
-\subsection{Peamised järeldused}
-% Arutleda, mida tulemused tähendavad
-% Nt lamapuidu jaotuse mustrid, piirkondlikud erinevused
+\subsection{Peamised järeldused ja õppetunnid}
+Käesoleva töö peamiseks eesmärgiks oli tuvastada lamapuitu Eestis, kasutades Maa-ameti avalikke aerolaserskaneerimise (ALS) andmeid. Peamine väljakutse seisnes selles, et olemasolevad andmed on madala tihedusega (1-4 punkti/m$^2$), samas kui lamapuidu usaldusväärseks tuvastamiseks peetakse optimaalseks tihedust üle 10 punkti/m$^2$. 
 
-\subsection{Piirangud}
-% Kirjeldada, mis võis tulemusi mõjutada
-% Nt andmete kvaliteet, mudeli piirangud, mõõtmisvead
+Uuringu käigus selgus, et edukaks tuvastamiseks pole määravaks ainult masinõppemudeli arhitektuur, vaid kriitilise tähtsusega on andmete eeltöötlus ja sisendandmete (CHM ehk võramudelite) kvaliteet. Harmoniseeritud kõrgusmudelite ja maapinna eemaldamise (HAG -- \textit{Height Above Ground}) filtrite kasutamine aitas oluliselt eristada madalat alusmetsa maaspuhkavatest tüvedest. Teine oluline õppetund seostus treeningandmetega: joonte puhverdamisel tekkivad maskid olid liiga mürased, sisaldades rohkelt tausta. Paremaid tulemusi andis spetsiaalsete tööriistadega (\textit{Brush segmentation}) loodud täpsete pikslimaskide kasutamine.
+
+\subsection{Uuringu piirangud}
+Tulemuste usaldusväärsust piiras peamiselt LiDAR andmestiku madal tihedus. Väiksema läbimõõduga või osaliselt pinnasesse vajunud lamapuit oli sageli esindatud vaid üksikute punktidega, mis suurendas valepositiivsete (\textit{False Positive}) vastuste hulka tiheda alusmetsa ja ebatasase reljeefiga aladel. 
+
+Samuti tõid CHM-i interpolatsioonimeetodid kaasa piiranguid. Silutud (\textit{Gaussian-smoothed}) rasterpildid parandasid küll suurte struktuuride nähtavust mudelile, kuid kaotasid mikrodetaile. Toorandmete (\textit{Raw}) kasutamisel esines madala resolutsiooni tõttu pildil palju auke, mis tegi tuvastamise lokaalselt keeruliseks.
 
 \subsection{Tuleviku arendused}
-% Milliseid täiendusi või uusi uuringuid võiks teha
-% Nt täiendavad andmed, mudeli täiustamine, laiem geograafiline katvus
+Edaspidises uurimistöös tuleb kindlasti jätkata tööd madala tihedusega punktipilvedega, kuna see on praegu Eestis valdavalt kättesaadav andmestik ja sellel baseeruvate lahenduste praktiline vajadus on suur.
+
+Metoodiliselt võiks tulevikus katsetada arhitektuure, mis õpivad otse 3D punktipilvedelt (nt PointNet++ või KPConv), et vältida 2D rasterkujule üleminekul tekkivat infokadu. Veel üks paljulubav suund on LiDAR andmete kombineerimine teiste kaugseireandmetega, näiteks multispektraalsete ortofotodega (NIR), mis aitaksid paremini eristada elusat biomassi elutust puidust. Lõpetuseks aitaks mudelite täpsust oluliselt tõsta ka parem sildistamistööriistade integreerimine ja ühtse, laiema geograafilise ulatusega treeningandmebaasi loomine Eestis.
