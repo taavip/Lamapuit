@@ -1,7 +1,7 @@
 \section{Andmed ja andmete ettevalmistus}
 \label{andmed}
 
-Uurimistöös lähtuti Eesti avaandmetest, kasutades lamapuidu kaardistamiseks Maa- ja Ruumiameti aerolaserskaneerimise (ALS) andmeid. Väga hea masinõppemudeli treenimiseks vajaliku andmestiku loomine vajab sihipärast uuringuala valikut, LiDAR-punktipilvedest madala taimkatte kõrgusmudelite (CHM) arvutamist ning ruumiandmete sildistamise tööriista kasutamist tõeste andmete (ingl \textit{ground truth}) kogumiseks.
+Uurimistöös lähtuti Eesti avaandmetest, kasutades lamapuidu kaardistamiseks Maa- ja Ruumiameti aerolaserskaneerimise (ALS) andmeid. Kõrge tuvastustäpsusega masinõppemudeli treenimiseks vajaliku andmestiku loomine vajab sihipärast uuringuala valikut, LiDAR-punktipilvedest madala taimkatte kõrgusmudelite (CHM) arvutamist ning ruumiandmete sildistamise tööriista kasutamist referentsandmete (ingl \textit{ground truth}) kogumiseks.
 
 \subsection{Aerolaserskaneerimine (LiDAR)}
 
@@ -46,7 +46,7 @@ Placeholder}}
 
 Uuringuala valik tehti kahes etapis. Esmalt kasutati Tartu linna lähedasi metsi, mis olid tänu tiheasustusala kaardistusele tihedama punktitihedusega. See oli vajalik, et arendada ja kontrollida, kas madala taimkatte kõrgusmudeli ja sildistamise töövoog töötab hästi väiksemal, kuid kvaliteetsel andmestikul. Seejärel laiendati valim üle Eesti nii, et hõlmatud oleksid erinevad metsatüübid, eri aastad ja erineva punktitihedusega kaardilehed.
 
-Lõplik valim koosneb 29 valitud kaardilehe (1:2000) asukohast, kus valiti kõik ide aastate ülelennud mis olid madala ülelennuga kogutud aastatel 2017 kuni2024 ning, mille kogupindala on 117 km$^2$. Ekspertvalim on koostatud nii, et see kataks erinevaid reljeefiga alasid, metsa- ja maastikutüüpe ning oleks kaetud tihedama ALSi andmestikuga. See tagab, et tulemused on üldistuvad kogu eestile.
+Lõplik valim koosneb 29 valitud kaardilehe (1:2000) asukohast, kus valiti kõikide aastate ülelennud mis olid madala ülelennuga kogutud aastatel 2017 kuni 2024 ning mille kogupindala on 117 km$^2$. Ekspertvalim on koostatud nii, et see kataks erinevaid reljeefiga alasid, metsa- ja maastikutüüpe ning oleks kaetud tihedama ALSi andmestikuga. See tagab, et tulemused on üldistuvad kogu Eestile.
 
 Andmestiku statistika näitab, et uuritavad Maa- ja Ruumiameti aerolaserskaneerimise andmed katavad kokku 27 km$^2$ unikaalset pindala 29 kaardilehel, kogusummas aga 117 km$^2$ (arvestades kõiki aastate ülelendude korratusi). Andmestik sisaldab kokku 4,45 miljardit laserpunkti keskmise tihedusega 37,86 pts/m$^2$ (vahemikus 11,81--81,32 pts/m$^2$). See märkimisväärselt kõrgem tihedus võrreldes standardmõõtudega peegeldab tiheasustusala lende, mida kasutati magistritöös madala taimkatte mudelite loomiseks.
 
@@ -63,22 +63,22 @@ Placeholder}}
 \centering
 \begin{tabular}{ll}
 \toprule
-Statistic & Value \\
+Näitaja & Väärtus \\
 \midrule
-Total LAZ files & 119 \\
-Unique mapsheets & 29 \\
-Survey years & 2017–2024 (8 years) \\
-Campaign type & \SI{118}{} madal, \SI{1}{} tava \\
-Unique area (mapsheet extent) & \SI{27}{\kilo\meter\squared} \\
-Total scan area (all years) & \SI{117}{\kilo\meter\squared} \\
-Total point count & \SI{4.45}{\billion} \\
-Mean point density & \SI{37.86}{pts/\meter\squared} \\
-Median point density & \SI{38.11}{pts/\meter\squared} \\
-Density range (min–max) & \SI{11.81}{} – \SI{81.32}{pts/\meter\squared} \\
-Total raw data size & $\sim$\SI{46}{\giga\byte} \\
+LAZ-failide koguarv & 119 \\
+Unikaalsed kaardilehed & 29 \\
+Uurimisperiood & 2017–2024 (8 aastat) \\
+Kampaania tüüp & \SI{118}{} madal, \SI{1}{} tava \\
+Unikaalne pindala (kaardilehe ulatus) & \SI{27}{\kilo\meter\squared} \\
+Mõõdistatud kogupindala (kõik aastad) & \SI{117}{\kilo\meter\squared} \\
+Laserpunktide koguarv & \SI{4.45}{\billion} \\
+Keskmine punktitihedus & \SI{37.86}{pts/\meter\squared} \\
+Mediaanpunktitihedus & \SI{38.11}{pts/\meter\squared} \\
+Tiheduse vahemik (min–max) & \SI{11.81}{} – \SI{81.32}{pts/\meter\squared} \\
+Algandmete andmemaht & $\sim$\SI{46}{\giga\byte} \\
 \bottomrule
 \end{tabular}
-\caption{Dataset extent and properties.}
+\caption{Andmestiku ulatus ja omadused.}
 \label{tbl:laz_dataset_overview}
 \end{table}
 
@@ -86,7 +86,7 @@ Total raw data size & $\sim$\SI{46}{\giga\byte} \\
 \centering
 \begin{tabular}{lrrrrrr}
 \toprule
-Year & Files & Mapsheets & Area (\si{\kilo\meter\squared}) & Points (M) & Mean density (\si{pts/\meter\squared}) \\
+Aasta & Faile & Kaardiruute & Pindala (\si{\kilo\meter\squared}) & Punkte (mln) & Keskmine tihedus (\si{pts/\meter\squared}) \\
 \midrule
 2017 & 11 & 11 & 11 & 266.7 & 24.25 \\
 2018 & 17 & 17 & 17 & 553.0 & 32.53 \\
@@ -104,49 +104,7 @@ Total & 119 & — & 117 & 4452.7 & 37.86 \\
 \label{tbl:laz_per_year}
 \end{table}
 
-\begin{table}[ht]
-\centering
-\footnotesize
-\begin{tabular}{lrrlrr}
-\toprule
-Kaardiruut & Area (\si{\kilo\meter\squared}) & Surveys & Years & Points (M) & Mean density (\si{pts/\meter\squared}) \\
-\midrule
-401675 & 0.7 & 1 & 2022–2022 & 21.8 & 29.17 \\
-401676 & 0.7 & 1 & 2022–2022 & 17.8 & 24.57 \\
-401677 & 0.7 & 1 & 2022–2022 & 19.7 & 29.57 \\
-401678 & 0.6 & 1 & 2022–2022 & 19.8 & 31.98 \\
-436646 & 1.0 & 4 & 2018–2024 & 182.7 & 45.68 \\
-436647 & 1.0 & 4 & 2018–2024 & 212.1 & 53.02 \\
-436648 & 1.0 & 4 & 2018–2024 & 189.2 & 47.29 \\
-437646 & 1.0 & 3 & 2018–2024 & 118.0 & 39.32 \\
-437647 & 1.0 & 4 & 2018–2024 & 185.4 & 46.35 \\
-437648 & 1.0 & 3 & 2018–2024 & 132.9 & 44.31 \\
-445396 & 1.0 & 1 & 2022–2022 & 44.6 & 44.65 \\
-451397 & 0.7 & 1 & 2022–2022 & 22.8 & 31.75 \\
-470383 & 1.0 & 1 & 2022–2022 & 20.1 & 20.23 \\
-492473 & 1.0 & 1 & 2022–2022 & 31.9 & 31.89 \\
-494475 & 0.8 & 1 & 2022–2022 & 24.2 & 31.58 \\
-538424 & 1.0 & 2 & 2019–2021 & 47.3 & 23.63 \\
-579543 & 1.0 & 7 & 2017–2023 & 184.4 & 26.35 \\
-580535 & 1.0 & 7 & 2017–2023 & 261.6 & 37.38 \\
-580536 & 1.0 & 7 & 2017–2023 & 238.0 & 34.00 \\
-580537 & 1.0 & 7 & 2017–2023 & 262.2 & 37.46 \\
-580538 & 1.0 & 7 & 2017–2023 & 253.9 & 36.28 \\
-580539 & 1.0 & 7 & 2017–2023 & 279.4 & 39.92 \\
-580540 & 1.0 & 7 & 2017–2023 & 233.9 & 33.41 \\
-580543 & 1.0 & 7 & 2017–2023 & 255.8 & 36.55 \\
-581543 & 1.0 & 7 & 2017–2023 & 299.3 & 42.76 \\
-582543 & 1.0 & 7 & 2017–2023 & 269.4 & 38.49 \\
-594728 & 1.0 & 2 & 2021–2022 & 24.8 & 12.40 \\
-601546 & 1.0 & 6 & 2019–2024 & 304.3 & 50.71 \\
-602546 & 1.0 & 8 & 2017–2024 & 295.4 & 36.92 \\
-\midrule
-Total & 27 & — & — & 4452.7 & 37.86 \\
-\bottomrule
-\end{tabular}
-\caption{Per-mapsheet summary. Area computed from LAS bounding box (L-EST97, EPSG:3301). Unique area (sum of distinct mapsheets) represents geographic footprint; total points reflect cumulative acquisitions across years.}
-\label{tbl:laz_per_mapsheet}
-\end{table}
+Kaardiruutude detailne koondtabel asub lisas \ref{lisa:kaardiruudud}.
 
 \subsection{CHM ja eeltöötlus}
 
@@ -185,29 +143,10 @@ Placeholder}}
 
 Selle töötluse tulemuseks saadud detailsed ja madalad taimkattemudelid on alus nii sidistamisele kui ka mudeli sisendile. Eesmärk ei ole üksnes objektide nähtavaks tegemine, vaid ka erinevate aastate ja alade vahel võrdleva, ühtse medoodika alusel kujutise loomine.
 
-\subsection{Sildistamise tööriist}
-
-Lamapuidu märgistamiseks töötati välja brauseripõhine sildistamistööriist, mis koondas üheks vaateks mitu ruumilist taustaallikat. Tööriista eesmärk oli kiirendada märgistust ja vähendada märgistaja sõltuvust ühestainsast andmestiku kihist (madal taimkattemudel) ning toetada otsustamist mitme erineva andmestiku põhjal.
-
-Tööriistas sai samaaegselt vaadata taimkatte kõrgusmudelit, ortofotot, ajaloolisi taimkattekihte, mudeli soojuskaarti, naaberalade konteksti ning vajadusel ka Street View ja Maa- ja Ruumiameti aerofotosid. See võimaldas kontrollida, kas nähtav struktuur on tõenäolisemalt lamapuit, rattaroobas, madalal asuv oks või muu maapinnal olev objekt.
-
-\begin{figure}[h!]
-\centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.5.} Sildistamise kasutajaliidese ekraanitõmmis, kus on näha CHM, ortofoto, ajalooline vaade .\
-Placeholder}}
-\caption{Sildistamistööriista kasutajaliides ja kontekstivaated.}
-\label{fig:labeling-ui}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.6.} Mudeli soojuskaardi integratsioon tööriistas: kuidas mudel suunas sildistaja tähelepanu.\
-Placeholder}}
-\caption{Mudeli soojuskaardi kasutamine sildistamise abikihina.}
-\label{fig:labeling-heatmap}
-\end{figure}
-
-Objektiivsuse tagamiseks ei kasutatud esialgse mudeli soojuskaarti ainsa otsustajana, vaid abikihina, millele järgnes käsitsi kontroll. Selline lähenemine aitab vältida märgistusvigu ja juhtida märgistaja tähelepanu, kuna igat objekti saab kontrollida erinevates vaadetes ja eri lennuaastate lõikes. Mitmekihiline visuaalne analüüs tagas masinõppemudelile kvaliteetse tõese andmestiku.
-
+Sildistamise ja hilisema mudeli sisendi jaoks jagati suuremõõtmelised ($1 \times 1$ km) TIF-failid väiksemateks, $128 \times 128$ piksli suurusteks pildikildudeks (ingl \textit{tiles}). Kuna rasteri resolutsiooniks oli eelnevalt määratud 20 cm piksli kohta, vastab ühe tiili maastikulisele ulatusele $25,6 \times 25,6$ meetrit. Selline suuruse valik ei olnud juhuslik, vaid tugines mitmele disainikaalutlusele:
+\begin{itemize}
+    \item \textbf{Töövoo kiirus:} $128 \times 128$ piksline pilt laeb kiiresti ja kuvatakse brauseris sujuvalt, muutes suuremahulise sildistamisprotsessi inimoperaatorile visuaalselt hoomatavaks ning mugavaks.
+    \item \textbf{Arhitektuuriline paindlikkus:} Küljepikkus 128 kujutab endast kahe astet ($2^7$), mis on ideaalne ja valdavalt standardnõue konvolutsiooniliste närvivõrkude ja süvaõppearhitektuuride mastaapimisel. Kuna andmete ettevalmistamisel polnud lõplik mudel veel fikseeritud, tagas selline mõõt universaalse sobivuse erinevate arhitektuuridega.
+    \item \textbf{Kontekstuaalne ülevaade:} $25,6$ meetri pikkune ala on piisavalt lai, et tavapärasesse metsa maha langenud eesti lamapuidu objekt, mis jääb üldiselt samasse suurusjärku, oleks pildil nähtav tervikuna koos seda ümbritseva reljeefiga.
+    \item \textbf{Ülekate servaalade kompenseerimiseks:} Piltide lõikamisel rakendati igas suunas 50\% ülekatet (samm 64 pikslit). See tagab, et objekt, mis satuks muidu pildi servale või lõigataks pooleks, jääb vähemalt ühel tiilil pildi keskossa. Pidev ja korduv keskse asetusega treeninginfo võimaldab mudelil objekte usaldusväärsemalt tuvastada.
+\end{itemize}

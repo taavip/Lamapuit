@@ -3,111 +3,57 @@
 
 Selles peatükis kirjeldatakse lamapuidu tuvastamise masinõppe töövoogu, sealhulgas andmete eeltöötlust, märgistuste kvaliteedikontrolli, ruumilise valideerimise loogikat ning lõpliku mudeliarhitektuuri valikut. 
 
-\subsection{Masinõppe töövoog}
-
-Metoodika aluseks on iteratiivne töövoog. Esmalt treeniti esialgne mudel väiksemal käsitsi märgistatud andmestikul. Seejärel kasutati saadud mudeli väljundeid sildistamistööriistas abikihina, lihtsustades uute objektide leidmist. Pärast märgistuste süstemaatilist kvaliteedikontrolli treeniti rangete ruumiliste jaotusreeglite (test/treening/puhver) abil lõplik ansambelmudel. Kirjeldatud protsess võimaldab terviklikult ühendada andmete ettevalmistuse, aktiivõppe elementidega sildistamise ja lõpliku hindamise.
-
 \begin{figure}[h!]
 \centering
 \fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 4.1.} Metoodika üldskeem: esialgne treenimine $\rightarrow$ aktiivõpe $\rightarrow$ siltide kvaliteedikontroll $\rightarrow$ lõplik treenimine.\
+\textbf{Joonis 4.1.} Metoodika üldskeem: esialgne treenimine $\rightarrow$ aktiivõpe $\rightarrow$ siltide kvaliteedikontroll $\rightarrow$ lõplik treenimine.\\
 Placeholder}}
 \caption{Metoodika iteratiivne töövoog.}
 \label{fig:workflow}
 \end{figure}
 
-Esialgse mudeli arvutatud klassi aktiveerimiskaardid (ingl \textit{class activation maps - CAM}) visualiseeriti sildistamisprotsessis soojuskaartidena (ingl \textit{heatmaps}), mis suunas tähelepanu potentsiaalsete objektide asukohtadele ning tõstis eelmärgistamise kiirust. Lõplik märgistamisotsus tugines siiski alati mitme andmekihi (taimkatemudel, ortofoto, ajaloolised tailmkattemudelid ja ortofotod) visuaalsele võrdlusele, minimeerides ohtu, et andmestik peegeldab ainult mudeli esialgseid ennustusi. Vajadusel kasutati ka Maa ja Ruumiameti kaldaerofotosid ja Google streetvew-d, et kontrollida olukorda maastikul. Kuna kõige värskemad avalikud andmed olid 2 aastat vanad (2024) siis katsetati ka välitöödega, mis kahjuks majandatavate metsades toimuvate kiirete muutuste tõttu efektiivseks ei osutunud kuna olukord maastikul oli muutunud võrreldes andmete kogumisega.
+\subsection{Andmete märgistamine ja aktiivõppe töövoog}
 
-\subsection{Mudeli valik ja otsinguprotsess}
-\label{mudeli-valik}
+Metoodika aluseks on iteratiivne töövoog. Esmalt treeniti esialgne mudel väiksemal käsitsi märgistatud andmestikul. Seejärel kasutati saadud mudeli väljundeid sildistamistööriistas abikihina, lihtsustades uute objektide leidmist. Pärast märgistuste süstemaatilist kvaliteedikontrolli treeniti rangete ruumiliste jaotusreeglite (test/treening/puhver) abil lõplik ansambelmudel. Kirjeldatud protsess võimaldab terviklikult ühendada andmete ettevalmistuse, aktiivõppe elementidega sildistamise ja lõpliku hindamise.
 
-Lõpliku ansamblemudeli arhitektuuri valik tugineb kolmeetapilisele otsinguprotsessile: esialgne märgistamisansambel, laiapõhjaline arhitektuuride võrdlusotsing ning lõplik ümberõpe ruumiliselt stratifitseeritud andmestikul.
+Lamapuidu usaldusväärseks ja efektiivseks märgistamiseks arendati käesoleva töö raames spetsiaalne brauseripõhine sildistamistarkvara, mille arhitektuur tugineb FastAPI raamistikul töötavale taustaserverile ning Konva.js teegiga realiseeritud interaktiivsele esiosale (HTML5 lõuendil). Loodud rakendus ühendas ja esitas sünkroniseeritult mitmeid ruumilisi andmekihte, eesmärgiga tasakaalustada märgistaja tähelepanu erinevate andmeallikate vahel ning toetada visuaalset otsustamist.
 
-\paragraph{Mudeli arhitektuuride otsing V1.}
-% Expanded: detailed explanation of 35 experiments covering 16 architectures
-% CNN-Deep-Attn variants (regular/headlight/headwide) + 12 pretrained models
+Sildistamistööriista tuumfunktsionaalsus hõlmas mitmeid töövoogu ja aktiivõpet optimeerivaid komponente:
+\begin{itemize}
+    \item \textbf{Intellektuaalne märgistamisjärjekord:} Serveri andmebaas töötles geomeetrilisi kriteeriume (kõrgusjaotus, servade tugevused) ja varajaste algmudelite ennustusi, tekitades dünaamiliselt tähtsuse järjekorra. See suunas eksperdi fookuse esmalt tiilidele, kus CWD esinemise tõenäosus oli suurim või mudeli hinnang kõige ebakindlam.
+    \item \textbf{Ajaline ja tootevaade:} Sama asukohta sai vaadelda analüüsitava pildi ajarea kaudu (erinevate aastate skaneeringud) või toodete vaates (toorandmed vs. Gaussi silumisega CHM), mis lihtsustas juhuslikust mürast püsivate tüvede eristamist. 
+    \item \textbf{Ruumilise konteksti kihid:} Lisaks madala taimkatte kõrgusmudelile kuvati 3D-varjundeid (\textit{hillshade}), Maa-ameti WMS-teenustest pärinevat ortofotot ja 3$\times$3 maatriksina naaberpiltide konteksti. Vajadusel hõlbustasid valideerimist ka kaldaerofotod või Google Street View välised lingid.
+    \item \textbf{Pintsliga segmenteerimine (ingl \textit{brush segmentation}):} Tavapäraste piirdekastide (\textit{bounding box}) asemel kasutas sildistaja pidevalt muudetava läbimõõduga pintslitööriista, märkides lõuendil konkreetsed pikslid kaheklassilisse vormingusse (lamapuit, taust või ignoreeritav ala). Tulemus salvestati serverisse koos metaandmetega otse PNG-formaadis.
+    \item \textbf{Mudeli soojuskaardi ülekate:} Esialgse mudeli arvutatud klassi aktiveerimiskaardid (ingl \textit{class activation maps - CAM}) visualiseeriti sildistamisprotsessis abistavate soojuskaartidena (režiimides nagu \textit{IntGrad}, \textit{HiResCAM} ja \textit{RISE}). Need suunasid spetsialisti tähelepanu potentsiaalsete objektide asukohtadele ning tõstsid eelmärgistamise kiirust.
+\end{itemize}
 
-Paralleelselt märgistusprotsessiga viidi läbi laiapõhjaline arhitektuuride võrdlusotsing (V1), kus 19\,812 märgistuse andmestikul (11 rasterikiht, klass-suhe no\_cdw:cdw $\approx 5{,}49$) hinnati kokku 35 treeningkatset 16 arhitektuuris. Testitud arhitektuurid jagunesid kahte rühma: (1) neli kohandatavat \textbf{CNN-Deep-Attn} varianti ning (2) 12 \textbf{ImageNeti eelõpitud} arhitektuuri. Lisaks varieeriti kaofunktsioone (ristentroopia, fokaalne), andmesuurendust (MixUp, MixUp+SWA) ning testiaegse andmerikastamise (\textit{TTA}) kasutamist.
-
-CNN-Deep-Attn arhitektuur koosneb neljast järjestikusest \textit{AttnBlock}-plokist, mille kanalite arv kasvab järgmiselt: $1 \to 32 \to 64 \to 128 \to 256$. Iga plokk sisaldab: kahte $3\times3$ konvolutsiooni BatchNorm-normaliseerimise ja ReLU aktivatsiooniga; \textit{Squeeze-Excitation} (SE) tähelepanumehhanismi, mis arvutab kanali globaalsest keskväärtusest kaalumisevektori, millega rõhutatakse diskriminatiivsemaid filtreid; jääkühendit ($1\times1$ konvolutsioon dimensioonide kohandamiseks, muidu identteisendus); ning $2\times2$ maksimumpuuli ruumilise mõõdme poolitamiseks. Klassifikaatorkiht koosneb AdaptiveAvgPool2d(4)$\to$Flatten$\to$Linear(4096,~$h$)$\to$ReLU$\to$Dropout(0{,}5)$\to$Linear($h$,~2). Kolme põhivarianti eristab peidetud kihi laius $h$: \textbf{regular} ($h{=}512$, baastase), \textbf{headlight} ($h{=}256$, vähem parameetreid, väiksem ülesobitamise risk) ja \textbf{headwide} ($h{=}768$, suurem representatsioonivõimekus). Eelõpitud mudelite hulka kuulusid ConvNeXt-tiny/-small, EfficientNet-B0/-B2/-B4, DenseNet-121, Swin-T, ResNet-18/-34/-50, MobileNet-V3-Large ja RegNetY-004; neis asendati RGB-sisend 1-kanalise CHM-sisendiga (RGB-kaalude keskmistamine) ja eeltreenitud mudeli selgroole rakendati 10$\times$ väiksemat õppimiskiirust kui klassifikaatorile. Eeltreenitud mudeli selgroot treenitakse väga väikese õppimiskiirusega, et säilida eelõpitud kaalud ja vältida olemasolevate tunnuste moonutamist. Klassifikaatorit treenitakse suurema õppimiskiirusega, et see omandaks uue ülesande seaduspärad kiiremini.
-
-V1 otsing kinnitas CNN-Deep-Attn arhitektuuri domineerimise ning ansamblistrateegia efektiivsuse (vt tulemused, Tabel~\ref{tab:model-search-v1}).
-
-
-\paragraph{Ansambli liikme ja agregeerimismeetodi rigorne võrdlusuuring.}
-
-Tabelis~\ref{tab:model-search-v1} esitatud V1 tulemused näitasid, et ansamblistrateegia ületab parimat üksikmudelit, kuid jäi vastuseta kaks põhimõttelist küsimust: milline arhitektuur sobib kõige paremini neljanda ansambli liikmena CNN-Deep-Attn~$\times$~3 kõrvale ning milline agregeerimismeetod (lihtne pehme hääletus, kaalutud hääletus või virnaansambel) annab parima tulemuse. Nende küsimuste teaduslikuks vastamiseks viidi läbi V1 katset jätkav rigorne võrdlusuuring, mille metoodika on kavandatud tagamaks tulemuste statistiline usaldusväärsus.
-
-\paragraph{Kandidaadid ja treeningu seadistus.}
-
-Võrdlusse kaasati kolm arhitektuurselt erinevat neljanda liikme kandidaati: EfficientNet-B2 (algselt valitud kandidaat), ConvNeXt-tiny ning ConvNeXt-small (V1 üksikmudelitasandi tipparhitektuurid). Kõiki kandidaate treeniti võrdsetes tingimustes, et ainsaks varieeruvaks teguriks jääks arhitektuur ise: identne 15\,000-tiilga treeningvalim koos 4\,000-tiilga valideerimisvalimiga, säilitades tegeliku klassijaotuse (CDW $\approx$ 75\%); ImageNeti eelõpitud kaalud; kaheastmeline õppimiskiirus (selgroog $5\times10^{-5}$, klassifikaatorkiht $5\times10^{-4}$, mis on hädavajalik ConvNeXt-perekonna eelõpitud kaalude säilitamiseks); MixUp-regulaarisatsioon ($\alpha=0{,}3$); sildistamise pehmendamine (0,05); ning 4-vaateline TTA (\textit{test-time augmentation}). Kolme CNN-Deep-Attn baasmudeli ennustused saadi otse V1 lõplikus E07-ruumijaotuses treenitud mudelitest.
-
-\paragraph{Agregeerimismeetodid.}
-
-Igale kandidaadile rakendati viit agregeerimismeetodit:
-\begin{enumerate}
-    \item \textbf{Lihtne pehme hääletus} -- nelja mudeli tõenäosuste keskmine, otsustuslävi 0,5;
-    \item \textbf{Pehme hääletus häälestatud lävega} -- keskmine tõenäosus, kuid otsustuslävi optimeeritakse igas ristvalideerimise grupi korral treeningosalt (otsing vahemikus 0,20--0,80);
-    \item \textbf{Kaalutud hääletus} -- mudelite kaalud tuletatakse logistilise regressiooni koefitsientidest, mis kajastavad iga baasmudeli prognoosi panust;
-    \item \textbf{Virnaansambel logistilise regressiooniga} (\textit{LR stacking}) -- metaõppurina toimib lineaarne kombinatsioon nelja baasmudeli tõenäosustest;
-    \item \textbf{Virnaansambel kihtidevahelise närvivõrguga} (\textit{MLP stacking}) -- metaõppurina toimib ühe peidetud kihiga (32 neuronit) närvivõrk, mis võimaldab mittelineaarseid kombinatsioone.
-\end{enumerate}
-
-\paragraph{Hindamisprotokoll ja statistilised testid.}
-
-Hindamiseks rakendati viiekordset ristvalideerimist (5 kordust $\times$ 5 andmegruppi = 25 hinnangut iga meetodi ja kandidaadi kohta). Iga grupi puhul kasutati treeningosa metaõppurite häälestamiseks ning otsustusläve optimeerimiseks, samas kui testosa, mis metaõppe protsessis ei osalenud, oli aluseks F1-skoori, AUC, täpsuse ja saagise arvutamisele. See protokoll tagab, et meetodeid võrreldakse identsetes tingimustes ning andmelekke risk on välistatud. F1-skoori 95\% usaldusvahemikud arvutati järelproovide meetodil (\textit{bootstrap}), tehes 1\,000 kordust grupipõhiste skooride põhjal.
-
-Tulemuste statistilise olulisuse hindamiseks rakendati \textbf{paaritud Wilcoxoni järgu testi} (\textit{paired Wilcoxon signed-rank test}). See mitteparameetriline test sobib paremini kui paaritud $t$-test, kuna F1-skoorid ei pruugi olla normaaljaotusega ning testi tugevus ei sõltu jaotuse kujust. Iga täiustatud meetodi paaritud võrdlused lihtsa pehme hääletuse vastu sooritati 25 grupipõhise skoori paaridel ($H_1$: täiustatud meetod annab kõrgema F1-skoori). $p$-väärtused tähistati järgmiselt: $***$ ($p<0{,}001$), $**$ ($p<0{,}01$), $*$ ($p<0{,}05$). Tulemused on esitatud Tabelis~\ref{tab:ensemble-methods-comparison} (vt tulemused).
-
-\paragraph{Esialgne märgistamisansambel}
-
-Märgistamise toetamiseks loodi esialgne nelja mudeliga ansambel, mille ülesandeks oli hinnata kõigi 580\,136 treening pildi usaldusväärsust mudeli tõenäosuse (\textit{model\_prob}) kaudu ning suunata aktiivõppe valikut. Ansambel koosnes kolmest CNN-Deep-Attn mudelist (juhuseemed 42, 43, 44) ning ühest EfficientNet-B2 mudelist. Valik tugines kahele printsiibile: (1) kolm identset arhitektuuri erinevate juhuseemetega vähendavad stohhastilisest initsialiseerimisest tulenevat varieeruvust; (2) EfficientNet-B2, mis kujutab arhitektuurselt erinevat mudeliperekonda, lisab ansambli ImageNeti eelõppest saadud üldisemad tunnused ning suurendab vastupanuvõimet üksikmudelite spetsiifiliste vigade suhtes.
-
-Ansambel treeniti 15\,850 käsitsi märgistatud õpepildil (valideerimisvalim 3\,962 pilti; CNN 50 epohhi, EfficientNet-B2 30 epohhi, \textit{label smoothing} 0,05, MixUp $\alpha=0{,}3$) ning hinnati 2\,186 treenimises mittekasutatud pildigal. Üksikmudelid saavutasid valideerimisvalimil F1-skoorid vahemikus 0,946--0,960; TTA-ga (\textit{test-time augmentation}) ansambel saavutas testvalimil F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987 (vt tulemused, Tabel~\ref{tab:initial-ensemble}). TTA tähendab sisendpildi mitmekordset teisendamist (nt peegeldamine, pööramine) testimise hetkel ja nende variatsioonide ennustuste koondamist, et vähendada juhuslikest müra- ja asendifaktoritest tingitud vigu. Mudelite kombineerimisel eelistati pehmet hääletust (\textit{soft voting}), mis arvutab üksikmudelite väljastatud klassitõenäosuste kaalutud keskmise, erinevalt virnastamisest (\textit{stacking}), kus mudelite väljundid suunatakse eraldi metamudelisse, mis õpitakse üksikmudelite prognoose optimaalselt liitma.
-
-
-\subsection{Mudeli arhitektuur ja ansamblid}
-
-Lõplikus tuvastuslahenduses rakendati neljamudelist ansamblit, mis koosnes kolmest identsest CNN-Deep-Attn mudelist ning ühest EfficientNet-B2 mudelist. Kolme identse arhitektuuri treenimisel kasutati erinevaid juhuseemneid (\textit{random seed}).
-
-\paragraph{Ansambli koosseisu põhjendus.}
-
-Ehkki traditsiooniline ansambli disain prioritiseerib arhitektuurilist mitmekesisust, põhineb valitud lähenemise efektiivsus kahel täiendaval mehhanismil:
-
-\begin{enumerate}
-    \item \textbf{Juhusliku hajuvuse vähendamine.} Kolme identse CNN-Deep-Attn mudeli kasutamine erinevate juhuseemnetega on suunatud juhusliku varieeruvuse minimeerimisele. See varieeruvus tuleneb mudeli kaalude esialgsest \textbf{algväärtustamisest} ja treeningandmete töötlemise järjekorrast. Selline lähenemine, mida tuntakse süvaansamblite (\textit{deep ensembles}) nime all, on tõendatult efektiivne meetod mudeli stabiilsuse tõstmiseks, aidates vältida juhuslikust algseisust tingitud ebasobivatesse lokaalsetesse miinimumidesse takerdumist.
-    
-    \item \textbf{Arhitektuuriline ja metodoloogiline mitmekesisus.} Kolmele CNN-mudelile lisatud EfficientNet-B2 esindab teistsugust mudeliperekonda ja õppimisstrateegiat. Kui CNN-Deep-Attn mudelid treeniti nullist vahetult kättesaadavatel andmetel, siis EfficientNet-B2 puhul rakendati siirdeõpet (\textit{transfer learning}), kasutades ImageNeti andmestikul eeltreenitud kaale. EfficientNet-i arhitektuuriline ülesehitus (inverteeritud jääkühendid, kihtide kokkusurumine) tagab, et ansambel ei ole tundlik ainult ühele arhitektuuritüübile omaste spetsiifiliste vigade suhtes.
-\end{enumerate}
-
-Empiiriline tugi valitud lahendusele põhineb testiandmete analüüsil: esialgne märgistamisansambel saavutas koos testiaegse augmentatsiooniga (TTA) $F_{1}$-skooriks 0,9701, ületades kõiki üksikmudeleid (parim üksikmudel CNN-Deep-Attn: $F_{1} = 0,9596$; EfficientNet-B2: $F_{1} = 0,9463$). Metoodika arenduse käigus läbi viidud võrdlusuuring viitab, et täiendavate erinevate arhitektuuride lisamine ansamblisse ei pakkunud statistiliselt märkimisväärset täpsuse kasvu, kuid suurendas oluliselt arvutusressursside kulu. Seega tähistab valitud koosseis optimaalset tasakaalu tuvastusvõimekuse ja arvutusliku tõhususe vahel.
-
-\begin{table}[h!]
-\centering
-\small
-\setlength{\tabcolsep}{5pt}
-\caption{Kasutatud mudeliarhitektuurid ja peamised treeningparameetrid.}
-\label{tab:model-architectures}
-\begin{tabular}{l|l|p{4.5cm}|c}
-\hline
-\textbf{Mudel} & \textbf{Sisend} & \textbf{Spetsiifilised tehnikad} & \textbf{Pikkus} \\
-\hline
-CNN-Deep-Attn (seeme 42/43/44) & CHM 1-kan. & Dropout, tähelepanu, MixUp & 50 ep. \\
-EfficientNet-B2 & CHM 1-kan. & ImageNet eeltreening, pehme adapter & 30 ep. \\
-\hline
-\end{tabular}
-\end{table}
-
-Kõikide mudelite optimeerimisel rakendati partii suurust (\textit{batch size}) 16, AdamW algoritmil põhinevat kaaluuuendust ja tasakaalustamata klassijaotuse parandamiseks klassipõhiseid kaale. Täiendavalt kasutati regulaariseerimistehnikaid nagu \textit{label smoothing} (0,05) ja \textit{MixUp} (0,3). Treeningu stabiilsuse tagamiseks seadistati EfficientNeti puhul selgroole (ingl \textit{backbone}) ja klassifikaatorile erinevad õppimiskiirused.
+Lõplik märgistamisotsus tugines siiski alati mitme andmekihi (taimkatemudel, ortofoto, ajaloolised taimkattemudelid ja mudeli soojuskaart) visuaalsele sünteesile, minimeerides ohtu automatiseerimiskaldeks (ingl \textit{automation bias}), kus andmestik hakkaks peegeldama ainult mudeli esialgseid ennustusi. Kuna kõige värskemad avalikud andmed olid 2 aastat vanad (2024), siis katsetati ka välitöödega, mis kahjuks majandatavates metsades toimuvate kiirete muutuste tõttu efektiivseks ei osutunud, sest olukord maastikul oli pärast andmete kogumist oluliselt muutunud.
 
 \begin{figure}[h!]
 \centering
 \fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 4.2.} Ansambelmudeli arhitektuuriskeem ja ennustuste agregeerimise põhimõte.\
+\textbf{Joonis 4.2.} Sildistamise kasutajaliidese ekraanitõmmis, kus on näha CHM, ortofoto, ajalooline vaade .\\
 Placeholder}}
-\caption{Ansambli tööpõhimõte.}
-\label{fig:ensemble-scheme}
+\caption{Sildistamistööriista kasutajaliides ja kontekstivaated.}
+\label{fig:labeling-ui}
 \end{figure}
+
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 4.3.} Mudeli soojuskaardi integratsioon tööriistas: kuidas mudel suunas sildistaja tähelepanu.\\
+Placeholder}}
+\caption{Mudeli soojuskaardi kasutamine sildistamise abikihina.}
+\label{fig:labeling-heatmap}
+\end{figure}
+
+\paragraph{Esialgne märgistamisansambel.}
+Märgistamise toetamiseks loodi esialgne nelja mudeliga ansambel, mille ülesandeks oli hinnata kõigi 580\,136 treening pildi usaldusväärsust mudeli tõenäosuse (\textit{model\_prob}) kaudu ning suunata aktiivõppe valikut. Ansambel koosnes kolmest CNN-Deep-Attn mudelist (juhuseemed 42, 43, 44) ning ühest EfficientNet-B2 mudelist. Valik tugines kahele printsiibile: (1) kolm identset arhitektuuri erinevate juhuseemetega vähendavad stohhastilisest initsialiseerimisest tulenevat varieeruvust; (2) EfficientNet-B2, mis kujutab arhitektuurselt erinevat mudeliperekonda, lisab ansambli ImageNeti eelõppest saadud üldisemad tunnused ning suurendab vastupanuvõimet üksikmudelite spetsiifiliste vigade suhtes.
+
+Ansambel treeniti 15\,850 käsitsi märgistatud õpepildil (valideerimisvalim 3\,962 pilti; CNN 50 epohhi, EfficientNet-B2 30 epohhi, märgiste silumine (ingl \textit{label smoothing}) 0,05, MixUp $\alpha=0{,}3$) ning hinnati 2\,186 treenimises mittekasutatud pildiga. Üksikmudelid saavutasid valideerimisvalimil F1-skoorid vahemikus 0,946--0,960; TTA-ga (\textit{test-time augmentation}) ansambel saavutas testvalimil F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987 (vt tulemused, Tabel~\ref{tab:initial-ensemble}). TTA tähendab sisendpildi mitmekordset teisendamist (nt peegeldamine, pööramine) testimise hetkel ja nende variatsioonide ennustuste koondamist, et vähendada juhuslikest müra- ja asendifaktoritest tingitud vigu. Mudelite kombineerimisel eelistati pehmet hääletust (\textit{soft voting}), mis arvutab üksikmudelite väljastatud klassitõenäosuste kaalutud keskmise, erinevalt virnastamisest (\textit{stacking}), kus mudelite väljundid suunatakse eraldi metamudelisse, mis õpitakse üksikmudelite prognoose optimaalselt liitma.
+
+\paragraph{Märgistuse kvaliteedikontroll.}
+Algmudeli väljundite põhjal toetuv märgistamine kätkeb endas ohtu automatiseerimiskaldeks (ingl \textit{automation bias}), kus ekspert kiidab pimesi heaks algoritmi ennustused. Selle riski neutraliseerimiseks rakendati kahetasandilist kvaliteedikontrolli. Kasutusel olnud lamapuidu märgistamise töövoos tugineti esmalt mitmele andmekihile: madala taimkatte kõrgusmudeli raster, ortofoto kalaerofotod ja \textit{Street View} tasakaalustasid üksteist. Ebaselged olukorrad vaadati käsitsi üle. Andmekataloogi aktsepteeritud märgistustest eraldati madala mudeliusaldusväärsusega vahemikus [0,39; 0,61] paiknevad objektid detailsemaks järelhindamiseks, lisaks sekkuti 5\% juhuslikule valimile automaatselt tugeva usaldusväärsusega määratud märgistustele. Kirjeldatud meetmed kindlustas märgistatud andmestiku usaldusväärsuse.
 
 \subsection{Andmestiku ruumiline ja ajaline jaotamine}
 \label{spatial-split}
@@ -132,7 +78,7 @@ r_s = \lfloor r_{\text{off}} / 64 \rfloor, \quad c_s = \lfloor c_{\text{off}} / 
 \]
 mis kujutab kattuvad aknad täisarvulisele ruudustikule positsioonideks 0, 1, 2, \ldots
 
-\paragraph{Testtsoon.} Iga valitud testkeskuse ümber laiendati testtsooni Tšebõšovi kaugusega ($\leq 1$), mis moodustab 3$\times$3 ruudustiku ehk ligikaudu 51,2~m $\times$ 51,2~m. See arvestab külgnevate akende 50\% kattuvust.
+\paragraph{Testtsoon.} Iga valitud testkeskuse ümber laiendati testtsooni Tšebõšovi kaugusega ($\leq 1$), mis moodustab $3\times3$ ruudustiku ehk ligikaudu 51,2~m $\times$ 51,2~m. See arvestab külgnevate akende 50\% kattuvust.
 
 \paragraph{Puhvertsoon.} Testtsooni ja treeningala vahele jäeti puhvertsoon (Tšebõšovi kaugus = 2, v.a nurgas paiknevad diagonaalpositsioonid). Testi- ja treeningpikslit lahutav vahe on 1 samm (64~px = 12,8~m), mis välistab pikslite jagamise kahe andmekogumi vahel. Kuigi see on väiksem kui Gu jt (2024) poolt pakutud 50~m lamapuidu autokorrelatsiooni vahemik, lähtub valik kasutatavas andmestikus esinevate märgistuste tihedusest ning andmemahu säilitamise vajadusest. Alternatiivne 50~m puhvertsooni rakendamine vähendaks treeningandmestiku 67\,290 märgistuselt ligikaudu 30\% võrra, mis käesoleva töö andmemahu juures ei ole otstarbekas. Puhvertsooni valiku piirang on selgesõnaliselt tunnistatud käesolevas töös lõigus~\ref{sec:split-piirangud}.
 
@@ -165,7 +111,7 @@ Treeningkomplektis on lamapuidu osakaal 75,25\%, testikomplektis 69,89\%. Klassi
 \begin{figure}[h!]
 \centering
 \fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 4.3.} Ruumilise jagamise loogika: testtsoon (51,2~m $\times$ 51,2~m), puhvertsoon (12,8~m riba) ja treeningala.\\
+\textbf{Joonis 4.4.} Ruumilise jagamise loogika: testtsoon (51,2~m $\times$ 51,2~m), puhvertsoon (12,8~m riba) ja treeningala.\\
 Placeholder}}
 \caption{Ruumilise valideerimise ja puhveralade loogika.}
 \label{fig:spatial-validation}
@@ -176,6 +122,87 @@ Placeholder}}
 
 Käesoleva andmejagamise peamised piirangud on järgmised. Esiteks jääb puhvertsoon (12,8~m) alla Gu jt (2024) soovitatud 50~m lamapuidu autokorrelatsiooni vahemiku, mis võib põhjustada väikest andmeleket väga täpse valideerimise korral. Teiseks on ajaline leke osaliselt võimalik, kuna sama asukoha eri aastate andmed, millel erineb märgistusallikas (nt \textit{auto\_skip} vs \textit{auto}), võivad kuuluda erinevatesse hulkadesse. Mõlema piirangu täpsemaks kvantifitseerimiseks on soovitatav tulevikus viia läbi permutatsioonitest, kus mudeleid treenitakse alternatiivse, 50~m puhvriga jaotuse alusel, ning võrrelda testjõudlust käesoleva lahendusega.
 
-\subsection{Märgistuse kvaliteedikontroll ja aktiivõpe}
+\subsection{Mudeliarhitektuuride otsing ja valik}
+\label{mudeli-valik}
 
-Algmudeli väljundite põhjal toetuv märgistamine kätkeb endas ohtu automatiseerimiskaldeks (ingl \textit{automation bias}), kus ekspert kiidab pimesi heaks algoritmi ennustused. Selle riski neutraliseerimiseks rakendati kahetasandilist kvaliteedikontrolli. Kasutusel olnud lamapuidu märgistamise töövoos tugineti esmalt mitmele andmekihile: madala taimkatte kõrgusmudeli raster, ortofoto kalaerofotod ja \textit{Street View} tasakaalustasid üksteist. Ebaselged olukorrad vaadati käsitsi üle. Andmekataloogi aktsepteeritud märgistustest eraldati madala mudeliusaldusväärsusega vahemikus [0,39; 0,61] paiknevad objektid detailsemaks järelhindamiseks, lisaks sekkuti 5\% juhuslikule valimile automaatselt tugeva usaldusväärsusega määratud märgistustele. Kirjeldatud meetmed kindlustas märgistatud andmestiku objektiivsuse.
+Lõpliku ansamblemudeli arhitektuuri valik tugineb kolmeetapilisele otsinguprotsessile: esialgne märgistamisansambel (kirjeldatud märgistamise peatükis), laiapõhjaline arhitektuuride võrdlusotsing ning lõplik ümberõpe ruumiliselt stratifitseeritud andmestikul.
+
+\paragraph{Parima mudeli arhitektuuri otsing.}
+
+Paralleelselt märgistusprotsessiga viidi läbi laiapõhjaline laiapõhjaline parima mudeli otsing, kus 19\,812 märgistuse andmestikul (11 rasterikiht, klass-suhe no\_cdw:cdw $\approx 5{,}49$) hinnati kokku 35 treeningkatset 16 arhitektuuris. Testitud arhitektuurid jagunesid kahte rühma: (1) neli kohandatavat \textbf{CNN-Deep-Attn} varianti ning (2) 12 \textbf{ImageNeti eelõpitud} arhitektuuri. Lisaks varieeriti kaofunktsioone (ristentroopia, fokaalne), andmesuurendust (MixUp, MixUp+SWA) ning testiaegse andmerikastamise (\textit{TTA}) kasutamist.
+
+CNN-Deep-Attn arhitektuur koosneb neljast järjestikusest \textit{AttnBlock}-plokist, mille kanalite arv kasvab järgmiselt: $1 \to 32 \to 64 \to 128 \to 256$. Iga plokk sisaldab: kahte $3\times3$ konvolutsiooni BatchNorm-normaliseerimise ja ReLU aktivatsiooniga; \textit{Squeeze-Excitation} (SE) tähelepanumehhanismi, mis arvutab kanali globaalsest keskväärtusest kaalumisevektori, millega rõhutatakse diskriminatiivsemaid filtreid; jääkühendit ($1\times1$ konvolutsioon dimensioonide kohandamiseks, muidu identteisendus); ning $2\times2$ maksimumpuuli ruumilise mõõdme poolitamiseks. Klassifikaatorkiht koosneb AdaptiveAvgPool2d(4)$\to$Flatten$\to$Linear(4096,~$h$)$\to$ReLU$\to$Dropout(0{,}5)$\to$Linear($h$,~2). Kolme põhivarianti eristab peidetud kihi laius $h$: \textbf{regular} ($h{=}512$, baastase), \textbf{headlight} ($h{=}256$, vähem parameetreid, väiksem ülesobitamise risk) ja \textbf{headwide} ($h{=}768$, suurem representatsioonivõimekus). Eelõpitud mudelite hulka kuulusid ConvNeXt-tiny/-small, EfficientNet-B0/-B2/-B4, DenseNet-121, Swin-T, ResNet-18/-34/-50, MobileNet-V3-Large ja RegNetY-004; neis asendati RGB-sisend 1-kanalise CHM-sisendiga (RGB-kaalude keskmistamine) ja eeltreenitud mudeli selgroole rakendati 10$\times$ väiksemat õppimiskiirust kui klassifikaatorile. Eeltreenitud mudeli selgroot treenitakse väga väikese õppimiskiirusega, et säilida eelõpitud kaalud ja vältida olemasolevate tunnuste moonutamist. Klassifikaatorit treenitakse suurema õppimiskiirusega, et see omandaks uue ülesande seaduspärad kiiremini.
+
+Parima mudeli otsing kinnitas CNN-Deep-Attn arhitektuuri domineerimise ning ansamblistrateegia efektiivsuse (vt tulemused, Tabel~\ref{tab:model-search-v1}).
+
+\subsection{Ansambelmudeli koostamine ja valideerimine}
+
+\paragraph{Ansambli liikme ja agregeerimismeetodi rigorne võrdlusuuring.}
+
+Tabelis~\ref{tab:model-search-v1} esitatud parima mudeli otsingu tulemused näitasid, et ansamblistrateegia ületab parimat üksikmudelit, kuid jäi vastuseta kaks põhimõttelist küsimust: milline arhitektuur sobib kõige paremini neljanda ansambli liikmena CNN-Deep-Attn~$\times$~3 kõrvale ning milline agregeerimismeetod (lihtne pehme hääletus, kaalutud hääletus või virnaansambel) annab parima tulemuse. Nende küsimuste teaduslikuks vastamiseks viidi läbi parima mudeli otsingu katset jätkav rigorne võrdlusuuring, mille metoodika on kavandatud tagamaks tulemuste statistiline usaldusväärsus.
+
+\paragraph{Kandidaadid ja treeningu seadistus.}
+
+Võrdlusse kaasati kolm arhitektuurselt erinevat neljanda liikme kandidaati: EfficientNet-B2 (algselt valitud kandidaat), ConvNeXt-tiny ning ConvNeXt-small (parima mudeli otsingu üksikmudelitasandi tipparhitektuurid). Kõiki kandidaate treeniti võrdsetes tingimustes, et ainsaks varieeruvaks teguriks jääks arhitektuur ise: identne 15\,000-tiilga treeningvalim koos 4\,000-tiilga valideerimisvalimiga, säilitades tegeliku klassijaotuse (CDW $\approx$ 75\%); ImageNeti eelõpitud kaalud; kaheastmeline õppimiskiirus (selgroog $5\times10^{-5}$, klassifikaatorkiht $5\times10^{-4}$, mis on hädavajalik ConvNeXt-perekonna eelõpitud kaalude säilitamiseks); MixUp-regulaarisatsioon ($\alpha=0{,}3$); sildistamise pehmendamine (0,05); ning 4-vaateline TTA (\textit{test-time augmentation}). Kolme CNN-Deep-Attn baasmudeli ennustused saadi otse esialgses lõplikus E07-ruumijaotuses treenitud mudelitest.
+
+\paragraph{Agregeerimismeetodid.}
+
+Igale kandidaadile rakendati viit agregeerimismeetodit:
+\begin{enumerate}
+    \item \textbf{Lihtne pehme hääletus} -- nelja mudeli tõenäosuste keskmine, otsustuslävi 0,5;
+    \item \textbf{Pehme hääletus häälestatud lävega} -- keskmine tõenäosus, kuid otsustuslävi optimeeritakse igas ristvalideerimise grupi korral treeningosalt (otsing vahemikus 0,20--0,80);
+    \item \textbf{Kaalutud hääletus} -- mudelite kaalud tuletatakse logistilise regressiooni koefitsientidest, mis kajastavad iga baasmudeli prognoosi panust;
+    \item \textbf{Virnaansambel logistilise regressiooniga} (\textit{LR stacking}) -- metaõppurina toimib lineaarne kombinatsioon nelja baasmudeli tõenäosustest;
+    \item \textbf{Virnaansambel kihtidevahelise närvivõrguga} (\textit{MLP stacking}) -- metaõppurina toimib ühe peidetud kihiga (32 neuronit) närvivõrk, mis võimaldab mittelineaarseid kombinatsioone.
+\end{enumerate}
+
+\paragraph{Hindamisprotokoll ja statistilised testid.}
+
+Hindamiseks rakendati viiekordset ristvalideerimist (5 kordust $\times$ 5 andmegruppi = 25 hinnangut iga meetodi ja kandidaadi kohta). Iga grupi puhul kasutati treeningosa metaõppurite häälestamiseks ning otsustusläve optimeerimiseks, samas kui testosa, mis metaõppe protsessis ei osalenud, oli aluseks F1-skoori, AUC, täpsuse ja saagise arvutamisele. See protokoll tagab, et meetodeid võrreldakse identsetes tingimustes ning andmelekke risk on välistatud. F1-skoori 95\% usaldusvahemikud arvutati järelproovide meetodil (\textit{bootstrap}), tehes 1\,000 kordust grupipõhiste skooride põhjal.
+
+Tulemuste statistilise olulisuse hindamiseks rakendati \textbf{paaritud Wilcoxoni järgu testi} (\textit{paired Wilcoxon signed-rank test}). See mitteparameetriline test sobib paremini kui paaritud $t$-test, kuna F1-skoorid ei pruugi olla normaaljaotusega ning testi tugevus ei sõltu jaotuse kujust. Iga täiustatud meetodi paaritud võrdlused lihtsa pehme hääletuse vastu sooritati 25 grupipõhise skoori paaridel ($H_1$: täiustatud meetod annab kõrgema F1-skoori). $p$-väärtused tähistati järgmiselt: $***$ ($p<0{,}001$), $**$ ($p<0{,}01$), $*$ ($p<0{,}05$). Tulemused on esitatud Tabelis~\ref{tab:ensemble-methods-comparison} (vt tulemused).
+
+\paragraph{Ansambli arhitektuur ja koosseisu põhjendus.}
+
+Lõplikus tuvastuslahenduses rakendati neljamudelist ansamblit, mis koosnes kolmest identsest CNN-Deep-Attn mudelist ning ühest EfficientNet-B2 mudelist. Kolme identse arhitektuuri treenimisel kasutati erinevaid juhuseemneid (\textit{random seed}). Ehkki traditsiooniline ansambli disain prioritiseerib arhitektuurilist mitmekesisust, põhineb valitud lähenemise efektiivsus kahel täiendaval mehhanismil:
+
+\begin{enumerate}
+    \item \textbf{Juhusliku hajuvuse vähendamine.} Kolme identse CNN-Deep-Attn mudeli kasutamine erinevate juhuseemnetega on suunatud juhusliku varieeruvuse minimeerimisele. See varieeruvus tuleneb mudeli kaalude esialgsest \textbf{algväärtustamisest} ja treeningandmete töötlemise järjekorrast. Selline lähenemine, mida tuntakse süvaansamblite (\textit{deep ensembles}) nime all, on tõendatult efektiivne meetod mudeli stabiilsuse tõstmiseks, aidates vältida juhuslikust algseisust tingitud ebasobivatesse lokaalsetesse miinimumidesse takerdumist.
+    
+    \item \textbf{Arhitektuuriline ja metodoloogiline mitmekesisus.} Kolmele CNN-mudelile lisatud EfficientNet-B2 esindab teistsugust mudeliperekonda ja õppimisstrateegiat. Kui CNN-Deep-Attn mudelid treeniti nullist vahetult kättesaadavatel andmetel, siis EfficientNet-B2 puhul rakendati siirdeõpet (\textit{transfer learning}), kasutades ImageNeti andmestikul eeltreenitud kaale. EfficientNet-i arhitektuuriline ülesehitus (inverteeritud jääkühendid, kihtide kokkusurumine) tagab, et ansambel ei ole tundlik ainult ühele arhitektuuritüübile omaste spetsiifiliste vigade suhtes.
+\end{enumerate}
+
+Empiiriline tugi valitud lahendusele põhineb testiandmete analüüsil: esialgne märgistamisansambel saavutas koos testiaegse augmentatsiooniga (TTA) $F_{1}$-skooriks 0,9701, ületades kõiki üksikmudeleid (parim üksikmudel CNN-Deep-Attn: $F_{1} = 0,9596$; EfficientNet-B2: $F_{1} = 0,9463$). Metoodika arenduse käigus läbi viidud võrdlusuuring viitab, et täiendavate erinevate arhitektuuride lisamine ansamblisse ei pakkunud statistiliselt märkimisväärset täpsuse kasvu, kuid suurendas oluliselt arvutusressursside kulu. Seega tähistab valitud koosseis optimaalset tasakaalu tuvastusvõimekuse ja arvutusliku tõhususe vahel.
+
+\begin{table}[h!]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\caption{Kasutatud mudeliarhitektuurid ja peamised treeningparameetrid.}
+\label{tab:model-architectures}
+\begin{tabular}{l|l|p{4.5cm}|c}
+\hline
+\textbf{Mudel} & \textbf{Sisend} & \textbf{Spetsiifilised tehnikad} & \textbf{Pikkus} \\
+\hline
+CNN-Deep-Attn (seeme 42/43/44) & CHM 1-kan. & Dropout, tähelepanu, MixUp & 50 ep. \\
+EfficientNet-B2 & CHM 1-kan. & ImageNet eeltreening, pehme adapter & 30 ep. \\
+\hline
+\end{tabular}
+\end{table}
+
+Kõikide mudelite optimeerimisel rakendati treeningpartii suurust (ingl \textit{batch size}) 16, AdamW algoritmil põhinevat kaaluuuendust ja tasakaalustamata klassijaotuse parandamiseks klassipõhiseid kaale. Täiendavalt kasutati regulariseerimistehnikaid nagu märgiste silumist (ingl \textit{label smoothing}) (0,05) ja \textit{MixUp} (0,3). Treeningu stabiilsuse tagamiseks seadistati EfficientNeti puhul selgroole (ingl \textit{backbone}) ja klassifikaatorile erinevad õppimiskiirused.
+
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 4.5.} Ansambelmudeli arhitektuuriskeem ja ennustuste agregeerimise põhimõte.\\
+Placeholder}}
+\caption{Ansambli tööpõhimõte.}
+\label{fig:ensemble-scheme}
+\end{figure}
+
+\subsection{Lõpliku mudeli rakendamine}
+
+Pärast parimate mudeliarhitektuuride väljaselgitamist ja optimaalse ansambli agregeerimismeetodi tuvastamist rakendati treenitud ja valideeritud ansambelmudel kogu uuringuala testandmestikule. Igale sisendpildile rakendati eelnevalt läbiproovitud testiaegset andmerikastamist (TTA) ning arvutati nelja mudeli (kolm CNN-Deep-Attn ja üks EfficientNet-B2) esialgsed tõenäosused. Need tõenäosused koondati valitud parima hääletusmeetodi alusel ühiseks lokaalseks lamapuidu esinemise tõenäosuseks.
+
+Selline integreeritud lähenemine tagas, et varasemates etappides tehtud teoreetilised valikud ansambli ja ruumilise valideerimise kohta realiseerusid praktiliste väljunditena ja mudeli ennustused olid statistiliselt stabiilsed. Saadud lõplikud tõenäosused on edasise analüüsi aluseks, mille täpsemad numbrilised tulemused avaldatakse töö järgmises peatükis.
