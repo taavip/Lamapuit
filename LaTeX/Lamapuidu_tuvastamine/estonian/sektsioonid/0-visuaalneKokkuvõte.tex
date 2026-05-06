@@ -1,11 +1,15 @@
 \newpage
-\pdfbookmark[1]{Visuaalne kokkuvõte}{visualsummary} % Lisame PDF-faili järjehoidjatesse.
+\pdfbookmark[1]{Visuaalne kokkuvõte}{visualsummary}
 \section*{Visuaalne kokkuvõte}
 
-\begin{figure}[p]
-    \centering
-    \includegraphics[width=1.0\textwidth]{estonian/joonised/Lamapuit_est.png}
+\begin{center}
+    % Kasutame 'height', et pilt mahuks pealkirja alla. 
+    % 0.7\textheight jätab piisavalt ruumi pealkirjale ja marginaalidele.
+    \includegraphics[height=0.65\textheight, angle=90, keepaspectratio]{estonian/joonised/Lamapuit_est.png}
+    
+    \stepcounter{figure} % Suurendame käsitsi jooniste loendurit
+    \small JÕONIS \thefigure: Visuaalne kokkuvõte % Kui soovid joonise allkirja
     \label{fig:visuaalne-kokkuvõte}
-\end{figure}
+\end{center}
 
 \newpage
