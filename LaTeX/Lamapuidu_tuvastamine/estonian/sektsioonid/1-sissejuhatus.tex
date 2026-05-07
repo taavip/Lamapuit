@@ -3,13 +3,13 @@
 
 \subsection{Probleemi taust ja motivatsioon}
 
-Metsade süsinikuvaru ja selle muutuste hindamine on oluline nii kliimapoliitika kujundamisel kui ka ökosüsteemide seisundi seires. Lamapuit (surnud puit maapinnal) on üks kriitilisemaid metsade süsinikuringe, struktuurse mitmekesisuse ja elurikkuse komponente. Teaduskirjanduses peetakse lamapuitu üheks olulisemaks metsade biodiversiteedi indikaatoriks, kuna see pakub elupaika ja toitu tuhandetele liikidele, peegeldades seeläbi ökosüsteemi tervist \parencite{lassauce_deadwood_2011, stokland_biodiversity_2012}. 
+Metsade süsinikuvaru ja selle muutuste hindamine on oluline nii kliimapoliitika kujundamisel kui ka ökosüsteemide seisundi seires. Lamapuit (surnud puit maapinnal) on üks kriitilisemaid metsade süsinikuringe, struktuurse mitmekesisuse ja elurikkuse komponente. Teaduskirjanduses peetakse lamapuitu üheks olulisemaks metsade elurikkuse indikaatoriks, kuna see pakub elupaika ja toitu tuhandetele liikidele, peegeldades seeläbi ökosüsteemi tervist \parencite{lassauce_deadwood_2011, stokland_biodiversity_2012}. 
 
 Viimastel aastatel on lamapuidu kaardistamine muutunud strateegiliselt oluliseks nii Euroopa Liidu kui ka Eesti siseriiklikus poliitikas. \textbf{Euroopa Liidu looduse taastamise määruse (Nature Restoration Law)} ning sellega seonduva \textbf{Eesti looduse taastamise kava} raames nähakse lamapuidu ja seisva surnud puidu koguse suurendamist kui üht peamist indikaatorit metsaökosüsteemide taastamisel. Strateegilistes dokumentides rõhutatakse eriti jämedamõõtmelise lamapuidu (läbimõõduga alates u 30 cm) säilitamist, mis on kriitiline paljudele ohustatud liikidele \parencite{kliimaministeerium_looduse_2024}. Nende eesmärkide saavutamiseks on seatud konkreetsed sihttasemed (nt baastase u 8,7 $m^3/ha$), mille seireks vajatakse täpseid ja ruumiliselt pidevaid andmeid \parencite{kliimaministeerium_looduse_2024}.
 
 Eestis on lamapuit leidnud rakendust ka ökosüsteemiteenuste üleriigilisel hindamisel \textbf{ELME projekti} raames, kus seda kasutatakse indikaatorina ökosüsteemide seisundi ja hüvede määramisel \parencite{helm_eesti_2023}. Vaatamata poliitilisele tähtsusele on lamapuidu täpne ruumiline hindamine jätkuvalt keerukas. Traditsioonilised välitöödel põhinevad meetodid on ajamahukad ja katavad vaid murdosa metsadest, mis võib raskendada taastamiskavade täitmise operatiivset kontrolli.
 
-Aerolaserskaneerimise (LiDAR) tehnoloogia pakub siin uusi võimalusi, kuid üleriigilise lennu punktitihedus (ALS IV ring, u 2,1 p/m\textsuperscript{2}) seab piirid väiksemate objektide tuvastamisele \parencite{maa-ja_ruumiamet_als_nodate}. Käesolev töö keskendub Maa- ja Ruumiameti madallendude andmestikule (18+ p/m\textsuperscript{2}), et uurida, mil määral võimaldavad masinnägemise meetodid liikuda üksikute tüvede automaatse tuvastamise ja segmenteerimise suunas.
+Aerolaserskaneerimise (LiDAR) tehnoloogia pakub siin uusi võimalusi, kuid üleriigilise lennu punktitihedus (ALS IV ring, u 2,1 p/m\textsuperscript{2}) seab piirid väiksemate objektide tuvastamisele \parencite{maa-ja_ruumiamet_als_nodate}. Käesolev töö keskendub Maa- ja Ruumiameti madallendude andmestikule (punktitihedus üle 18 punkti/m\textsuperscript{2}), et uurida, mil määral võimaldavad masinnägemise meetodid liikuda üksikute tüvede automaatse tuvastamise ja segmenteerimise suunas.
 
 \subsection{Töö eesmärk ja uurimisküsimused}
 
@@ -18,7 +18,7 @@ Käesoleva magistritöö eesmärk on katsetada ja hinnata metoodikaid lamapuidu 
 Töös püütakse vastata järgmistele uurimisküsimustele:
 \begin{itemize}
     \item Millist täpsust on võimalik saavutada lamapuidu objektide tuvastamisel ja segmenteerimisel tiheda punktipilve (18+ p/m\textsuperscript{2}) põhjal?
-    \item Kas masinnägemise mudelid suudavad usaldusväärselt eristada lamapuitu muudest maapinnalähedastest objektidest (kännud, madal taimestik) Eesti komplekssetes metsatüüpides?
+    \item Kas masinnägemise mudelid suudavad usaldusväärselt eristada lamapuitu muudest maapinnalähedastest objektidest (rattaroopad, madal taimestik) Eesti komplekssetes metsatüüpides?
     \item Kuidas saab loodud treeningandmestikku ja metoodilisi katsetusi rakendada edaspidises töös, et toetada looduse taastamise kavas seatud monitooringueesmärke?
 \end{itemize}
 
@@ -26,7 +26,6 @@ Töös püütakse vastata järgmistele uurimisküsimustele:
 
 Töö eesmärgi saavutamiseks on kavandatud järgmised uurimisülesanded:
 \begin{itemize}
-    \item analüüsida lamapuidu rolli Eesti looduse taastamise kavas ja ELME projektis ning kaardistada tehnilised vajadused selle seireks;
     \item teostada kõrge punktitihedusega LiDAR-punktipilvede eeltöötlus ja normaliseerimine;
     \item koostada ja märgistada esinduslik treeningandmestik lamapuidu objektidest;
     \item katsetada valitud masinõppe mudeleid lamapuidu automaatseks segmenteerimiseks;
