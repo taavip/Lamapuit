@@ -3,35 +3,30 @@
 
 \subsection{Probleemi taust ja motivatsioon}
 
-Metsade süsinikuvaru ja selle muutuste hindamine on oluline nii kliimapoliitika kujundamisel kui ka ökosüsteemide seisundi seires. Aerolaserskaneerimise (Light Detection and Ranging – LiDAR) kasutuselevõtt on võimaldanud detailsemaid hinnanguid puistu struktuurile ja elusa biomassi ruumilisele jaotusele. Samas on metsa surnud puidu, sealhulgas lamapuidu, ruumiline ja kvantitatiivne hindamine jätkuvalt keerukas ning tugineb suures osas piiratud ulatusega välitöödele ja statistilistele üldistustele \parencite{marchi_airborne_2018}.
+Metsade süsinikuvaru ja selle muutuste hindamine on oluline nii kliimapoliitika kujundamisel kui ka ökosüsteemide seisundi seires. Lamapuit (surnud puit maapinnal) on üks kriitilisemaid metsade süsinikuringe, struktuurse mitmekesisuse ja elurikkuse komponente. Teaduskirjanduses peetakse lamapuitu üheks olulisemaks metsade biodiversiteedi indikaatoriks, kuna see pakub elupaika ja toitu tuhandetele saproksüülsetele liikidele, olles seega ökosüsteemi tervise otsene peegeldaja \parencite{lassauce_deadwood_2011, stokland_biodiversity_2012}. Vaatamata sellele on lamapuidu ruumiline ja kvantitatiivne hindamine jätkuvalt keerukas, tuginedes Eestis ja mujal suures osas piiratud ulatusega välitöödele ning statistilistele üldistustele, mis ei paku piisavat ruumilist resolutsiooni \parencite{marchi_airborne_2018}.
 
-Lamapuit on oluline metsade süsinikuringe, elurikkuse ja struktuurse mitmekesisuse komponent ning seda kasutatakse indikaatorina nii looduskaitselises seires kui ka metsade seisundi hindamisel. Lisaks ökoloogilisele väärtusele on lamapuidu täpne kaardistamine kriitilise tähtsusega praktilises metsahalduses ja ohutusseires. Lamapuidu asukoht ja maht on olulised sisendparameetrid metsatulekahjude leviku modelleerimisel, kuna maapinnal asuv kuiv surnud puit moodustab olulise osa kütusekoormusest, mis mõjutab otseselt tule levikukiirust ja intensiivsust \parencite{shin_morphological_2024, dietenberger_accurate_2025}. Operatiivne lamapuidu tuvastamine on asendamatu tööriist ka tormikahjude (nt tuuleheide ja -murd) ulatuse kiireks hindamiseks, võimaldades planeerida koristustöid ja hinnata metsade kahjustusastet vahetult pärast loodusõnnetusi \parencite{jarron_detection_2021, bui_assessing_2026}. 
+Aerolaserskaneerimise (Light Detection and Ranging – LiDAR) tehnoloogia on viimastel kümnenditel revolutsioneerinud metsanduslikku kaugseiret, võimaldades hinnata puistu struktuuri kolmemõõtmeliselt. Lisaks ökoloogilisele väärtusele on lamapuidu täpne kaardistamine kriitilise tähtsusega praktilises metsahalduses. Näiteks on lamapuidu maht oluline sisendparameeter metsatulekahjude leviku modelleerimisel, kuna maapinnal asuv kuiv surnud puit moodustab olulise osa kütusekoormusest \parencite{shin_morphological_2024, dietenberger_accurate_2025}. Operatiivne lamapuidu tuvastamine on asendamatu tööriist ka tormikahjude ulatuse kiireks hindamiseks, võimaldades planeerida koristustöid ja hinnata metsade kahjustusastet vahetult pärast loodusõnnetusi \parencite{jarron_detection_2021}.
 
-Samuti on LiDAR-andmete abil tuvastatud lamapuit leidnud rakendust spordis, eriti orienteerumiskaartide koostamisel. Kuna lamapuit on üks peamisi metsa läbitavust piiravaid tegureid, võimaldab selle automaatne tuvastamine luua täpsemaid aluskaarte, kus on märgitud liikumist takistavad objektid, parandades kaartide usaldusväärsust ja raja planeerimise kvaliteeti \parencite{karm_orienteerumiskaardi_2015}.
-
-Eestis hinnatakse lamapuitu peamiselt statistilise metsainventeerimise (SMI) proovitükkidel ning metsaregistri andmete alusel, kuid need hinnangud ei võimalda saada ruumiliselt pidevat ja ajakohast ülevaadet lamapuidu jaotusest. Varasemad uuringud on näidanud, et tavapärase punktitihedusega lennukipõhised LiDAR-andmed on lamapuidu tuvastamisel piiratud, kuid sobiva andmetöötluse ja objektipõhise analüüsi korral on võimalik eristada suuremaid ja pikemaid lamapuiduobjekte maapinnalähedaste punktide põhjal \parencite{joyce_detection_2019}. Samas on kasutatud metoodikad ja andmestikud olnud ebaühtlased, mis raskendab tulemuste üldistamist suurematele aladele.
-
-Eestis kogutakse aerolaserskaneerimise andmeid riikliku seire raames erinevatel lennukõrgustel, mis määravad otseselt punktipilve tiheduse. Maa- ja Ruumiameti aerolaserskaneerimise neljanda ringi (ALS IV, 2021–2024) raames kaetakse igal aastal ligikaudu veerand Eesti territooriumist kevadise lennuga, mille keskmine punktitihedus on umbes 2,1 p/m\textsuperscript{2} \parencite{maa-ja_ruumiamet_als_nodate}. Kuigi suurema punktitihedusega LiDAR-andmed võimaldavad detailsemat objektide eristamist, ei ole madalate lennukõrguste kasutamine kogu riigi ulatuses majanduslikult realistlik. Seetõttu tekib praktiline vajadus arendada metoodikaid, mis võimaldaksid lamapuitu tuvastada usaldusväärselt ka hõreda punktitihedusega andmetest.
+Eestis kogutakse aerolaserskaneerimise andmeid riikliku seire raames (ALS IV ring), kuid üleriigilise lennu keskmine punktitihedus (umbes 2,1 p/m\textsuperscript{2}) seab piirid väiksemate objektide, nagu üksikute tüvede, detailsele tuvastamisele \parencite{maa-ja_ruumiamet_als_nodate}. Samas on Maa- ja Ruumiamet alustanud madallendude teostamist, kus punktitihedus ulatub üle 18 p/m\textsuperscript{2}, mis loob eeldused masinnägemise meetodite rakendamiseks lamapuidu automaatseks segmenteerimiseks. Senine praktika on näidanud, et suurim takistus selliste mudelite arendamisel on kvaliteetsete märgistatud treeningandmete puudus.
 
 \subsection{Töö eesmärk ja uurimisküsimused}
 
-Käesoleva magistritöö eesmärk on uurida ja arendada metoodikaid lamapuidu tuvastamiseks ja kvantitatiivseks hindamiseks aerolaserskaneerimise abil, keskendudes eelkõige madala punktitihedusega andmestike kasutusvõimalustele üleriigilises hindamises. Töö lähtekohaks on eeldus, et tihedama punktipilvega aladel tuvastatud lamapuidu ruumilisi ja struktuurseid tunnuseid on võimalik tuvastada piirangutega ka hõredamatelt punktipilvedelt.
+Käesoleva magistritöö peamine eesmärk on demonstreerida kaasaegsete masinõppe meetodite (klassifitseerimine ja segmenteerimine) teostatavust lamapuidu tuvastamiseks Eestis, kasutades selleks kõrge resolutsiooniga aerolaserskaneerimise andmeid. Erinevalt varasematest statistilistest lähenemistest keskendub käesolev töö objektipõhisele analüüsile tihedas punktipilves. Töö oluliseks väljundiks on ka esimese standardiseeritud lamapuidu treeningandmestiku loomine Eesti metsatüüpide baasil, mis võimaldab tulevikus arendada mudeleid üleriigiliseks rakendamiseks.
 
 Töös püütakse vastata järgmistele uurimisküsimustele:
 \begin{itemize}
-    \item Millisel määral on võimalik tuvastada lamapuitu madala punktitihedusega aerolaserskaneerimise põhjal, kasutades maapinnalähedasi kõrgusmudeleid?
-    \item Millised objekti- ja masinnägemisepõhised lähenemised sobivad lamapuidu tuvastamiseks ja kirjeldamiseks hõreda punktipilvega?
-    \item Kuidas saab tihedama punktipilvega aladel tuvastatud lamapuiduobjekte kasutada mudelite treenimiseks ja rakendamiseks üleriigilises, madalama punktitihedusega andmestikus?
+    \item Millise täpsusega on võimalik klassifitseerida ja segmenteerida lamapuitu Maa- ja Ruumiameti madallendude (18+ p/m\textsuperscript{2}) punktipilve andmetest?
+    \item Kas sügavõppe-põhised masinnägemise mudelid on võimelised eristama lamapuitu muust maapinnalähedasest taimestikust Eesti komplekssetes metsaoludes?
+    \item Milline on loodud treeningandmestiku potentsiaal edasisteks arendusteks, et liikuda üleriigilise automaatse seiresüsteemi suunas?
 \end{itemize}
 
 \subsection{Uurimisülesanded}
 
 Töö eesmärgi saavutamiseks on kavandatud järgmised uurimisülesanded:
 \begin{itemize}
-    \item analüüsida varasemaid lamapuidu tuvastamise ja hindamise metoodikaid aerolaserskaneerimise kontekstis;
-    \item teostada LiDAR-punktipilvede eeltöötlus ning eraldada maapinna ja maapinnalähedased punktid;
-    \item arendada objektipõhine lähenemine lamapuidu tuvastamiseks tihedama punktipilvega aladel;
-    \item katsetada masinnägemisepõhiseid meetodeid lamapuidu ruumiliste ja struktuursete tunnuste kirjeldamiseks;
-    \item rakendada ja hinnata väljatöötatud metoodika toimivust hõredama punktitihedusega LiDAR-andmetel üle-eesti;
-    \item võrrelda saadud tulemusi tihedamate punktipilvedega, statistilise metsainventeerimise proovitükkide ja metsaregistri andmetega.
+    \item analüüsida teaduskirjanduse põhjal parimaid praktikaid lamapuidu tuvastamiseks tihedates punktipilvedes;
+    \item teostada kõrge punktitihedusega LiDAR-andmete eeltöötlus ja normaliseerimine;
+    \item märgistada ja ette valmistada esinduslik treeningandmestik lamapuidu objektidest;
+    \item treenida ja valideerida masinõppe mudeleid lamapuidu klassifitseerimiseks ja segmenteerimiseks valitud testaladel;
+    \item hinnata mudelite täpsust ning analüüsida peamisi vigu (nt segiminek rattaroobastega või madala põõsarindega).
 \end{itemize}
