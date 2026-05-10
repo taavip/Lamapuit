@@ -144,3 +144,14 @@ yolo11n-seg.pt
 yolo11s-seg.pt
 yolo11m-seg.pt
 yolo26n.pt
+
+# Minimal LaTeX build artifacts for thesis project
+LaTeX/Lamapuidu_tuvastamine/thesis.aux
+LaTeX/Lamapuidu_tuvastamine/thesis.bbl
+LaTeX/Lamapuidu_tuvastamine/thesis.bcf
+LaTeX/Lamapuidu_tuvastamine/thesis.fdb_latexmk
+LaTeX/Lamapuidu_tuvastamine/thesis.fls
+LaTeX/Lamapuidu_tuvastamine/thesis.run.xml
+LaTeX/Lamapuidu_tuvastamine/thesis.synctex.gz
+LaTeX/Lamapuidu_tuvastamine/thesis.synctex(busy)
+LaTeX/Lamapuidu_tuvastamine/thesis.toc
