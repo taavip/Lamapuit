@@ -1,0 +1,585 @@
+{
+  "input_laz": "data/lamapuit/laz/436646_2024_madal.laz",
+  "labels": "output/onboarding_labels_v2_drop13/436646_2024_madal_chm_max_hag_20cm_labels.csv",
+  "filter_mode": "drop",
+  "hag_max_requested": 1.3,
+  "hag_max_effective": 1.3,
+  "methods": [
+    {
+      "name": "class2_idw_baseline",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_class2_idw_chm_max_hag_20cm.tif",
+      "notes": "Existing LAS class 2 ground points + IDW interpolation (drop mode)."
+    },
+    {
+      "name": "smrf_idw",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_smrf_idw_chm_max_hag_20cm.tif",
+      "notes": "PDAL SMRF ground reclassification, then same IDW CHM logic (drop mode)."
+    },
+    {
+      "name": "csf_idw",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_csf_idw_chm_max_hag_20cm.tif",
+      "notes": "PDAL CSF ground reclassification, then same IDW CHM logic (drop mode)."
+    },
+    {
+      "name": "allpoints_surface",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_allpoints_surface_chm_max_hag_20cm.tif",
+      "notes": "No class tags: coarse minimum surface + morphological opening + smoothing, then CHM (drop mode)."
+    },
+    {
+      "name": "class2_surface_fixed_low",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_class2_surface_fixed_low_chm_max_hag_20cm.tif",
+      "notes": "Class2 ground DEM with fixed low smoothing (sigma=0.8), then CHM (drop mode)."
+    },
+    {
+      "name": "class2_surface_fixed_high",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_class2_surface_fixed_high_chm_max_hag_20cm.tif",
+      "notes": "Class2 ground DEM with fixed high smoothing (sigma=2.4), then CHM (drop mode)."
+    },
+    {
+      "name": "class2_surface_adaptive",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_class2_surface_adaptive_chm_max_hag_20cm.tif",
+      "notes": "Class2 ground DEM with adaptive roughness-based smoothing, then CHM (drop mode)."
+    },
+    {
+      "name": "class2_filter_local_residual",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_class2_filter_local_residual_chm_max_hag_20cm.tif",
+      "notes": "Class2 filter local residual (n=5, thr=2.0) + fixed_high surface smoothing, then CHM (drop mode)."
+    },
+    {
+      "name": "class2_filter_mad",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_class2_filter_mad_chm_max_hag_20cm.tif",
+      "notes": "Class2 filter MAD (n=5, thr=2.5) + fixed_high surface smoothing, then CHM (drop mode)."
+    },
+    {
+      "name": "class2_filter_slope_curvature",
+      "chm": "tmp/ground_method_study_436646_filtered_drop/chm/436646_2024_madal_class2_filter_slope_curvature_chm_max_hag_20cm.tif",
+      "notes": "Class2 filter slope-curvature (slope_thr=0.6) + fixed_high surface smoothing, then CHM (drop mode)."
+    }
+  ],
+  "raster_stats": {
+    "class2_idw_baseline": {
+      "count": 8227882,
+      "min": 0.0,
+      "max": 1.2999999523162842,
+      "mean": 0.10299110412597656,
+      "std": 0.26261356472969055,
+      "p50": 5.833328486914979e-09,
+      "p90": 0.2657555937767029,
+      "p95": 0.864553689956665,
+      "p99": 1.2276215553283691
+    },
+    "smrf_idw": {
+      "count": 7543147,
+      "min": 0.0,
+      "max": 1.2999999523162842,
+      "mean": 0.07843755930662155,
+      "std": 0.26786598563194275,
+      "p50": 3.620527877501445e-09,
+      "p90": 3.472869281040403e-08,
+      "p95": 0.893893837928772,
+      "p99": 1.2318217754364014
+    },
+    "csf_idw": {
+      "count": 7499097,
+      "min": 0.0,
+      "max": 1.2999999523162842,
+      "mean": 0.08437337726354599,
+      "std": 0.2736928164958954,
+      "p50": 3.68351038559922e-09,
+      "p90": 0.09084806591272354,
+      "p95": 0.9126774668693542,
+      "p99": 1.2338405847549438
+    },
+    "allpoints_surface": {
+      "count": 10858876,
+      "min": 0.0,
+      "max": 1.2999998331069946,
+      "mean": 0.18888890743255615,
+      "std": 0.24072016775608063,
+      "p50": 0.10708196461200714,
+      "p90": 0.4184826612472534,
+      "p95": 0.7791322469711304,
+      "p99": 1.2151117324829102
+    },
+    "class2_surface_fixed_low": {
+      "count": 8961611,
+      "min": 1.1652900866465643e-12,
+      "max": 1.299999475479126,
+      "mean": 0.21059559285640717,
+      "std": 0.2843547761440277,
+      "p50": 0.09221746027469635,
+      "p90": 0.6243441104888916,
+      "p95": 0.954949140548706,
+      "p99": 1.2354710102081299
+    },
+    "class2_surface_fixed_high": {
+      "count": 7527486,
+      "min": 9.350742402602918e-12,
+      "max": 1.2999998331069946,
+      "mean": 0.307621031999588,
+      "std": 0.3323136866092682,
+      "p50": 0.16037915647029877,
+      "p90": 0.8747420310974121,
+      "p95": 1.0811998844146729,
+      "p99": 1.2581008672714233
+    },
+    "class2_surface_adaptive": {
+      "count": 7656832,
+      "min": 9.350742402602918e-12,
+      "max": 1.2999999523162842,
+      "mean": 0.31436893343925476,
+      "std": 0.3360998332500458,
+      "p50": 0.16471266746520996,
+      "p90": 0.8898292183876038,
+      "p95": 1.0887290239334106,
+      "p99": 1.2589333057403564
+    },
+    "class2_filter_local_residual": {
+      "count": 5915078,
+      "min": 1.0677990758267697e-07,
+      "max": 1.2999999523162842,
+      "mean": 0.4770176410675049,
+      "std": 0.3515603244304657,
+      "p50": 0.3886350989341736,
+      "p90": 1.039608120918274,
+      "p95": 1.168668508529663,
+      "p99": 1.2750643491744995
+    },
+    "class2_filter_mad": {
+      "count": 6299295,
+      "min": 2.4404585019510705e-08,
+      "max": 1.2999998331069946,
+      "mean": 0.41676798462867737,
+      "std": 0.35293343663215637,
+      "p50": 0.2960716187953949,
+      "p90": 1.0009719133377075,
+      "p95": 1.1482762098312378,
+      "p99": 1.2711029052734375
+    },
+    "class2_filter_slope_curvature": {
+      "count": 7202394,
+      "min": 0.0,
+      "max": 1.2999993562698364,
+      "mean": 0.31401821970939636,
+      "std": 0.3392166197299957,
+      "p50": 0.16139212250709534,
+      "p90": 0.9013447761535645,
+      "p95": 1.0973405838012695,
+      "p99": 1.2613019943237305
+    }
+  },
+  "evaluation": {
+    "class2_idw_baseline": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.2979624308185813,
+      "no_tile_max_mean": 1.23286397201563,
+      "cdw_detect_rate_15cm": 1.0,
+      "no_false_high_rate_15cm": 0.9715397713451714,
+      "best_youden_tile_max": {
+        "threshold": 1.294705322490019,
+        "tpr": 0.9118165784832452,
+        "fpr": 0.7594259304305522,
+        "precision": 0.24879692011549567,
+        "f1": 0.39092627599243857,
+        "youden_j": 0.15239064805269298,
+        "tp": 1034,
+        "fp": 3122,
+        "tn": 989,
+        "fn": 100
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.09742931850113147,
+        "tpr": 0.8386243386243386,
+        "fpr": 0.5273656044757966,
+        "precision": 0.3049054184033344,
+        "f1": 0.4472137314836586,
+        "youden_j": 0.311258734148542,
+        "tp": 951,
+        "fp": 2168,
+        "tn": 1943,
+        "fn": 183
+      },
+      "auc_tile_max": 0.577340357118189,
+      "auc_frac_above_15cm": 0.6769455802537778,
+      "cohens_d_tile_max": 0.2901514818486875,
+      "cohens_d_frac_above_15cm": 0.49986613611358954
+    },
+    "smrf_idw": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.2978337714070787,
+      "no_tile_max_mean": 1.2259258707422376,
+      "cdw_detect_rate_15cm": 1.0,
+      "no_false_high_rate_15cm": 0.9498905375820968,
+      "best_youden_tile_max": {
+        "threshold": 1.2951992121864768,
+        "tpr": 0.9029982363315696,
+        "fpr": 0.7406956944782291,
+        "precision": 0.25165888424674365,
+        "f1": 0.3936190659235056,
+        "youden_j": 0.16230254185334048,
+        "tp": 1024,
+        "fp": 3045,
+        "tn": 1066,
+        "fn": 110
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.04205902446750871,
+        "tpr": 0.8835978835978836,
+        "fpr": 0.640963269277548,
+        "precision": 0.2755017871872422,
+        "f1": 0.42003772793963534,
+        "youden_j": 0.24263461432033562,
+        "tp": 1002,
+        "fp": 2635,
+        "tn": 1476,
+        "fn": 132
+      },
+      "auc_tile_max": 0.5846391386811398,
+      "auc_frac_above_15cm": 0.6381862744467139,
+      "cohens_d_tile_max": 0.28981138224233105,
+      "cohens_d_frac_above_15cm": 0.3663120075990449
+    },
+    "csf_idw": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.297875549322293,
+      "no_tile_max_mean": 1.2269607653078671,
+      "cdw_detect_rate_15cm": 1.0,
+      "no_false_high_rate_15cm": 0.9506202870347847,
+      "best_youden_tile_max": {
+        "threshold": 1.2952207326889038,
+        "tpr": 0.908289241622575,
+        "fpr": 0.750182437363172,
+        "precision": 0.25036460865337873,
+        "f1": 0.39253048780487804,
+        "youden_j": 0.15810680425940293,
+        "tp": 1030,
+        "fp": 3084,
+        "tn": 1027,
+        "fn": 104
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.0506973103754706,
+        "tpr": 0.8624338624338624,
+        "fpr": 0.6154220384334712,
+        "precision": 0.27879133409350054,
+        "f1": 0.42137009909521755,
+        "youden_j": 0.24701182400039123,
+        "tp": 978,
+        "fp": 2530,
+        "tn": 1581,
+        "fn": 156
+      },
+      "auc_tile_max": 0.5872806729654212,
+      "auc_frac_above_15cm": 0.6506773885351684,
+      "cohens_d_tile_max": 0.2870953458922933,
+      "cohens_d_frac_above_15cm": 0.3880181410222027
+    },
+    "allpoints_surface": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.2978594518632907,
+      "no_tile_max_mean": 1.2434485910115554,
+      "cdw_detect_rate_15cm": 1.0,
+      "no_false_high_rate_15cm": 0.9961080029189978,
+      "best_youden_tile_max": {
+        "threshold": 1.2926228352154003,
+        "tpr": 0.9497354497354498,
+        "fpr": 0.8328873753344685,
+        "precision": 0.23928015996445234,
+        "f1": 0.38225377107364683,
+        "youden_j": 0.11684807440098122,
+        "tp": 1077,
+        "fp": 3424,
+        "tn": 687,
+        "fn": 57
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.26635342114465554,
+        "tpr": 0.7354497354497355,
+        "fpr": 0.5769885672585745,
+        "precision": 0.2601372426699938,
+        "f1": 0.38433179723502303,
+        "youden_j": 0.15846116819116096,
+        "tp": 834,
+        "fp": 2372,
+        "tn": 1739,
+        "fn": 300
+      },
+      "auc_tile_max": 0.54429281014459,
+      "auc_frac_above_15cm": 0.6068090857882474,
+      "cohens_d_tile_max": 0.28102198001032813,
+      "cohens_d_frac_above_15cm": 0.3789026640364393
+    },
+    "class2_surface_fixed_low": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.29872898470998,
+      "no_tile_max_mean": 1.242287164312504,
+      "cdw_detect_rate_15cm": 1.0,
+      "no_false_high_rate_15cm": 0.9922160058379956,
+      "best_youden_tile_max": {
+        "threshold": 1.299147605895996,
+        "tpr": 0.5881834215167548,
+        "fpr": 0.4390659207005595,
+        "precision": 0.2698220064724919,
+        "f1": 0.36993899057127005,
+        "youden_j": 0.14911750081619535,
+        "tp": 667,
+        "fp": 1805,
+        "tn": 2306,
+        "fn": 467
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.38283755678799425,
+        "tpr": 0.8174603174603174,
+        "fpr": 0.45974215519338363,
+        "precision": 0.329073482428115,
+        "f1": 0.469248291571754,
+        "youden_j": 0.3577181622669338,
+        "tp": 927,
+        "fp": 1890,
+        "tn": 2221,
+        "fn": 207
+      },
+      "auc_tile_max": 0.5993102773691438,
+      "auc_frac_above_15cm": 0.7379087251178389,
+      "cohens_d_tile_max": 0.2778526103480927,
+      "cohens_d_frac_above_15cm": 0.8807882884950908
+    },
+    "class2_surface_fixed_high": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.2929303609294656,
+      "no_tile_max_mean": 1.2377935174813643,
+      "cdw_detect_rate_15cm": 0.9955908289241623,
+      "no_false_high_rate_15cm": 0.9914862563853077,
+      "best_youden_tile_max": {
+        "threshold": 1.2978809219248155,
+        "tpr": 0.8430335097001763,
+        "fpr": 0.7046947214789588,
+        "precision": 0.24811834933817806,
+        "f1": 0.3833968317625827,
+        "youden_j": 0.13833878822121748,
+        "tp": 956,
+        "fp": 2897,
+        "tn": 1214,
+        "fn": 178
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.68462176487082,
+        "tpr": 0.7530864197530864,
+        "fpr": 0.4040379469715398,
+        "precision": 0.33956262425447314,
+        "f1": 0.4680734447793916,
+        "youden_j": 0.34904847278154666,
+        "tp": 854,
+        "fp": 1661,
+        "tn": 2450,
+        "fn": 280
+      },
+      "auc_tile_max": 0.5788015720716605,
+      "auc_frac_above_15cm": 0.7385538519488085,
+      "cohens_d_tile_max": 0.25561115660526795,
+      "cohens_d_frac_above_15cm": 0.8318191120391463
+    },
+    "class2_surface_adaptive": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.2988741561849282,
+      "no_tile_max_mean": 1.2421228666700346,
+      "cdw_detect_rate_15cm": 1.0,
+      "no_false_high_rate_15cm": 0.9944052541960594,
+      "best_youden_tile_max": {
+        "threshold": 1.298355463813333,
+        "tpr": 0.8306878306878307,
+        "fpr": 0.6555582583313062,
+        "precision": 0.25900467418201817,
+        "f1": 0.39488576818277094,
+        "youden_j": 0.1751295723565245,
+        "tp": 942,
+        "fp": 2695,
+        "tn": 1416,
+        "fn": 192
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.6229497034100728,
+        "tpr": 0.8192239858906526,
+        "fpr": 0.4697153977134517,
+        "precision": 0.3248251748251748,
+        "f1": 0.4651977966950425,
+        "youden_j": 0.3495085881772009,
+        "tp": 929,
+        "fp": 1931,
+        "tn": 2180,
+        "fn": 205
+      },
+      "auc_tile_max": 0.6098531406039717,
+      "auc_frac_above_15cm": 0.7403862695559769,
+      "cohens_d_tile_max": 0.27999862251717156,
+      "cohens_d_frac_above_15cm": 0.8432173287288315
+    },
+    "class2_filter_local_residual": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.2344701208134807,
+      "no_tile_max_mean": 1.2378437401539037,
+      "cdw_detect_rate_15cm": 0.9506172839506173,
+      "no_false_high_rate_15cm": 0.9776210167842374,
+      "best_youden_tile_max": {
+        "threshold": 1.2985233382617727,
+        "tpr": 0.7574955908289241,
+        "fpr": 0.6757479931890051,
+        "precision": 0.23618366785812483,
+        "f1": 0.3600922238524419,
+        "youden_j": 0.08174759763991901,
+        "tp": 859,
+        "fp": 2778,
+        "tn": 1333,
+        "fn": 275
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.981358903592293,
+        "tpr": 0.3315696649029982,
+        "fpr": 0.18414011189491608,
+        "precision": 0.3318623124448367,
+        "f1": 0.3317159241288046,
+        "youden_j": 0.14742955300808214,
+        "tp": 376,
+        "fp": 757,
+        "tn": 3354,
+        "fn": 758
+      },
+      "auc_tile_max": 0.5427868706876248,
+      "auc_frac_above_15cm": 0.5913819206610904,
+      "cohens_d_tile_max": -0.013558567623835964,
+      "cohens_d_frac_above_15cm": 0.17349577880805353
+    },
+    "class2_filter_mad": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.2621788896580852,
+      "no_tile_max_mean": 1.2394205835885526,
+      "cdw_detect_rate_15cm": 0.9717813051146384,
+      "no_false_high_rate_15cm": 0.9822427633179275,
+      "best_youden_tile_max": {
+        "threshold": 1.29614435784957,
+        "tpr": 0.9250440917107584,
+        "fpr": 0.8187788859158356,
+        "precision": 0.237599093997735,
+        "f1": 0.37808614164714366,
+        "youden_j": 0.10626520579492282,
+        "tp": 1049,
+        "fp": 3366,
+        "tn": 745,
+        "fn": 85
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.8778598965077475,
+        "tpr": 0.656084656084656,
+        "fpr": 0.4096326927754804,
+        "precision": 0.30642504118616143,
+        "f1": 0.4177428411005053,
+        "youden_j": 0.24645196330917563,
+        "tp": 744,
+        "fp": 1684,
+        "tn": 2427,
+        "fn": 390
+      },
+      "auc_tile_max": 0.5540310613285558,
+      "auc_frac_above_15cm": 0.6569981299365877,
+      "cohens_d_tile_max": 0.09905542960226105,
+      "cohens_d_frac_above_15cm": 0.4316267814171027
+    },
+    "class2_filter_slope_curvature": {
+      "n_tiles": 5245,
+      "n_cdw": 1134,
+      "n_no_cdw": 4111,
+      "cdw_tile_max_mean": 1.2621557362495908,
+      "no_tile_max_mean": 1.2351745173980273,
+      "cdw_detect_rate_15cm": 0.9717813051146384,
+      "no_false_high_rate_15cm": 0.9888105083921187,
+      "best_youden_tile_max": {
+        "threshold": 1.2987431287765503,
+        "tpr": 0.7566137566137566,
+        "fpr": 0.6134760398929701,
+        "precision": 0.25384615384615383,
+        "f1": 0.38015064244572433,
+        "youden_j": 0.14313771672078657,
+        "tp": 858,
+        "fp": 2522,
+        "tn": 1589,
+        "fn": 276
+      },
+      "best_youden_frac_above_15cm": {
+        "threshold": 0.6743293098975918,
+        "tpr": 0.7742504409171076,
+        "fpr": 0.42957917781561666,
+        "precision": 0.3320726172465961,
+        "f1": 0.4647961884595024,
+        "youden_j": 0.34467126310149093,
+        "tp": 878,
+        "fp": 1766,
+        "tn": 2345,
+        "fn": 256
+      },
+      "auc_tile_max": 0.5830424631811155,
+      "auc_frac_above_15cm": 0.7187735018149354,
+      "cohens_d_tile_max": 0.1124144791186642,
+      "cohens_d_frac_above_15cm": 0.7353298315625784
+    }
+  },
+  "filter_diagnostics": {
+    "class2_filter_local_residual": {
+      "n_class2_input": 11230061,
+      "n_class2_filtered": 727356,
+      "filter_pct": 6.476865976061929,
+      "n_reject_cells": 63621,
+      "reject_cell_pct": 6.3621,
+      "dem_roughness_before": 0.0200042724609375,
+      "dem_roughness_after": 0.029998779296875,
+      "dem_roughness_reduction_pct": -49.96186117467582,
+      "filter_method": "local_residual",
+      "neighborhood_sz": 5,
+      "threshold": 2.0
+    },
+    "class2_filter_mad": {
+      "n_class2_input": 11230061,
+      "n_class2_filtered": 456343,
+      "filter_pct": 4.063584338500031,
+      "n_reject_cells": 42800,
+      "reject_cell_pct": 4.28,
+      "dem_roughness_before": 0.0200042724609375,
+      "dem_roughness_after": 0.029998779296875,
+      "dem_roughness_reduction_pct": -49.96186117467582,
+      "filter_method": "mad",
+      "neighborhood_sz": 5,
+      "threshold": 2.5
+    },
+    "class2_filter_slope_curvature": {
+      "n_class2_input": 11230061,
+      "n_class2_filtered": 102375,
+      "filter_pct": 0.9116157071631222,
+      "n_reject_cells": 29546,
+      "reject_cell_pct": 2.9546,
+      "dem_roughness_before": 0.0200042724609375,
+      "dem_roughness_after": 0.0200042724609375,
+      "dem_roughness_reduction_pct": 0.0,
+      "filter_method": "slope_curvature",
+      "neighborhood_sz": 5,
+      "threshold": 0.6
+    }
+  },
+  "best_method": "class2_surface_adaptive"
+}
