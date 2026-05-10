@@ -20,6 +20,7 @@ Usage:
     results = generator.generate(variants=['baseline', 'raw', 'gaussian', 'composite', 'masked-raw'])
 """
 
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -66,6 +67,7 @@ class CHMVariantGenerator:
         self.max_tiles = max_tiles
         self.skip_existing = skip_existing
         self.verbose = verbose
+        self._harmonized_outputs_ready = False
 
         if not self.laz_dir.exists():
             raise FileNotFoundError(f"LAZ directory not found: {self.laz_dir}")
@@ -190,59 +192,109 @@ class CHMVariantGenerator:
 
     def _generate_harmonized_raw(self) -> bool:
         """Generate harmonized raw CHM (no smoothing)."""
-        output_subdir = self.output_dir / "harmonized_raw_0p2m"
-
-        if output_subdir.exists() and self.skip_existing:
-            self._print("status", f"Harmonized raw CHM already exists: {output_subdir}")
-            return True
-
-        output_subdir.mkdir(parents=True, exist_ok=True)
-
-        cmd = [
-            "python",
-            "experiments/laz_to_chm_harmonized_0p8m/build_dataset.py",
-            "--laz-dir",
-            str(self.laz_dir),
-            "--output-dir",
-            str(output_subdir),
-            "--resolution",
-            str(self.resolution),
-        ]
-
-        if self.max_tiles > 0:
-            cmd.extend(["--max-tiles", str(self.max_tiles)])
-
-        return self._run_command(cmd, "Generating harmonized raw CHM")
+        return self._build_harmonized_pair()
 
     def _generate_harmonized_gaussian(self) -> bool:
         """Generate harmonized Gaussian CHM (with smoothing)."""
-        output_subdir = (
-            self.output_dir / f"harmonized_gauss_kernel{self.gaussian_kernel:.1f}m_res{self.resolution:.1f}m"
-        )
+        return self._build_harmonized_pair()
 
-        if output_subdir.exists() and self.skip_existing:
-            self._print("status", f"Harmonized Gaussian CHM already exists: {output_subdir}")
+    def _build_harmonized_pair(self) -> bool:
+        """Run harmonized pipeline once and stage raw+gaussian outputs."""
+        if self._harmonized_outputs_ready:
             return True
 
-        output_subdir.mkdir(parents=True, exist_ok=True)
+        output_raw = self.output_dir / "harmonized_raw_0p2m"
+        output_gauss = self.output_dir / "harmonized_gauss_kernel0p8m_0p2m"
+        output_raw.mkdir(parents=True, exist_ok=True)
+        output_gauss.mkdir(parents=True, exist_ok=True)
 
+        all_existing = (
+            self.skip_existing
+            and len(list(output_raw.glob("*.tif"))) > 0
+            and len(list(output_gauss.glob("*.tif"))) > 0
+        )
+        if all_existing:
+            self._harmonized_outputs_ready = True
+            return True
+
+        tile_ids = []
+        for laz in sorted(self.laz_dir.glob("*.laz")):
+            parts = laz.stem.split("_")
+            if parts and parts[0].isdigit():
+                tile_ids.append(parts[0])
+        tile_ids = sorted(set(tile_ids))
+        if not tile_ids:
+            self._print("error", "Could not parse tile IDs from LAZ names.")
+            return False
+
+        tmp_out = self.output_dir / "_harmonized_build_tmp"
         cmd = [
             "python",
             "experiments/laz_to_chm_harmonized_0p8m/build_dataset.py",
             "--laz-dir",
             str(self.laz_dir),
-            "--output-dir",
-            str(output_subdir),
-            "--resolution",
+            "--labels-dir",
+            "output/onboarding_labels_v2_drop13",
+            "--baseline-chm-dir",
+            "data/lamapuit/chm_max_hag_13_drop",
+            "--out-dir",
+            str(tmp_out),
+            "--dem-resolution",
+            "0.8",
+            "--fallback-grid-resolution",
             str(self.resolution),
-            "--gaussian-kernel",
-            str(self.gaussian_kernel),
+            "--hag-max",
+            "1.3",
+            "--chm-clip-min",
+            "0.0",
+            "--hag-upper-mode",
+            "drop",
+            "--gaussian-sigma",
+            "0.3",
+            "--return-mode",
+            "last",
+            "--point-sample-rate",
+            "1.0",
+            "--chunk-size",
+            "800000",
+            "--epsg",
+            "3301",
+            "--mad-factor",
+            "2.5",
+            "--mad-floor",
+            "0.15",
+            "--gpu-mode",
+            "off",
+            "--reuse-csf",
+            "--continue-on-error",
+            "--tiles",
+            ",".join(tile_ids),
+            "--workers",
+            "1",
         ]
+        if not self._run_command(cmd, "Generating harmonized raw+gaussian CHM"):
+            return False
 
-        if self.max_tiles > 0:
-            cmd.extend(["--max-tiles", str(self.max_tiles)])
+        src_raw = tmp_out / "chm_raw"
+        src_gauss = tmp_out / "chm_gauss"
+        if not src_raw.exists() or not src_gauss.exists():
+            self._print("error", "Harmonized pipeline did not produce chm_raw/chm_gauss.")
+            return False
 
-        return self._run_command(cmd, "Generating harmonized Gaussian CHM")
+        for src in sorted(src_raw.glob("*.tif")):
+            dst = output_raw / src.name
+            if self.skip_existing and dst.exists():
+                continue
+            shutil.copy2(src, dst)
+
+        for src in sorted(src_gauss.glob("*.tif")):
+            dst = output_gauss / src.name
+            if self.skip_existing and dst.exists():
+                continue
+            shutil.copy2(src, dst)
+
+        self._harmonized_outputs_ready = True
+        return True
 
     def _generate_composite_4band(self) -> bool:
         """Generate 4-band composite (Gauss+Raw+Base+Mask)."""
@@ -254,7 +306,7 @@ class CHMVariantGenerator:
             self._print("status", f"4-band composite already exists: {output_subdir}")
             return True
 
-        gauss_dir = self.output_dir / f"harmonized_gauss_kernel{self.gaussian_kernel:.1f}m_res{self.resolution:.1f}m"
+        gauss_dir = self.output_dir / "harmonized_gauss_kernel0p8m_0p2m"
         raw_dir = self.output_dir / "harmonized_raw_0p2m"
         base_dir = self.output_dir / "baseline_chm_0p2m"
 
