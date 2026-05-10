@@ -206,3 +206,33 @@ Placeholder}}
 Pärast parimate mudeliarhitektuuride väljaselgitamist ja optimaalse ansambli agregeerimismeetodi tuvastamist rakendati treenitud ja valideeritud ansambelmudel kogu uuringuala testandmestikule. Igale sisendpildile rakendati eelnevalt läbiproovitud testiaegset andmerikastamist (TTA) ning arvutati nelja mudeli (kolm CNN-Deep-Attn ja üks EfficientNet-B2) esialgsed tõenäosused. Need tõenäosused koondati valitud parima hääletusmeetodi alusel ühiseks lokaalseks lamapuidu esinemise tõenäosuseks.
 
 Selline integreeritud lähenemine tagas, et varasemates etappides tehtud teoreetilised valikud ansambli ja ruumilise valideerimise kohta realiseerusid praktiliste väljunditena ja mudeli ennustused olid statistiliselt stabiilsed. Saadud lõplikud tõenäosused on edasise analüüsi aluseks, mille täpsemad numbrilised tulemused avaldatakse töö järgmises peatükis.
+
+\subsection{Kõrgusmudeli variantide loomine mudeli treenimiseks}
+
+Selleks, et maksimeerida lamapuidu tuvastamise täpsust ning leida parim sisendandmete esitusviis konvolutsioonilistele närvivõrkudele, loodi aerolaserskaneerimise (LAZ) punktipilvedest viis erinevat madala taimkatte mudeli (CHM) varianti. Kõigi variantide ruumiliseks resolutsiooniks (piksli suuruseks) säilitati 20 cm ($0,2$ m). Mitu erinevat andmekihti loodi spetsiaalselt eesmärgiga tasakaalustada algsete hõredate LiDAR-andmete ebakorrapärasust ning mudeli vajadust sujuvate ruumiliste gradientide järele.
+
+Kogu andmetöötlusvõrgustik tugines järgmistele variantidele:
+\begin{enumerate}
+    \item \textbf{Baasmudel (\textit{Baseline CHM}):} Otsene ja minimaalse töötlusega mudel, mis genereeriti algsest hõredast punktipilvest. Kasutati ainult lokaalseid maksimume 20 cm ruudustikus ilma interpoleerimiseta ja silumiseta. See esindab puhtaid, kuid sageli lünklikke (katvus $\sim$23\%) laserskaneerimise mõõtmisi.
+    
+    \item \textbf{Harmoniseeritud toor-CHM (\textit{Harmonized Raw}):} Täpsustatud maapinnamudeli (DEM) alusel normaliseeritud kõrgused, mis tagavad parema maapinna eristamise. Rastris ei rakendatud silumist, jättes katvuse madalaks (umbes 34\%), kuid vältides kunstlikke andmeid.
+    
+    \item \textbf{Gaussi silumisega CHM (\textit{Harmonized Gaussian}):} Harmoniseeritud toormudeli peal rakendati Gaussi filtrit tuumaga 0,8 m (kvartilist kõrvalekallet). See lähenemine interpoleerib ja hajutab üksikpunktid laiali, luues lünkadevaba ning sujuvate üleminekutega pinna (katvus $\sim$76\%). Kuigi füüsilised detailid hägustuvad, on pidevad pildigradiendid pildituvastusalgoritmidele, nagu YOLO, olemuslikult lihtsamini õpitavad.
+    
+    \item \textbf{Mitmekanaliline liitmudel (\textit{Composite 4-band}):} Kombineeritud raster (faililaiend \textit{4band}), mis koondab endas eelnevate sammude parimad omadused: Gaussi silutud kiht annab pideva ruumilise struktuuri, harmoniseeritud toor-CHM ja baasmudel säilitavad ranged füüsilised mõõtmised ning neljas maski-kanal märgistab kehtivad unikaalsed pikslid. Maskeerimine võimaldab mudeli õppeprotsessil (\textit{loss function}) eristada reaalseid peegeldusi Gaussi interpoleeritud "tühjast" alast.
+    
+    \item \textbf{Maskeeritud 2-kanaliline mudel (\textit{Masked Raw 2-band}):} Otsekohene kahekihiline raster, kus esimene kanal sisaldab harmoniseeritud toormõõtmisi ja teine binaarset maski, mis aitab algoritmil tuvastada andmete legitiimsust (katvus $\sim$34,5\%).
+\end{enumerate}
+
+See sammsammuline andmegeneerimise töövoog oli masinõppe mudeleid kaasavate eksperimentide, sealhulgas ablatsiooniuuringute (vt peatükki tulemusi), tehniliseks vundamendiks. Loodud variandid võimaldasid testida, kas süvaõppe algoritm eelistab realistlikku kuid lünklikku algmõõtmist, sünteetiliselt silutud ja tihendatud andmestikku või nende kahe teadlikku kombinatsiooni.
+
+\paragraph{Maapinna kõrgusmudelite (DTM) arvutamise erinevused ja nende tehniline teostus.}
+Baasmudeli ja harmoniseeritud toor-CHM-i peamine erinevus seisneb maapinna kõrgusmudeli (ingl \textit{Digital Terrain Model} ehk DTM) loomise ning punktide kõrguste arvutamise algoritmis. Mõlemad lähenemised toovad esile erinevaid ruumilisi andmekihte ning omavad oma kindlaid eeliseid, mistõttu on oluline analüüsida nende mõlema panust.
+
+Baasmudeli puhul arvutatakse kõrgused sageli rangelt lokaalsete minimaalsete kõrgusväärtuste alusel, ilma ulatusliku regionaalse ja tiilideülese tasandamiseta. Sellise matemaatiliselt "krobelisema" maapinnamudeli peamine eelis on lamapuidu kõrgeimate punktide ja spetsiifiliste detailide täpne säilitamine. Kuna lünklikku aluspinda ja tihedat metsaalust ei siluta kunstlikult siledaks, ei kao tipmised laserpeegeldused andmete interpoleerimise käigus ära. See aitab algoritmil tuvastada lamapuidu maksimumkõrguse tugevat signaali ja aitab esile tuua just kõrgema profiiliga ja värskemaid lamatüvesid.
+
+Harmoniseeritud toor-CHM kasutab aga matemaatiliselt siledamat, laiemale piirkondlikule kontekstile toetuvat maapinnamudelit. Tehniliselt eraldatakse maapinnapunktid laserskaneerimise algandmetest riidesimulatsiooni filtri algoritmi (ingl \textit{Cloth Simulation Filter} ehk CSF) abil \citep{zhang2016easy}. Seejärel genereeritakse igast uuringuaastast sõltumatu pinnamudel, mis koondatakse ajaliselt harmoniseeritud tervikuks. Selles protsessis valitakse eri aastate mõõtmistest asukohapõhiselt stabiilsed madalaimad kõrgusväärtused, välistades tugevad anomaaliad statistiliste meetoditega (mediaani absoluutne hälve, ingl \textit{Median Absolute Deviation} ehk MAD). Lõplik alusmaapind skaleeritakse analüüsiresolutsiooni bi-lineaarse interpoleerimisega (ingl \textit{bilinear resampling}).
+
+Töötluse käigus eemaldatakse seeläbi järsud ebaloomulikud lokaalsed anomaaliad ning tuuakse välja pidevam geograafiline reljeef. Harmoniseeritud CSF-algoritmil põhineva meetodi vaieldamatu tugevus on maapinna loomuliku mikrostruktuuri (nt nõod, künkad, mättad ja lohud langenud puu ümbruses) märgatavalt selgem väljajoonistumine, mis muidu hajusate lokaalsete kõikumiste sekka ära kaoksid. Kui stabiilne ja ühtlustatud maapind on taustaks, tulevad esile ka need madalama reljeefiga lamapuidu osad, mis puutuvad tihedalt pinnasega kokku või on kõrge lagunemisastmega ning seetõttu maastikku sulandunud. 
+
+Lisades mudelile infokilde mõlemast allikast (näiteks mitmekanalilises liitmudelis), võimendab baasmudeli lokaalne algoritm kõrgeid objektipunkte, samas kui harmoniseeritud CSF-põhine mudel pakub selge fooni metsaaluse mikrostruktuuri eraldamiseks tihedatest peegeldustest.
