@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  v9-pipeline:
+    image: lamapuit:gpu
+    container_name: v9_pipeline_runner
+    volumes:
+      - .:/workspace
+      - /tmp:/tmp
+    working_dir: /workspace
+    command: bash -lc "source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect && bash run_v9_pipeline.sh"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true

@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  v6-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    image: lamapuit:gpu-v6
+    container_name: v6_pipeline_runner
+    volumes:
+      - .:/workspace
+      - /tmp:/tmp
+    working_dir: /workspace
+    command: bash -lc "source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect && bash run_v6_all_stages.sh"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true

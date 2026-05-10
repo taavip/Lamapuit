@@ -1,0 +1,91 @@
+version: '3.8'
+
+# SOTA CWD Semantic Segmentation Pipeline — Docker Compose
+#
+# Run the full 4-phase pipeline:
+#   docker-compose -f seg_pipeline/docker-compose.seg.yml up seg-train
+#
+# Run individual phases:
+#   docker-compose -f seg_pipeline/docker-compose.seg.yml run --rm seg-train \
+#     bash -lc "... python seg_pipeline/scripts/phase1_mask_synthesis.py ..."
+
+services:
+  seg-train:
+    build:
+      context: ..
+      dockerfile: Dockerfile.gpu
+    image: lamapuit:gpu-benchmark
+    container_name: seg_pipeline_runner
+    volumes:
+      - ..:/workspace
+    working_dir: /workspace
+    command: >
+      bash -lc "
+        source /opt/conda/etc/profile.d/conda.sh && conda activate cwd-detect &&
+        echo '[seg] Installing SMP + timm + tensorboard...' &&
+        pip install --quiet 'segmentation-models-pytorch>=0.5.0,<0.6' 'timm>=0.9.16' tensorboard &&
+
+        echo '[Phase I] True Mask Synthesis...' &&
+        python seg_pipeline/scripts/phase1_mask_synthesis.py --device cuda &&
+
+        echo '[Phase II] Dataset Construction...' &&
+        python seg_pipeline/scripts/phase2_dataset.py &&
+
+        echo '[Phase III] Model Training (all architectures, all folds)...' &&
+        python seg_pipeline/scripts/phase3_train.py --arch all --device cuda &&
+
+        echo '[Phase IV] Evaluation & Reporting...' &&
+        python seg_pipeline/scripts/phase4_evaluate.py --device cuda &&
+
+        echo 'Pipeline complete. Results in seg_pipeline/output/phase4_report/'
+      "
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - TORCH_HOME=/workspace/.docker_torch_cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # TensorBoard for live training monitoring
+  tensorboard:
+    image: tensorflow/tensorflow:2.13.0
+    container_name: seg_tensorboard
+    volumes:
+      - ..:/workspace
+    working_dir: /workspace
+    command: >
+      tensorboard --logdir seg_pipeline/output/phase3_runs/tensorboard
+        --host 0.0.0.0 --port 6006
+    ports:
+      - "6006:6006"
+
+  # GPU utilization monitor — writes to phase4_report/gpu_log.csv every 10 s
+  gpu-monitor:
+    image: nvidia/cuda:11.8.0-base-ubuntu22.04
+    container_name: seg_gpu_monitor
+    volumes:
+      - ..:/workspace
+    command: >
+      bash -c "
+        mkdir -p /workspace/seg_pipeline/output/phase4_report &&
+        echo 'timestamp,gpu_util_pct,mem_used_mib,mem_total_mib,temp_c' \
+          > /workspace/seg_pipeline/output/phase4_report/gpu_log.csv &&
+        while true; do
+          nvidia-smi \
+            --query-gpu=timestamp,utilization.gpu,memory.used,memory.total,temperature.gpu \
+            --format=csv,noheader \
+            >> /workspace/seg_pipeline/output/phase4_report/gpu_log.csv
+          sleep 10
+        done
+      "
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
