@@ -2,90 +2,37 @@
 
 
 
-\subsection{Surnud puidu kaugseire: traditsioonilistest meetoditest laserskaneerimiseni}
+\subsection{Kaugseire meetodite rakendamine surnud puidu hindamisel}
 
 
 
-Surnud puidu, sealhulgas seisvate surnud puude (ingl \textit{snags}) ja maapinnal asuva lamapuidu (ingl \textit{downed dead wood} või \textit{coarse woody debris}, CWD) seire on metsade süsinikuvaru ja elurikkuse hindamisel kriitiline komponent \cite{marchi_airborne_2018, jarron_detection_2021}. Traditsioonilised välitöödel põhinevad inventeerimismeetodid, nagu joontransektid või proovitükid, võimaldavad küll kõrget mõõtetäpsust, kuid on töömahukad ning raskesti skaleeritavad suurtele maa-aladele \cite{pesonen_airborne_2008, lopes_queiroz_estimating_2020}. See piirab nende kasutatavust üleriigilistes hinnangutes.
+Surnud puidu, sealhulgas seisvate surnud puude (ingl \textit{snags}) ja maapinnal asuva lamapuidu (ingl \textit{downed dead wood} või \textit{coarse woody debris}, CWD) seire on metsade süsinikuvaru ja elurikkuse hindamisel üks põhikomponent \cite{marchi_airborne_2018, jarron_detection_2021}. 
+Traditsioonilised välitöödel põhinevad inventeerimismeetodid, nagu joontransektid või proovitükid, võimaldavad küll kõrget mõõtetäpsust, kuid on suure töömahukuse tõttu raskesti skaleeritavad üleriigilistele maa-aladele \cite{pesonen_airborne_2008, lopes_queiroz_estimating_2020}.
 
+Sellest tulenev vajadus kaugseirelahenduste järele seab aga tingimuse eristada selgelt seisva ja lamapuidu tuvastamist, kuna neile kehtivad erinevad füüsikalised piirangud. Seisva surnud puidu puhul on puu võra õhust pealtvaates sageli nähtav, mis võimaldab edukalt kasutada passiivset optilist kaugseiret, näiteks spektraalanalüüsi aerofotodelt või satelliitpiltidelt \cite{zielewska-buttner_2020}. Seevastu lamapuit asub metsa rinde all, kus elusa puistu võrastik varjab tüvesid passiivsete sensorite eest, muutes vältimatuks aktiivse laserskaneerimise (LiDAR) kasutamise, mille laserkiired suudavad tungida läbi võra vahede maapinnani \cite{marchi_airborne_2018}. Kuigi aerolaserskaneerimine (ingl \textit{Airborne Laser Scanning}, ALS) on muutunud operatiivses metsaseires standardseks tööriistaks, tugineb see alati kompromissile ruumilise ulatuse ja andmete detailsuse vahel \cite{marchi_airborne_2018}. Kui suure punktitihedusega maapealne (TLS) ja mehitamata õhusõidukitel põhinev laserskaneerimine (ULS) võimaldavad detailset objektipõhist analüüsi, siis riiklike andmete puhul muutub kriitiliseks võime eristada tegelikku signaali mürast \cite{jarron_detection_2021, vakimies_makaavan_2025}."
 
+\subsection{Andmekvaliteedi ja taimkatte struktuuri mõju}
 
-Nende piirangute ületamiseks on metsade kolmemõõtmelisel analüüsimisel muutunud standardseks tööriistaks aerolaserskaneerimine (ingl \textit{Airborne Laser Scanning}, ALS) ehk LiDAR. Kuigi maapealne laserskaneerimine (TLS) ja mehitamata õhusõidukitel põhinev laserskaneerimine (ULS) pakuvad väga suurt punktitihedust (sageli $>1000$~p/m$^2$), on nende kasutamine piiratud väiksemate aladega. Seetõttu tugineb operatiivne metsaseire peamiselt lennukipõhisele ALS-ile, mille punktitihedus on oluliselt madalam \cite{marchi_airborne_2018, heinaro_airborne_2021}. 
+Lamapuidu tuvastamise edukus sõltub otseselt punktipilve tihedusest. Joyce jt (2019) näitasid eksperimentaalselt, et lamapuidu tuvastamise tõenäosus suureneb märkimisväärselt kuni umbes $16~p/m^2$ tiheduseni, mille järel täheldatakse täpsuse kasvus platooefekti \cite{joyce_detection_2019}. Käesolevas töös kasutatavad andmed ($>18~p/m^2$) asuvad just selles optimaalses vahemikus, pakkudes piisavat detailsust üksikute lamapuidu objektide geomeetriliseks eristamiseks üleriigilises skaalas.
 
+Tegelik maapinnani jõudvate laserimpulsside arv sõltub lisaks andmestiku üldisele tihedusele oluliselt ka metsatüübist ja fenoloogilisest faasist. Varasemad uuringud on näidanud, et lehtedeta (ingl \textit{leaf-off}) periood on lamapuidu seireks optimaalseim, kuna raagus võrastik võimaldab laserkiirte parema läbitungimise maapinnani \cite{marchi_airborne_2018}. Siiski varieerub penetratsioonivõime puistute lõikes – näiteks tihedates kuusikutes on võrastiku katvus suurem kui männikutes, mis piirab oluliselt maapinna lähedale jõudvate mõõtmiste arvu ja seeläbi ka tüvede tuvastatavust. Lisaks puistu ja alustaimestiku struktuurile mõjutavad detekteerimist objekti enda omadused: suurema diameetriga ja maapinnast kõrgemal asuvad tüved on punktipilves paremini eristatavad, samas kui peenem ja tugevalt lagunenud lamapuit võib jääda varjatuks alustaimestiku või maastiku mikroreljeefi tõttu \cite{heinaro_airborne_2021, shin_morphological_2024}.
 
+\subsection{Analüüsimeetodite areng: statistilistest mudelitest masinõppeni}
 
-Sellest tulenev kompromiss ruumilise ulatuse ja andmete detailsuse vahel määrab otseselt, millised analüüsimeetodid on rakendatavad \cite{marchi_airborne_2018}. Kui suure punktitihedusega andmed võimaldavad objektipõhist analüüsi \cite{heinaro_airborne_2021}, siis hõredate punktipilvede korral muutub kriitiliseks võime eristada signaali mürast, mis seab esiplaanile eeltöötluse ja spetsiifilised analüüsimeetodid \cite{jarron_detection_2021, vakimies_makaavan_2025}.
+LiDAR-andmete analüüsimeetodid on arenenud koos andmete kvaliteedi ja kättesaadavusega, liikudes statistilistelt mudelitelt objektipõhiste ja masinõppel põhinevate lähenemisteni. Madala punktitihedusega andmete puhul ($4$--$10~p/m^2$) on laialdaselt kasutatud alal põhinevaid meetodeid (ABA), mis võimaldavad prognoosida puidu üldmahtu, kuid ei taga üksikobjektide tuvastamist \cite{pesonen_airborne_2008}. Üksikute tüvede leidmiseks nendest andmetest on rakendatud näiteks automaatset sobitamist (\textit{template matching}) taimkatte kõrgusmudelil (CHM), mis on olnud edukas suurte tüvede tuvastamisel, kuid jätnud märkamata peenema lamapuidu \cite{lindberg_2013}.
 
+Masinõppe ja objektipõhise analüüsi (OBIA) kombineerimine on võimaldanud täpsust tõsta ka keskmise tihedusega ($10$--$20~p/m^2$) andmetes. Guo jt (2011) saavutasid reeglipõhise masinõppe ja OBIA abil $73\%$-lise korrektsuse \cite{guo_2011}, samas kui Mücke jt (2013) näitasid, et intensiivsusandmete ja OBIA integreerimine tagab avatud aladel kuni $75\%$-lise täpsuse \cite{mucke_2013}. Nyström jt (2014) kasutasid joonsegmentide analüüsi ja Random Forest algoritmi, suutes tuvastada $64\%$ lamapuidu mahust isegi $10~p/m^2$ tiheduse juures \cite{nystrom_2014}. Need uuringud kinnitavad, et madala tiheduse korral tugineb edukas tuvastamine peamiselt kuju-indikaatoritele ja suurte objektide geomeetrilisele eristumisele. 
 
-\subsection{Punktitiheduse kriitiline roll lamapuidu tuvastamisel}
+\subsection{Sügavõppe rakendamine ja skaleeritavuse väljakutsed}
 
+Viimastel aastatel on lamapuidu tuvastamine liikunud sügavõppe suunas, kus eristatakse semantilist (\textit{semantic}) ja objektipõhist (\textit{instance}) segmentimist. Kui semantiline segmentimine klassifitseerib piksleid või punkte klassidesse, siis objektipõhine lähenemine suudab eristada ka üksteisega kattuvaid tüvesid. Nava jt (2022) rakendasid U-Net arhitektuuri nDSM rasteril (tihedus $\sim 25~p/m^2$), saavutades F1-skoori $0,82$ \cite{nava_2022}. Sarnast lähenemist, kuid väga kõrge punktitihedusega ($500+~p/m^2$) UAV-LS andmetel kasutasid Kaufmann jt (2024), saavutades ResNet-34 selgrooga U-Net mudeliga F1-skoori vahemikus $0,73$--$0,96$ \cite{kaufmann_2024}. 
 
+Uuemad uuringud on hakanud rasternäitajatelt liikuma otse 3D-punktipilve analüüsi poole. Duan jt (2023) kasutasid PointNet++ arhitektuuri tihedal andmestikul ($\sim 340~p/m^2$), saavutades F1-skoori $0,88$ \cite{duan_2023}. Zhu jt (2021) rakendasid instantsipõhist segmentimist (nt Mask R-CNN), mis võimaldas eristada risti asuvaid tüvesid mAP näitajaga $0,85$ \cite{zhu_2021}. Otse punktipilvest analüüsimine võimaldab paremini eristada lamapuitu madalast alustaimestikust, kuna süsteem suudab hinnata objekti vertikaalset struktuuri, mitte ainult kõrgust maapinnast. 
 
-Lamapuidu tuvastamise edukus sõltub otseselt punktipilve tihedusest, kuid kirjanduses puudub ühtne arusaam sellest, milline tihedus on operatiivselt piisav. Varasemad uuringud viitavad küll selgele positiivsele seosele punktitiheduse ja tuvastustäpsuse vahel, kuid tulemused ei ole erinevate metoodikate ja andmestike tõttu otseselt võrreldavad.
-
-
-
-Pesonen jt (2008) demonstreerisid, et lamapuidu mahtu on võimalik hinnata ka suhteliselt hõreda andmestikuga (4~p/m$^2$), kasutades maapinnalähedaste punktide statistilisi näitajaid. Samas oli saadud täpsus piiratud (RMSE = 51,6\%), mis viitab, et selline lähenemine sobib pigem üldiste hinnangute andmiseks kui üksikute objektide usaldusväärseks tuvastamiseks \cite{pesonen_airborne_2008}.
-
-
-
-Tehnoloogia arenguga on tähelepanu nihkunud detekteerimisvõime piiridele. Marchi jt (2018) osutasid, et hõreda punktipilve (tavaliselt $<10$~p/m$^2$) korral on lamapuidu eristamine maapinna mikroreljeefist ja alustaimestikust keeruline, mistõttu jäävad väiksema diameetriga objektid sageli tuvastamata \cite{marchi_airborne_2018}. Joyce jt (2019) näitasid eksperimentaalselt, et lamapuidu tuvastamise tõenäosus suureneb märkimisväärselt kuni umbes 16~p/m$^2$ tiheduseni, mille järel täheldatakse platooefekti \cite{joyce_detection_2019}. 
-
-
-
-Samas sõltub tuvastatavus lisaks punktitihedusele ka objekti omadustest. Suurema diameetriga ja maapinnast kõrgemal asuvad tüved eristuvad paremini kui peenem ja lagunenud lamapuit, mis võib jääda varjatuks alustaimestiku ja mikroreljeefi tõttu. Heinaro jt (2021) võrdlesid ALS- (15~p/m$^2$) ja ULS-andmeid (285~p/m$^2$), kinnitades, et tiheduse kasv parandab väiksemate objektide tuvastamist, kuid ei kõrvalda täielikult taimkatte põhjustatud müra \cite{heinaro_airborne_2021}.
-
-
-
-Seega ei saa punktitihedust käsitleda ainsa piirava tegurina. Madala punktitihedusega andmete puhul muutub kriitiliseks võime eristada lamapuidule iseloomulikke lineaarseid struktuure maapinnamürast, mis suunab tähelepanu eeltöötlus- ja filtreerimismeetoditele \cite{joyce_detection_2019, shin_morphological_2024}.
-
-
-\subsection{Analüüsimeetodite areng: statistilistest lähenemistest masinõppeni}
-
-
-
-LiDAR-andmete analüüsimeetodid on arenenud koos andmete kvaliteedi ja kättesaadavusega, liikudes statistilistest mudelitest objektipõhiste ja masinõppel põhinevate lähenemisteni.
-
-
-
-Madala punktitihedusega andmete puhul on laialdaselt kasutatud alal põhinevaid meetodeid (ingl \textit{Area-Based Approach}, ABA), mis tuginevad punktipilve statistilistele tunnustele. Kuigi need võimaldavad prognoosida metsa üldparameetreid, ei võimalda need üksikute lamapuiduobjektide tuvastamist \cite{pesonen_airborne_2008}.
-
-
-
-Objektipõhiste ja masinõppel põhinevate lähenemiste puhul on oluline erinevate andmeallikate kombineerimine. Kamińska jt (2018) rakendasid juhumetsa (Random Forest) algoritmi, kombineerides ALS-andmeid spektraalsete tunnustega, saavutades kõrge täpsuse seisva surnud puidu tuvastamisel \cite{kaminska_species-related_2018}. Lopes Queiroz jt (2020) näitasid, et multispektraalse LiDAR-i ja pildianalüüsi integreerimine võimaldab parandada lamapuidu tuvastamist ja vähendada mahu hindamise viga \cite{lopes_queiroz_estimating_2020}.
-
-
-
-Geomeetrilise müra vähendamiseks ja lineaarsete struktuuride esiletõstmiseks on üheks kasutatud lähenemiseks Hough' transformatsioon. Uuringud viitavad, et selline geomeetriline filtreerimine võib parandada segmentatsiooni ja klassifitseerimise täpsust, eriti olukordades, kus punktitihedus on piiratud \cite{heinaro_airborne_2021, vakimies_makaavan_2025}. See viitab, et eeltöötlus ei ole pelgalt abietapp, vaid võib olla määrava tähtsusega kogu analüüsiahelas.
-
-
-
-\subsection{Süvaõppe arhitektuurid 3D-punktipilvede töötlemisel}
-
-
-
-Viimastel aastatel on lamapuidu tuvastamisel üha enam kasutatud süvaõppe (Deep Learning) meetodeid, mis võimaldavad töödelda 3D-punktipilvi otse ning õppida ruumilisi mustreid ilma käsitsi konstrueeritud tunnusteta.
-
-
-
-Punktipõhised arhitektuurid, nagu PointCNN ja PointNet++, on näidanud häid tulemusi kõrge punktitihedusega andmetes. Hell jt (2022) demonstreerisid, et PointCNN saavutab 80~p/m$^2$ tihedusega andmestikul kõrge klassifitseerimistäpsuse \cite{hell_classification_2022}. Krisanski jt (2021) näitasid, et PointNet++ võimaldab täpset taimkatte filtreerimist ja puude struktuuri kirjeldamist \cite{krisanski_sensor_2021}. Samas märkisid nad, et madala resolutsiooniga andmete korral väheneb mudeli suutlikkus eristada tüvepunkte maapinnast.
-
-
-
-Rasteriseeritud andmetel põhinevad pilditöötlusmudelid, nagu U-Net, on samuti näidanud tugevaid tulemusi. Dietenberger jt (2025) saavutasid kõrge täpsuse UAV-andmetel, kuid nende tulemused põhinesid väga suure punktitihedusega andmestikul, mis ei ole üleriigilises skaalas rakendatav \cite{dietenberger_accurate_2025}.
-
-
-
-Lisaks nõuavad süvaõppe mudelid märkimisväärset hulka märgistatud treeningandmeid ja arvutusressurssi, mis piirab nende otsest kasutatavust operatiivses metsaseires, eriti madala punktitihedusega andmete korral \cite{hell_classification_2022, virro_detection_2025}.
-
-
+Peamiseks takistuseks on endiselt tihe alustaimestik – enamik mudeleid saavutab väga kõrge täpsuse ($90\%+$) harvendatud metsades, kuid loodusmetsades, kus leidub palju põõsaid või sõnajalgu, tuvastusmäär langeb märgatavalt \cite{heinaro_airborne_2021, zhu_2021}. Lisaks kinnitab teaduskirjandus, et usaldusväärne automaatne tuvastamine algab tüvedest, mille läbimõõt on üle $20$--$30$~cm \cite{marchi_airborne_2018, heinaro_airborne_2021}.
 
 \subsection{Uurimislünk ja töö eesmärk Eesti kontekstis}
 
-Eelnevast teaduskirjandusest joonistub välja vastuolu kõrge täpsusega meetodite ja nende praktilise rakendatavuse vahel. Kuigi mitmed uuringud on näidanud, et lamapuitu on võimalik tuvastada suure täpsusega, põhinevad need tulemused valdavalt kõrge punktitihedusega andmetel \cite{heinaro_airborne_2021, krisanski_sensor_2021, dietenberger_accurate_2025}.
+Eelnevast teaduskirjandusest joonistub välja vastuolu kõrge täpsusega meetodite ja nende praktilise rakendatavuse vahel. Enamik edukaid lamapuidu uuringuid põhinevad lokaalsetel ja väga tihedatel andmetel (ULS, TLS), mis ei ole üleriigiliselt kättesaadavad \cite{heinaro_airborne_2021, dietenberger_accurate_2025}. 
 
-Eesti kontekstis on see probleem eriti aktuaalne. Riiklike kevadiste aerolaserskaneerimise andmete punktitihedus jääb vahemikku 2,1–3,5~p/m$^2$ \cite{maa-ja_ruumiamet_als_nodate}, mis on oluliselt madalam kui enamikus varasemates uuringutes kasutatud andmestikud. Kuigi sarnaseid madala punktitihedusega Eesti ALS-andmeid on edukalt rakendatud teiste lineaarselt kulgevate maastikuobjektide, näiteks kuivenduskraavide automaatseks tuvastamiseks \cite{virro_detection_2025}, esitab lamapuit detekteerimisalgoritmidele spetsiifilisi väljakutseid. Virro jt (2025) näitasid, et süvaõppe ja siirdeõppe (\textit{transfer learning}) abil on võimalik saavutada usaldusväärseid tulemusi ka 2,1~p/m$^2$ tihedusega andmetest tuletatud reljeefimudelite põhjal, kuid lamapuidu puhul muudab olukorra keerulisemaks objektide väike vertikaalne ulatus ja vajadus eristada neid ümbritsevast maapinnamürast ning madalast taimkattest.
-
-Seetõttu ei ole olemasolevad, sageli tihedale punktipilvele optimeeritud meetodid Eesti riiklikele andmetele otseselt ülekantavad. Lamapuidu usaldusväärne ja süstemaatiline tuvastamine hõredates LiDAR-tingimustes on seni lahendamata probleem, mis piirab meie võimekust hinnata metsade süsinikuvaru ja elurikkust maastiku tasandil.
-
-
+Eesti kontekstis on seni puudunud üleriigiliselt skaleeritav metoodika, mis rakendaks sügavõpet spetsiifiliselt lamapuidu automaatseks tuvastamiseks riiklikest aerolaserskanneerimise andmetest. Kuigi sarnaseid Eesti ALS-andmeid on edukalt rakendatud kuivenduskraavide tuvastamiseks \cite{virro_detection_2025}, esitab lamapuit tuvastamismudelitel suuremaid väljakutseid objektide väikese vertikaalse ulatuse ja maapinnamüra tõttu. Käesoleva töö eesmärk on täita see lünk, kombineerides optimaalse tihedusega kevadised LiDAR-andmed ja sügavõppe, et luua esimene automatiseeritud lahendus lamapuidu üle-eestiliseks hindamiseks.
