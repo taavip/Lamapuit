@@ -1,0 +1,22 @@
+default_raster: source/406455_2021_tava/chm_variants_reconstructed_original_20260510/baseline_chm_0p2m/406455_2021_tava_chm_max_hag_20cm.tif
+
+scenes:
+  - id: case_406455_core
+    x: 455695.1617
+    y: 6406968.1024
+    crs: EPSG:3301
+    tile_size: 128
+    layouts: ["tile", "16:9", "1x4", "2x2"]
+    views:
+      - key: chm
+        type: chm
+        title: CHM
+      - key: orthophoto
+        type: orthophoto
+        title: Ortofoto
+      - key: probability
+        type: probability
+        title: Probability
+      - key: intgrad
+        type: intgrad
+        title: IntGrad
