@@ -11,7 +11,7 @@ Lamapuidu tuvastamise seisukohalt on oluline, et punktipilv sisaldaks piisavalt 
 
 
 
-\subsection{Maa- ja Ruumiameti aerolaserskaneerimise kõrguspunktid}
+\subsection{Maa- ja Ruumiameti aerolaserskaneerimise punktid}
 
 Magistritöö aluseks on Maa- ja Ruumiameti aerolaserskaneerimise (ALS) andmestik aastatest 2017--2024. Andmeid on kogutud mitmel erineva metoodikaga, mille punktitihedus ja katvuse eesmärk erinevad. Töö kontekstis on oluline eristada riiklikke baaskaardi tootmise lende ja täpsemaid tiheasustusalade kaardistuslende, sest just nende erinevus määrab, kas andmestik sobib antud töös kasutamiseks. Tiheasustusalasid lennatake iga aastaselt kuid põhikaardi tootmiseks lennatakse umbes üks neljandik eestist korraga, nii kaetakse kogu eesti iga 4 aasta tagant. Antud töös ei sobinud kasutada suvel toimuvad metsanduslennud, sest maapinniani jõudvaid punkte vähe tänu kõrgele lennukõrgusele, lehtedele ja alustaimestikule.
 
@@ -48,12 +48,11 @@ Uuringuala valik tehti mitmes etapis. Esmalt kasutati Tartu linna lähedasi mets
 
 Lõplik valim koosneb 29 valitud kaardilehe (1:2000) asukohast, kus valiti kõikide aastate ülelennud, mis olid madala ülelennuga kogutud aastatel 2017 kuni 2024 ning mille kogupindala on 117 km$^2$. Ekspertvalim on koostatud nii, et see kataks erinevaid reljeefiga alasid, metsa- ja maastikutüüpe ning oleks kaetud tihedama ALSi andmestikuga. See tagab, et tulemused on üldistuvad kogu Eestile.
 
-Kuna käsitsi segmenteerimine on äärmiselt ajamahukas protsess, ei ole seda võimalik ega ka otstarbekas läbi viia üle-eestilises mastaabis. Seetõttu valiti lamapuidu tuvastamise metoodika ja mudelite treenimise toimivuse katsetamiseks eraldiseisvalt välja üks konkreetne kaardileht (tähisega \texttt{406455\_2021\_tava}), et luua usaldusväärne segmentatsiooni treeningandmestik. Valik langes osale Ruhnu saarest, kuna sealsed metsad on vanad, reljeefi osas mitmekesised ja sisaldavad suurel hulgal lamapuitu. Akadeemiliselt on sellise kontrollala valik põhjendatud asjaoluga, et treeningandmete koostamisel on kriitilise tähtsusega objektide varjatus ja tihedus -- mida rohkem edukaid ja erinevates lagunemisastmetes lamatüvesid andmestikku kaasatakse, seda paremini suudab mudel õppida lamapuidule iseloomulikke jooni erinevates metsatingimustes.
+Klassifitseerimise andmestiku statistika näitab tabelis \ref{tbl:laz_dataset_overview}, et uuritavad Maa- ja Ruumiameti aerolaserskaneerimise andmed katavad kokku 27 km$^2$ uuringuala 29 kaardilehel, kogusummas aga 117 km$^2$ (arvestades kõiki aastate ülelendude kordusi). Andmestik sisaldab kokku 4,45 miljardit laserpunkti keskmise tihedusega 37,86 pts/m$^2$ (vahemikus 11,81--81,32 pts/m$^2$). See on märkimisväärselt kõrgem tihedus võrreldes tiheasustusala lende dokumenteeritud tihedusega. 
 
-Ruhnu saare valituid metsades on rikkalikult vanu ja mitmekesise puistustruktuuriga eraldisi. Näiteks paiknevad antud kaardilehel üle 140 aasta vanused männi- ja kuusemetsad (Ruhnu vald, Kirikumaa üksus: 2,5 ha, keskmine vanus 140 aastat, peapuuliigiks mänd loodusliku kuusega, sinilille kasvukohatüüp), samuti mitmekesiseid lehtpuumetsi (Steffenss üksus: 0,69 ha, 67-aastane sanglepamets angervaksa kasvukohatüübis, koos loodusliku kase, vahtra ja saarega). Selline liigiline ja vanuseline mitmekesisus peegeldab keerulist ja reljeefset metsaalust, millest mudel peab objektid tuvastama. Samuti teostati antud alal aerolaserskaneerimine tiheasustusala kaardistuse parameetritega, mille käigus lennati tavapärasest madalamalt. See tõi kaasa märgatavalt suurema punktitiheduse maapinnalähedastes kihtides (keskmiselt 43,7 p/m$^2$), mis esindab ideaalset andmestikku kõrgresolutsioonilise referentsi märgistamiseks (vt Tabel \ref{tbl:laz_dataset_overview}).
+Kuna käsitsi segmenteerimine on äärmiselt ajamahukas protsess, ei ole seda võimalik ega ka otstarbekas läbi viia üle-eestilises mastaabis. Seetõttu valiti lamapuidu tuvastamise metoodika ja mudelite treenimise toimivuse katsetamiseks eraldiseisvalt välja üks konkreetne kaardileht (tähisega \texttt{406455\_2021\_tava}), et luua usaldusväärne segmentatsiooni treeningandmestik. Valik langes osale Ruhnu saarest, kuna sealsed metsad on vanuse, kasvukohatüübi ja puuliikide osas mitmekesised ja sel leidub suurel hulgal lamapuitu. Treeningandmete koostamisel on kriitilise tähtsusega objektide varjatus ja tihedus -- mida rohkem edukaid ja erinevates lagunemisastmetes lamatüvesid andmestikku kaasatakse, seda paremini suudab mudel õppida lamapuidule iseloomulikke jooni erinevates metsatingimustes.
 
-Andmestiku statistika näitab tabelis \ref{tbl:laz_dataset_overview}, et uuritavad Maa- ja Ruumiameti aerolaserskaneerimise andmed katavad kokku 27 km$^2$ uuringuala 29 kaardilehel, kogusummas aga 117 km$^2$ (arvestades kõiki aastate ülelendude kordusi). Andmestik sisaldab kokku 4,45 miljardit laserpunkti keskmise tihedusega 37,86 pts/m$^2$ (vahemikus 11,81--81,32 pts/m$^2$). See on märkimisväärselt kõrgem tihedus võrreldes tiheasustusala lende dokumenteeritud tihedusega. Antud andmeid kasutati magistritöös madala taimkatte mudelite loomiseks.
-
+Ruhnu saare valituid metsades on rikkalikult vanu ja mitmekesise puistustruktuuriga eraldisi. Näiteks paiknevad antud kaardilehel üle 140 aasta vanused männi- ja kuusemetsad, samuti mitmekesiseid lehtpuumetsi. Selline kasvukohatüüpide, liigiline ja vanuseline mitmekesisus peegeldab keerulist ja reljeefset metsaalust, millest mudel peab Lamapuitu tuvastama. Samuti teostati antud alal aerolaserskaneerimine tiheasustusala kaardistuse parameetritega, mille käigus lennati tavapärasest madalamalt. See tõi kaasa märgatavalt suurema punktitiheduse maapinnalähedastes kihtides (keskmiselt 43,7 p/m$^2$), mis esindab ideaalset andmestikku kõrgresolutsioonilise referentsi märgistamiseks (vt Tabel \ref{tbl:laz_dataset_overview}).Antud andmeid kasutati magistritöös madala taimkatte mudelite loomiseks.
 
 
 \begin{figure}[h!]
@@ -87,35 +86,16 @@ Tiheduse vahemik & 11,81 – 81,32 p/m$^2$ & - \\
 \end{tabular}
 \end{table}
 
-\begin{table}[ht]
-\centering
-\caption{Andmete jaotus aastate lõikes.}
-\label{tbl:laz_per_year}
-\begin{tabular}{lrrrr}
-\hline
-\textbf{Aasta} & \textbf{Ruute} & \textbf{Pindala (km$^2$)} & \textbf{Punkte (mln)} & \textbf{Tihedus (p/m$^2$)} \\
-\hline
-2017 & 11 & 11 & 266,7 & 24,25 \\
-2018 & 17 & 17 & 553,0 & 32,53 \\
-2019 & 13 & 13 & 521,5 & 40,12 \\
-2020 & 18 & 18 & 723,2 & 40,18 \\
-2021 & 14 & 14 & 527,6 & 37,68 \\
-2022 & 26 & 24 & 1040,5 & 42,05 \\
-2023 & 12 & 12 & 481,4 & 40,12 \\
-2024 & 8 & 8 & 338,9 & 42,36 \\
-\hline
-\textbf{Kokku} & \textbf{119} & \textbf{117} & \textbf{4452,7} & \textbf{37,86} \\
-\hline
-\end{tabular}
-\end{table}
 
 Kaardiruutude detailne koondtabel asub lisas \ref{lisa:kaardiruudud}.
 
 \subsection{CHM ja eeltöötlus}
 
-Lamapuidu märgistamise jaoks tekitati madal taimkattemudel ( Canopy Height Model -- CHM) järgmise töövoo järgi: punktipilvest maapinnamudel, arvutati kõrgus maapinnast (Height Above Ground -- HAG), filtreeriti välja punktid kõrgusvahemikust 0--1,3 m ning rasteriseeriti maksimaalne kõrgus 20 cm piksliga rastriks. 1,3 m piir on siin kasutatud ka varasemates töödes \cite{jarron_detection_2021, joyce_detection_2019}: see jätab välja kõrgema ja tõenäolisemalt elusa taimestiku ning vähendab müra, kuid hoiab alles lamapuiduga seotud maapinnalähedastest struktuuridest ja võimaldab kasutada agrigeerimiseks maksimaalset kõrgust taimkatte mudeli jaoks ilma olulist infot varjamata. Selline lähenemine hoiab CHM-i semantika lihtsana ja vähendab kõrgema taimestiku mõju. Mõju ei kao kuna igihaljad puud vähendavad laserimpulsside läbilastvust ja vähendab maapinna lähedastese kididesse jõudmist seega tekitavad varje ja muudavad punktitiheduse väikesel alal väga ebaühtlaseks. 
+Lamapuidu märgistamise jaoks tekitati madal taimkattemudel ( Canopy Height Model -- CHM) järgmise töövoo järgi: punktipilvest maapinnamudel, arvutati kõrgus maapinnast (Height Above Ground -- HAG), filtreeriti välja punktid kõrgusvahemikust 0--1,3 m ning rasteriseeriti maksimaalne kõrgus 20 cm piksliga rastriks. 1,3 m piir on siin kasutatud ka varasemates töödes \cite{jarron_detection_2021, joyce_detection_2019}: see jätab välja kõrgema ja tõenäolisemalt elusa taimestiku ning vähendab müra, kuid hoiab alles lamapuiduga seotud maapinnalähedastest struktuuridest ja võimaldab kasutada agrigeerimiseks maksimaalset kõrgust taimkatte mudeli jaoks ilma olulist infot varjamata. Selline lähenemine hoiab CHM-i lihtsana ja vähendab kõrgema taimestiku mõju. Mõju ei kao kuna igihaljad puud vähendavad laserimpulsside läbilastvust ja vähendab maapinna lähedastese kididesse jõudmist seega tekitavad varje ja muudavad punktitiheduse väikesel alal väga ebaühtlaseks. 
+
 
 Andmete rasteriseerimisel rakendati piksli suurust 20 cm, omistades igale piksli ruudule selles sisalduva punktipilve maksimaalse kõrgusväärtuse. Resolutsiooni valik on metoodiliselt kaalutletud otsus, mis peab tasakaalustama punktipilve tihedust, andmestiku detailset katvust ning võimekust eristada kõrvuti asetsevaid üksikobjekte -- veelgi väiksema (peenema) resolutsiooni kasutamine tekitaks piiratud punktitiheduse korral rohkelt ilma laserpeegelduse väärtuseta lünkasid ehk tühje piksleid. Antud uuringus valitud 20 cm piksli suurus on otseses seoses tuvastatavate objektide füüsiliste mõõtmetega. Statistilise metsainventuuri (SMI) 2024. aasta välitööde juhendi kohaselt loetakse lamapuidu mõõtmisel künniseks tüve läbimõõt alates 15 cm \cite{SMI2024}. Samas rõhutab erialane kirjandus, et elurikkuse seisukohalt on kriitilise tähtsusega just jämedam lamapuit — paljud nõudlikud ja ohustatud saproksüülsed liigid eelistavad või vajavad elupaigana tüvesid, mille läbimõõt on vähemalt 20 cm \cite{Vilhelmsson2013}. Lisaks rõhutatakse strateegilistes dokumentides eriti jämedamõõtmelise lamapuidu (läbimõõduga alates u 30 cm) säilitamist, mis on kriitiline paljudele ohustatud liikidele \cite{kliimaministeerium_looduse_2024}. Seega on 20 cm piksli suurus optimaalne lävi, mis vastab minimaalsele ökoloogiliselt olulisele objekti suurusele, mida käesoleva analüüsi raames soovitakse tuvastada, tagades samas piisava ruumilise täpsuse objektide kuju säilitamiseks ilma liigsete tühjade pikslite tekkimiseta.
+
 
 \begin{figure}[h!]
 \centering
@@ -144,12 +124,12 @@ Placeholder}}
 \label{fig:chm-example}
 \end{figure}
 
-Selle töötluse tulemuseks saadud detailsed ja madalad taimkattemudelid on alus nii sidistamisele kui ka mudeli sisendile. Eesmärk ei ole üksnes objektide nähtavaks tegemine, vaid ka erinevate aastate ja alade vahel võrdleva, ühtse medoodika alusel kujutise loomine.
+Selle töötluse tulemuseks saadud detailsed ja madalad taimkattemudelid on alus nii sildistamisele kui ka mudeli sisendile. Eesmärk ei ole üksnes objektide nähtavaks tegemine, vaid ka erinevate aastate ja alade vahel võrdleva, ühtse medoodika alusel kujutise loomine.
 
-Sildistamise ja hilisema mudeli sisendi jaoks jagati suuremõõtmelised ($1 \times 1$ km) TIF-failid väiksemateks, $128 \times 128$ piksli suurusteks pildikildudeks (ingl \textit{tiles}). Kuna rasteri resolutsiooniks oli eelnevalt määratud 20 cm piksli kohta, vastab ühe tiili maastikulisele ulatusele $25,6 \times 25,6$ meetrit. Selline suuruse valik ei olnud juhuslik, vaid tugines mitmele disainikaalutlusele:
+Sildistamise ja hilisema mudeli sisendi jaoks jagati suuremõõtmelised kaardilehed ($1 \times 1$ km) TIF-formaadis väiksemateks, $128 \times 128$ piksli suurusteks pildikildudeks ehk paanideks (ingl \textit{tiles}). Kuna rasteri resolutsiooniks oli eelnevalt määratud 20 cm piksli kohta, vastab ühe paanile maastikulisele ulatusele $25,6 \times 25,6$ meetrit. Selline suuruse valik ei olnud juhuslik, vaid tugines mitmele disainikaalutlusele:
 \begin{itemize}
-    \item \textbf{Töövoo kiirus:} $128 \times 128$ piksline pilt laeb kiiresti ja kuvatakse brauseris sujuvalt, muutes suuremahulise sildistamisprotsessi inimoperaatorile visuaalselt hoomatavaks ning mugavaks.
-    \item \textbf{Arhitektuuriline paindlikkus:} Küljepikkus 128 kujutab endast kahe astet ($2^7$), mis on ideaalne ja valdavalt standardnõue konvolutsiooniliste närvivõrkude ja süvaõppearhitektuuride mastaapimisel. Kuna andmete ettevalmistamisel polnud lõplik mudel veel fikseeritud, tagas selline mõõt universaalse sobivuse erinevate arhitektuuridega.
-    \item \textbf{Kontekstuaalne ülevaade:} $25,6$ meetri pikkune ala on piisavalt lai, et tavapärasesse metsa maha langenud eesti lamapuidu objekt, mis jääb üldiselt samasse suurusjärku, oleks pildil nähtav tervikuna koos seda ümbritseva reljeefiga.
-    \item \textbf{Ülekate servaalade kompenseerimiseks:} Piltide lõikamisel rakendati igas suunas 50\% ülekatet (samm 64 pikslit). See tagab, et objekt, mis satuks muidu pildi servale või lõigataks pooleks, jääb vähemalt ühel tiilil pildi keskossa. Pidev ja korduv keskse asetusega treeninginfo võimaldab mudelil objekte usaldusväärsemalt tuvastada.
+    \item \textbf{Töövoo kiirus:} $128 \times 128$ piksline pilt laeb kiiresti ja selle töötlemine on kiire.
+    \item \textbf{Arhitektuuriline paindlikkus:} Küljepikkus 128 kujutab endast kahe astet ($2^7$), mis on ideaalne ja valdavalt standardnõue konvolutsiooniliste närvivõrkude ja sügavõppe arhitektuuride skaleeritavuse standardnõuetele. Kuna andmete ettevalmistamisel polnud lõplik mudel fikseeritud, tagas selline mõõt universaalse sobivuse erinevate arhitektuuridega.
+    \item \textbf{Kontekstuaalne ülevaade:} $25,6$ meetri pikkune ala on piisavalt lai, et tavapärane lamapuidu objekt, mis jääb üldiselt samasse suurusjärku, oleks pildil nähtav tervikuna koos seda ümbritseva alaga.
+    \item \textbf{Ülekate servaalade kompenseerimiseks:} Piltide lõikamisel paanideks rakendati igas suunas 50\% ülekatet (samm 64 pikslit). See tagab, et objekt, mis satuks muidu pildi servale või lõigataks pooleks, jääb vähemalt ühel paanil pildi keskossa. Pidev ja korduv keskse asetusega treeninginfo võimaldab mudelil objekte usaldusväärsemalt tuvastada.
 \end{itemize}
