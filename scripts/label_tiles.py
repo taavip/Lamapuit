@@ -43,7 +43,6 @@ from pathlib import Path
 import cv2
 import matplotlib
 import matplotlib.colors as mcolors
-import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
 from rasterio.enums import Resampling
@@ -1200,6 +1199,8 @@ def run_labeling_session(
     model_path: Path | None = None,  # optional explicit checkpoint path
     tile_list: "dict[str, list[tuple[int,int]]] | None" = None,  # audit queue filter
     tile_meta: "dict[str, dict[tuple[int,int], dict]] | None" = None,
+    focus_xy: tuple[float, float] | None = None,  # map coordinate to prioritize on start
+    active_learn: bool = False,  # sort remaining tiles by entropy before GUI
 ) -> bool:
     """Run interactive labeling session for one CHM raster.
 
@@ -1246,9 +1247,12 @@ def run_labeling_session(
     }
     _session_json.write_text(json.dumps(_session_meta, indent=2))
 
+    focus_rc: tuple[int, int] | None = None
     with rasterio.open(chm_path) as src:
         height, width = src.height, src.width
         res = abs(src.transform.a)  # metres/pixel, typically 0.2
+        if focus_xy is not None:
+            focus_rc = src.index(float(focus_xy[0]), float(focus_xy[1]))
 
     temporal_views = _discover_temporal_rasters(
         chm_path,
@@ -1308,6 +1312,45 @@ def run_labeling_session(
             seen_rc.add(_rc)
         remaining = merged
         print(f"  [tile-list] Restricted to {len(remaining)} audited tiles")
+
+    if focus_rc is not None and remaining:
+        focus_row, focus_col = focus_rc
+        candidate_hits = [
+            rc
+            for rc in remaining
+            if rc[0] <= focus_row < rc[0] + chunk_size and rc[1] <= focus_col < rc[1] + chunk_size
+        ]
+        if candidate_hits:
+            def _tile_distance(rc: tuple[int, int]) -> tuple[int, int, int]:
+                row_off, col_off = rc
+                center_row = row_off + (chunk_size // 2)
+                center_col = col_off + (chunk_size // 2)
+                return (
+                    abs(center_row - focus_row) + abs(center_col - focus_col),
+                    abs(center_row - focus_row),
+                    abs(center_col - focus_col),
+                )
+
+            focus_tile = min(candidate_hits, key=_tile_distance)
+        else:
+            def _tile_distance(rc: tuple[int, int]) -> tuple[int, int]:
+                row_off, col_off = rc
+                center_row = row_off + (chunk_size // 2)
+                center_col = col_off + (chunk_size // 2)
+                return (
+                    abs(center_row - focus_row) + abs(center_col - focus_col),
+                    abs(center_row - focus_row),
+                )
+
+            focus_tile = min(remaining, key=_tile_distance)
+
+        if focus_tile in remaining:
+            remaining = [focus_tile] + [rc for rc in remaining if rc != focus_tile]
+            print(
+                f"  [focus] Requested map point x={focus_xy[0]:.3f}, y={focus_xy[1]:.3f} "
+                f"→ starting tile row={focus_tile[0]}, col={focus_tile[1]} (pixel row={focus_row}, col={focus_col})"
+            )
+
     _audit_mode = bool(tile_list is not None and (relabel or remaining))
 
     n_total = len(chunks)
@@ -1525,13 +1568,10 @@ def run_labeling_session(
             predictor.shutdown()
             return False
 
-    # ── Active-learning sort: show most uncertain tiles first ─────────────────
-    # Tiles with CNN probability near 0.5 (max entropy) are hardest for the
-    # model and most informative to label manually.  Sort them first so the
-    # human's effort is concentrated where it reduces model uncertainty most.
-    # For binary classification, entropy-based and margin sampling give the same
-    # ranking — entropy used here because it is directly interpretable.
-    if predictor._trained and remaining:
+    # ── Optional active-learning sort: show most uncertain tiles first ───────
+    # Disabled by default so the GUI opens immediately. Enable with
+    # --active-learn when you want uncertainty-first ordering.
+    if active_learn and predictor._trained and remaining:
         print(f"  [active-learn] Scoring {len(remaining)} tiles by entropy …", flush=True)
         _scored: list[tuple[float, tuple[int, int]]] = []
         for _rc in remaining:
@@ -1581,6 +1621,10 @@ def run_labeling_session(
                     except Exception:
                         matplotlib.use("TkAgg", force=True)
 
+    # Import pyplot only after backend selection; importing it earlier can lock
+    # matplotlib to a non-interactive backend in containerized sessions.
+    import matplotlib.pyplot as plt
+
     display_cols = context_cols * display_scale  # 5×128×scale px
     display_rows = context_rows * display_scale  # 2×128×scale px
     fig, ax = plt.subplots(1, 1, figsize=(16, 5))
@@ -1597,7 +1641,7 @@ def run_labeling_session(
     instruction = fig.text(
         0.5,
         0.01,
-        "→/c CDW  ← No CDW  Space No CDW  ↑ Unk  ↓ Skip5  z Undo  b Focus  h Heatmap(IntGrad/HiResCAM/GradCAM+/RISE)  o Orthophoto  w/s Year  Esc Next  q QuitAll",
+        "→/c CDW  ← No CDW  Space No CDW  ↑ Unk  ↓ Skip5  z Undo  b Focus  h Heatmap(IntGrad/HiResCAM/GradCAM+/RISE)  o Orthophoto  k Scale  e Export  w/s Year  Esc Next  q QuitAll",
         ha="center",
         va="bottom",
         color="#cccccc",
@@ -1811,11 +1855,13 @@ def run_labeling_session(
         "heatmap_mode": "off",
         "_heatmap_cache": {},  # (method, row_off, col_off) → uint8 ndarray
         "show_orthophoto": False,  # O — toggle orthophoto WMS as base layer
+        "show_scale_overlay": True,  # K — toggle scale overlay in interactive view
         "_wms_cache": {},  # cache_key -> RGB image
         "_wms_cache_order": [],  # insertion order for bounded cache
         "_notice_text": "",
         "_notice_color": "#ffaa44",
         "_notice_ttl": 0,
+        "last_focus_xy": None,
     }
 
     _WMS_CACHE_MAX = 16
@@ -1845,6 +1891,30 @@ def run_labeling_session(
 
     def _active_layer() -> str:
         return "orthophoto" if state.get("show_orthophoto", False) else "chm"
+
+    def _draw_scale_overlay(frame: np.ndarray) -> np.ndarray:
+        out = frame.copy()
+        h = out.shape[0]
+        base_x = 28
+        base_y = h - 26
+        px10 = max(1, int(round(10.0 / res)))
+        px5 = max(1, int(round(5.0 / res)))
+        fg = (255, 255, 255)
+        bg = (0, 0, 0)
+        cv2.line(out, (base_x, base_y), (base_x + px10, base_y), bg, 4)
+        cv2.line(out, (base_x, base_y), (base_x + px10, base_y), fg, 2)
+        for x in (base_x, base_x + px5, base_x + px10):
+            cv2.line(out, (x, base_y - 7), (x, base_y + 7), bg, 3)
+            cv2.line(out, (x, base_y - 7), (x, base_y + 7), fg, 1)
+        cv2.putText(out, "0", (base_x - 5, base_y - 12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, bg, 2, cv2.LINE_AA)
+        cv2.putText(out, "0", (base_x - 5, base_y - 12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, fg, 1, cv2.LINE_AA)
+        cv2.putText(out, "5", (base_x + px5 - 5, base_y - 12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, bg, 2, cv2.LINE_AA)
+        cv2.putText(out, "5", (base_x + px5 - 5, base_y - 12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, fg, 1, cv2.LINE_AA)
+        cv2.putText(out, "10", (base_x + px10 - 10, base_y - 12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, bg, 2, cv2.LINE_AA)
+        cv2.putText(out, "10", (base_x + px10 - 10, base_y - 12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, fg, 1, cv2.LINE_AA)
+        cv2.putText(out, "m", (base_x + px10 + 8, base_y - 2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, bg, 2, cv2.LINE_AA)
+        cv2.putText(out, "m", (base_x + px10 + 8, base_y - 2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, fg, 1, cv2.LINE_AA)
+        return out
 
     def _is_archive_view() -> bool:
         return int(state.get("year_idx", 0)) != int(state.get("label_year_idx", 0))
@@ -2124,6 +2194,7 @@ def run_labeling_session(
         coord_str = f"L-EST97 {y0:.2f}, {x0:.2f}"
         focus_line = f"{view_path.name} | {coord_str}"
         focus_info_text.set_text(focus_line)
+        state["last_focus_xy"] = (float(x0), float(y0))
         # Emit once per focus tile in terminal to make copying easy.
         if state.get("last_coord_print") != focus_line:
             print(f"  [focus-coord] {focus_line}", flush=True)
@@ -2175,6 +2246,16 @@ def run_labeling_session(
             c1 = min(display_cols, c0 + chunk_px)
             mask[r0:r1, c0:c1] = True
             color_big[~mask] = 0
+
+        if state.get("show_orthophoto", False):
+            txt = "Ortofoto Maa- ja Ruumiamet"
+            x_txt = max(8, color_big.shape[1] - 360)
+            y_txt = max(24, color_big.shape[0] - 12)
+            cv2.putText(color_big, txt, (x_txt, y_txt), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3, cv2.LINE_AA)
+            cv2.putText(color_big, txt, (x_txt, y_txt), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
+
+        if state.get("show_scale_overlay", True):
+            color_big = _draw_scale_overlay(color_big)
 
         img_color.set_data(color_big)
 
@@ -2713,6 +2794,43 @@ def run_labeling_session(
                 _set_notice("View: CHM", color="#88aaff", ttl=20)
             fig.canvas.draw_idle()
             return
+        elif key_norm_lower == "k":
+            state["show_scale_overlay"] = not state.get("show_scale_overlay", True)
+            if state["idx"] < len(remaining):
+                _update_display(*remaining[state["idx"]])
+            _set_notice(
+                "Scale overlay: ON" if state["show_scale_overlay"] else "Scale overlay: OFF",
+                color="#88aaff",
+                ttl=20,
+            )
+            fig.canvas.draw_idle()
+            return
+        elif key_norm_lower == "e":
+            xy = state.get("last_focus_xy")
+            if xy is None:
+                _set_notice("Export failed: focus coordinate unavailable", color="#ff5555", ttl=30)
+                fig.canvas.draw_idle()
+                return
+            try:
+                from scripts.export_thesis_figures import quick_export_current_view
+
+                if state["idx"] < len(remaining):
+                    rr, cc = remaining[state["idx"]]
+                else:
+                    rr, cc = 0, 0
+                export_dir = quick_export_current_view(
+                    chm_path=chm_path,
+                    x=float(xy[0]),
+                    y=float(xy[1]),
+                    output_dir=output_dir,
+                    tile_size=chunk_size,
+                    scene_id=f"{chm_path.stem}_r{rr}_c{cc}",
+                )
+                _set_notice(f"Exported: {export_dir}", color="#66cc66", ttl=40)
+            except Exception as exc:
+                _set_notice(f"Export failed: {exc}", color="#ff5555", ttl=40)
+            fig.canvas.draw_idle()
+            return
 
     fig.canvas.mpl_connect("key_press_event", _on_key)
 
@@ -2817,6 +2935,23 @@ def main() -> None:
         help="Optional explicit checkpoint path (.pt). If set, it overrides output/ensemble_model.pt.",
     )
     p.add_argument(
+        "--active-learn",
+        action="store_true",
+        help="Sort remaining tiles by entropy before opening the GUI.",
+    )
+    p.add_argument(
+        "--focus-x",
+        type=float,
+        default=None,
+        help="Optional map X/Easting in EPSG:3301 to start near.",
+    )
+    p.add_argument(
+        "--focus-y",
+        type=float,
+        default=None,
+        help="Optional map Y/Northing in EPSG:3301 to start near.",
+    )
+    p.add_argument(
         "--tile-list",
         default=None,
         help="CSV file with raster/row_off/col_off columns (e.g. audit_review_queue.csv). "
@@ -2868,6 +3003,12 @@ def main() -> None:
         model_path=Path(args.model_path) if args.model_path else None,
         tile_list=tile_list,
         tile_meta=tile_meta,
+        active_learn=args.active_learn,
+        focus_xy=(
+            (float(args.focus_x), float(args.focus_y))
+            if args.focus_x is not None and args.focus_y is not None
+            else None
+        ),
     )
 
 

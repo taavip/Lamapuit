@@ -18,7 +18,8 @@ WMS_CRS = "EPSG:3301"
 _CHM_FILENAME_RE = re.compile(r"^(?P<grid>\d+)_(?P<year>\d{4})_(?P<token>[a-z]+)_chm_max_hag")
 _TOKEN_MAP = {
     "madal": "asulad",
-    "tava": "aeropildistamine",
+    # Maa-amet WMS uses short token "aero" in layer names (e.g. of2021aero).
+    "tava": "aero",
 }
 
 
