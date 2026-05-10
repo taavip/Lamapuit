@@ -121,3 +121,26 @@ Thumbs.db
 *.png
 *.jpg
 !docs/*.png
+
+# Local scratch/output trees
+tmp/
+logs/
+source/
+
+# Local metadata sidecar files
+*:Zone.Identifier
+*:sec.endpointdlp
+
+# One-off local artifacts
+tmp_single_tile.csv
+test_ogr.json
+project-*-d51ad8a4.json
+
+# Local diagnostics
+scripts/tmp_diag/
+
+# Keep large local model files out of git in this workspace
+yolo11n-seg.pt
+yolo11s-seg.pt
+yolo11m-seg.pt
+yolo26n.pt
