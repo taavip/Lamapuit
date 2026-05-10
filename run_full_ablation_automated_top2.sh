@@ -11,7 +11,7 @@
 # - Phase 3: Test 5 arch × 2 CHM variants = 10 conditions → Select top 2 combos
 # - Phase 4: Test 8 loss × 2 arch/CHM combos = 16 conditions → Select top 2
 # - Phase 5: Test 5 aug × 2 loss configs = 10 conditions → Select top 2
-# - Phase 6: Validate both top 2 configurations across all 4 folds
+# - Phase 6: Final locked-test estimation (Top 2 from Phase 5 + legacy V10 baseline)
 #
 # Usage:
 #   bash run_full_ablation_automated_top2.sh                # All phases
@@ -31,6 +31,9 @@ DATASET_DIR="${DATASET_DIR:-$REPO_ROOT/seg_pipeline/output/phase2_dataset_v10_re
 SELECTION_METRIC="${SELECTION_METRIC:-val_cldice}"
 CHM_SOURCE_DIR="${CHM_SOURCE_DIR:-}"
 PHASE2_CONDITIONS="${PHASE2_CONDITIONS:-2A,2B,2C,2D,2E}"
+PHASE3_CONDITIONS="${PHASE3_CONDITIONS:-3B,3C,3E}"
+PHASE4_CONDITIONS="${PHASE4_CONDITIONS:-4A,4D,4F,4H}"
+PHASE5_CONDITIONS="${PHASE5_CONDITIONS:-5A,5D,5E}"
 REBUILD_DATASET="${REBUILD_DATASET:-true}"
 LOG_DIR="$REPO_ROOT/logs"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -43,6 +46,9 @@ SEED=${SEED:-42}
 SWA_START=${SWA_START:-35}
 DEVICE=${DEVICE:-cuda}
 NO_SWA=${NO_SWA:-false}
+CV_VERSION=${CV_VERSION:-4}
+LEGACY_V10_CHAIN=${LEGACY_V10_CHAIN:-2A__3C__4H__5D}
+PARALLEL_JOBS=${PARALLEL_JOBS:-1}
 
 DOCKER_IMAGE="lamapuit:gpu"
 DOCKER_OPTS=(
@@ -54,6 +60,16 @@ DOCKER_OPTS=(
 )
 
 mkdir -p "$OUTPUT_BASE" "$LOG_DIR"
+
+# Locked thesis protocol assumptions
+if [ "$SELECTION_METRIC" != "val_cldice" ]; then
+    echo "ERROR: Locked protocol requires SELECTION_METRIC=val_cldice (got '$SELECTION_METRIC')." >&2
+    exit 1
+fi
+if [ "$CV_VERSION" -ne 4 ]; then
+    echo "ERROR: Locked protocol requires CV_VERSION=4 (balanced 2-fold)." >&2
+    exit 1
+fi
 
 # ============================================================================
 # Helper Functions
@@ -88,6 +104,14 @@ join_by_comma() {
     echo "$*"
 }
 
+cv_folds_for_version() {
+    if [ "$CV_VERSION" -eq 4 ]; then
+        echo "0 1"
+    else
+        echo "0 1 2 3"
+    fi
+}
+
 prepare_inputs_and_dataset() {
     log_section "PREFLIGHT: CHM INPUTS + DATASET ASSETS"
     log "Dataset dir: $DATASET_DIR"
@@ -109,14 +133,25 @@ conda activate cwd-detect
 set -e
 mkdir -p '$DATASET_DIR'
 for v in baseline raw gauss masked composite; do
-  python3 $SCRIPT_DIR/phase2_dataset_v3.py --chm-variant \$v --cv-version 3 --output-dir '$DATASET_DIR'
+  python3 $SCRIPT_DIR/phase2_dataset_v3.py --chm-variant \$v --cv-version $CV_VERSION --output-dir '$DATASET_DIR'
 done
 "
         docker run "${DOCKER_OPTS[@]}" "$DOCKER_IMAGE" bash -c "$cmd" 2>&1 | tee -a "$MAIN_LOG"
     fi
+
+    log "Balanced-fold preflight check (variant=composite, cv_version=$CV_VERSION)"
+    local validate_cmd="
+source /opt/conda/etc/profile.d/conda.sh
+conda activate cwd-detect
+set -e
+python3 $SCRIPT_DIR/phase2_dataset_v3.py --chm-variant composite --cv-version $CV_VERSION --output-dir '$DATASET_DIR' --validate
+"
+    docker run "${DOCKER_OPTS[@]}" "$DOCKER_IMAGE" bash -c "$validate_cmd" 2>&1 | tee -a "$MAIN_LOG"
 }
 
-# Get top N winners from phase results, return condition IDs
+# Get top N winners from phase results, return condition IDs.
+# Tie-break is fixed before run start:
+#   1) higher mean(selection metric), 2) higher mean(val_f1), 3) lower std(selection metric)
 get_phase_winners() {
     local phase=$1
     local count=${2:-1}
@@ -136,29 +171,69 @@ get_phase_winners() {
     python3 << PYTHON_EOF
 import csv
 import sys
+import statistics
+from collections import defaultdict
 
-results = []
+rows = []
 with open('$results_file', 'r') as f:
     reader = csv.DictReader(f)
     for row in reader:
-        cond_id = row.get('run_id') or row.get('condition_id') or row.get('condition', '')
-        metric_val = 0.0
-        # Selection is validation-only. The held-out test stripe is not used here.
-        for metric_name in ['val_cldice', 'best_val_cldice', 'val_f1', 'best_val_f1', 'threshold_f1', 'best_val_dice', 'val_dice']:
-            if metric_name in row and row[metric_name]:
-                try:
-                    metric_val = float(row[metric_name])
-                    break
-                except (ValueError, TypeError):
-                    continue
-        results.append((cond_id, metric_val))
+        rows.append(row)
 
-if not results:
+if not rows:
     sys.exit(1)
 
-results.sort(key=lambda x: x[1], reverse=True)
-for i in range(min($count, len(results))):
-    print(results[i][0])
+metric_priority = ['$SELECTION_METRIC', 'val_cldice', 'best_val_cldice', 'val_f1', 'best_val_f1', 'threshold_f1', 'best_val_dice', 'val_dice']
+grouped = defaultdict(list)
+folds = defaultdict(set)
+f1_grouped = defaultdict(list)
+
+for row in rows:
+    run_id = row.get('run_id') or row.get('condition_id') or row.get('condition', '')
+    if not run_id:
+        continue
+    metric_val = None
+    for metric_name in metric_priority:
+        if metric_name in row and row[metric_name]:
+            try:
+                metric_val = float(row[metric_name])
+                break
+            except (ValueError, TypeError):
+                continue
+    if metric_val is None:
+        continue
+    grouped[run_id].append(metric_val)
+    f1_val = None
+    for f1_name in ('val_f1', 'best_val_f1'):
+        if f1_name in row and row[f1_name]:
+            try:
+                f1_val = float(row[f1_name])
+                break
+            except (ValueError, TypeError):
+                continue
+    if f1_val is not None:
+        f1_grouped[run_id].append(f1_val)
+    folds[run_id].add(str(row.get('fold_id', 'NA')))
+
+aggregated = []
+for run_id, vals in grouped.items():
+    if not vals:
+        continue
+    mean_sel = sum(vals) / len(vals)
+    mean_f1 = (sum(f1_grouped[run_id]) / len(f1_grouped[run_id])) if f1_grouped[run_id] else float('-inf')
+    std_sel = statistics.pstdev(vals) if len(vals) > 1 else 0.0
+    aggregated.append((run_id, mean_sel, mean_f1, std_sel, len(folds[run_id]), len(vals)))
+
+if not aggregated:
+    sys.exit(1)
+
+# Primary: mean selection metric (higher better)
+# Tie-break 1: mean val_f1 (higher better)
+# Tie-break 2: std(selection metric) (lower better)
+# Tie-break 3: fold coverage / row count (higher better)
+aggregated.sort(key=lambda x: (-x[1], -x[2], x[3], -x[4], -x[5], x[0]))
+for i in range(min($count, len(aggregated))):
+    print(aggregated[i][0])
 PYTHON_EOF
 }
 
@@ -215,6 +290,7 @@ python3 $SCRIPT_DIR/phase3_ablation_v10.py \\
     --fold $FOLD \\
     --epochs $EPOCHS \\
     --selection-metric $SELECTION_METRIC \\
+    --cv-version $CV_VERSION \\
     $swa_flag \\
     --warmup-epochs $WARMUP \\
     --seed $SEED \\
@@ -238,14 +314,16 @@ source /opt/conda/etc/profile.d/conda.sh
 conda activate cwd-detect
 export NO_ALBUMENTATIONS_UPDATE=1
 
-python3 $SCRIPT_DIR/phase3_ablation_v10.py \\
-    --phase $phase \\
-    --chm-variant $chm \\
-    --fold $FOLD \\
-    --epochs $EPOCHS \\
-    --selection-metric $SELECTION_METRIC \\
-    $swa_flag \\
-    --warmup-epochs $WARMUP \\
+	python3 $SCRIPT_DIR/phase3_ablation_v10.py \\
+	    --phase $phase \\
+	    --chm-variant $chm \\
+	    --fold $FOLD \\
+	    --epochs $EPOCHS \\
+	    --selection-metric $SELECTION_METRIC \\
+	    --cv-version $CV_VERSION \\
+	    --condition-ids $PHASE3_CONDITIONS \\
+	    $swa_flag \\
+	    --warmup-epochs $WARMUP \\
     --seed $SEED \\
     --dataset-dir $DATASET_DIR \\
     --carry-winner 2:${winner} \\
@@ -259,6 +337,12 @@ python3 $SCRIPT_DIR/phase3_ablation_v10.py \\
 
     # For Phase 4+, run with all winner combinations
     local prev_phase=$((phase - 1))
+    local condition_ids_arg=""
+    if [ "$phase" -eq 4 ]; then
+        condition_ids_arg="--condition-ids $PHASE4_CONDITIONS"
+    elif [ "$phase" -eq 5 ]; then
+        condition_ids_arg="--condition-ids $PHASE5_CONDITIONS"
+    fi
     for winner in "${winners[@]}"; do
         log "  Testing Phase $phase with winning configuration: $winner"
 
@@ -267,13 +351,15 @@ source /opt/conda/etc/profile.d/conda.sh
 conda activate cwd-detect
 export NO_ALBUMENTATIONS_UPDATE=1
 
-python3 $SCRIPT_DIR/phase3_ablation_v10.py \\
-    --phase $phase \\
-    --fold $FOLD \\
-    --epochs $EPOCHS \\
-    --selection-metric $SELECTION_METRIC \\
-    $swa_flag \\
-    --warmup-epochs $WARMUP \\
+	python3 $SCRIPT_DIR/phase3_ablation_v10.py \\
+	    --phase $phase \\
+	    --fold $FOLD \\
+	    --epochs $EPOCHS \\
+	    --selection-metric $SELECTION_METRIC \\
+	    --cv-version $CV_VERSION \\
+	    $condition_ids_arg \
+	    $swa_flag \\
+	    --warmup-epochs $WARMUP \\
     --seed $SEED \\
     --dataset-dir $DATASET_DIR \\
     --carry-winner ${prev_phase}:${winner} \\
@@ -282,6 +368,72 @@ python3 $SCRIPT_DIR/phase3_ablation_v10.py \\
 "
         docker run "${DOCKER_OPTS[@]}" "$DOCKER_IMAGE" bash -c "$cmd" 2>&1 | tee -a "$MAIN_LOG"
     done
+}
+
+run_final_locked_test() {
+    local winner="$1"
+    local swa_flag="--swa-start-epoch $SWA_START"
+    [ "$NO_SWA" = "true" ] && swa_flag="--no-swa"
+    log "  Final locked-test run: $winner (train on all non-test stripes)"
+    local cmd="
+source /opt/conda/etc/profile.d/conda.sh
+conda activate cwd-detect
+export NO_ALBUMENTATIONS_UPDATE=1
+
+python3 $SCRIPT_DIR/phase3_ablation_v10.py \\
+    --phase 6 \\
+    --condition-ids 6 \\
+    --fold 0 \\
+    --epochs $EPOCHS \\
+    --selection-metric $SELECTION_METRIC \\
+    --cv-version $CV_VERSION \\
+    $swa_flag \\
+    --warmup-epochs $WARMUP \\
+    --seed $SEED \\
+    --dataset-dir $DATASET_DIR \\
+    --carry-winner 5:${winner} \\
+    --evaluate-test \\
+    --final-train-all \\
+    --max-ap-component-pairs 50000 \\
+    --output-dir $OUTPUT_BASE \\
+    --device $DEVICE
+"
+    docker run "${DOCKER_OPTS[@]}" "$DOCKER_IMAGE" bash -c "$cmd" 2>&1 | tee -a "$MAIN_LOG"
+}
+
+run_phase_across_folds() {
+    local phase=$1
+    shift
+    local winners=("$@")
+    local -a pids=()
+    local fail=0
+
+    for fold_id in "${cv_folds[@]}"; do
+        log "  Running Phase $phase on fold $fold_id"
+        if [ "$PARALLEL_JOBS" -gt 1 ]; then
+            (
+                FOLD=$fold_id run_phase_with_winners "$phase" "${winners[@]}"
+            ) &
+            pids+=($!)
+            while [ "$(jobs -rp | wc -l)" -ge "$PARALLEL_JOBS" ]; do
+                sleep 2
+            done
+        else
+            FOLD=$fold_id run_phase_with_winners "$phase" "${winners[@]}"
+        fi
+    done
+
+    if [ "$PARALLEL_JOBS" -gt 1 ]; then
+        for pid in "${pids[@]}"; do
+            if ! wait "$pid"; then
+                fail=1
+            fi
+        done
+        if [ "$fail" -ne 0 ]; then
+            log_error "One or more parallel fold jobs failed in Phase $phase"
+            exit 1
+        fi
+    fi
 }
 
 # Print summary with top 2 winners
@@ -317,21 +469,29 @@ print_phase_summary() {
     if [ $? -eq 0 ]; then
         local i=1
         while IFS= read -r winner; do
-            # Get metric value
+            # Get aggregated cross-fold metric value for this run_id
             local metric=$(python3 << PYTHON_EOF
 import csv
+from collections import defaultdict
 with open('$results_file', 'r') as f:
     reader = csv.DictReader(f)
+    vals = []
     for row in reader:
-        if row.get('condition_id') == '$winner':
-            for m in ['val_cldice', 'best_val_cldice', 'val_f1', 'best_val_f1', 'threshold_f1', 'best_val_dice', 'val_dice']:
+        if (row.get('run_id') or row.get('condition_id')) == '$winner':
+            for m in ['$SELECTION_METRIC', 'val_cldice', 'best_val_cldice', 'val_f1', 'best_val_f1', 'threshold_f1', 'best_val_dice', 'val_dice']:
                 if m in row and row[m]:
-                    print(row[m])
-                    break
-            break
+                    try:
+                        vals.append(float(row[m]))
+                        break
+                    except Exception:
+                        pass
+if vals:
+    print(f"{sum(vals)/len(vals):.6f}")
+else:
+    print("N/A")
 PYTHON_EOF
 )
-            log "  $i. $winner → metric=$metric ✓✓ ADVANCE TO PHASE $((phase+1))"
+            log "  $i. $winner → mean($SELECTION_METRIC)=$metric ✓✓ ADVANCE TO PHASE $((phase+1))"
             ((i++))
         done <<< "$winners"
     fi
@@ -348,8 +508,9 @@ main() {
     log "Start time: $(date)"
     log "Output directory: $OUTPUT_BASE"
     log "Main log: $MAIN_LOG"
-    log "Configuration: fold=$FOLD, epochs=$EPOCHS, device=$DEVICE"
+    log "Configuration: epochs=$EPOCHS, device=$DEVICE, cv_version=$CV_VERSION"
     log "Selection metric: $SELECTION_METRIC"
+    log "Locked assumptions: legacy=$LEGACY_V10_CHAIN, selection_metric=val_cldice, cv_version=4"
     echo "" | tee -a "$MAIN_LOG"
 
     local phases_to_run=(2 3 4 5 6)
@@ -358,9 +519,16 @@ main() {
     fi
 
     log "Will execute phases: ${phases_to_run[*]}"
-    log "Strategy: Select top 2 winners per phase, test all with both in next phase"
+    log "Strategy: Select top 2 winners per phase, then run locked test once with Top2 + legacy baseline"
+    log "Selection tie-break (locked): mean($SELECTION_METRIC) > mean(val_f1) > lower std($SELECTION_METRIC)"
+    log "Academic guardrail: test stripe is untouched in Phases 2-5 and used only in final Phase 6"
+    log "Pruning (locked defaults): phase3=$PHASE3_CONDITIONS phase4=$PHASE4_CONDITIONS phase5=$PHASE5_CONDITIONS"
+    log "Parallel speed mode: PARALLEL_JOBS=$PARALLEL_JOBS (same configs/seeds/metrics; wall-clock only)"
     echo "" | tee -a "$MAIN_LOG"
     prepare_inputs_and_dataset
+    local -a cv_folds
+    read -r -a cv_folds <<< "$(cv_folds_for_version)"
+    log "CV folds used for model-selection phases (2-5): ${cv_folds[*]}"
 
     # Track winners across phases
     declare -a phase2_winners=()
@@ -372,11 +540,20 @@ main() {
     if [[ " ${phases_to_run[@]} " =~ " 2 " ]]; then
         log_section "PHASE 2: CHM VARIANT SEARCH (5 conditions)"
         log "Testing: baseline, raw, gauss, masked, composite"
-        log "Expected runtime: ~2.5 hours"
-        log "Strategy: Select top 2 variants for Phase 3"
+        log "Strategy: run all CV folds, aggregate by mean $SELECTION_METRIC, select top 2 variants"
+        log "Execution order (Phase 2): per-condition cross-validation (each condition runs on folds ${cv_folds[*]} before next condition)"
 
         mkdir -p "$OUTPUT_BASE/phase2"
-        run_phase_with_winners 2
+        IFS=',' read -r -a phase2_ids <<< "$PHASE2_CONDITIONS"
+        for cond in "${phase2_ids[@]}"; do
+            cond="$(echo "$cond" | xargs)"
+            [ -z "$cond" ] && continue
+            log "  Condition $cond: running folds ${cv_folds[*]}"
+            for fold_id in "${cv_folds[@]}"; do
+                log "    fold $fold_id"
+                FOLD=$fold_id PHASE2_CONDITIONS="$cond" run_phase_with_winners 2
+            done
+        done
 
         print_phase_summary 2
 
@@ -409,11 +586,11 @@ main() {
             local chm=$(get_chm_from_condition "$winner")
             log "  - $chm (from condition $winner)"
         done
-        log "Expected runtime: ~7 hours (5 arch × 2 CHMs × 1.4h per run)"
-        log "Strategy: Select top 2 architecture/CHM combinations for Phase 4"
+        log "Candidate pruning: keeping phase3 IDs [$PHASE3_CONDITIONS], dropping others"
+        log "Strategy: run all CV folds, aggregate by mean $SELECTION_METRIC, select top 2 architecture/CHM combinations"
 
         mkdir -p "$OUTPUT_BASE/phase3"
-        run_phase_with_winners 3 "${phase2_winners[@]}"
+        run_phase_across_folds 3 "${phase2_winners[@]}"
 
         print_phase_summary 3
 
@@ -442,10 +619,11 @@ main() {
         for winner in "${phase3_winners[@]}"; do
             log "  - Configuration $winner"
         done
-        log "Expected runtime: ~9 hours (8 loss × 2 combos × 1.125h per run)"
+        log "Candidate pruning: keeping phase4 IDs [$PHASE4_CONDITIONS], dropping others"
+        log "Strategy: run all CV folds, aggregate by mean $SELECTION_METRIC, select top 2 loss configurations"
 
         mkdir -p "$OUTPUT_BASE/phase4"
-        run_phase_with_winners 4 "${phase3_winners[@]}"
+        run_phase_across_folds 4 "${phase3_winners[@]}"
 
         print_phase_summary 4
 
@@ -474,10 +652,11 @@ main() {
         for winner in "${phase4_winners[@]}"; do
             log "  - Configuration $winner"
         done
-        log "Expected runtime: ~5 hours (5 aug × 2 combos × 1h per run)"
+        log "Candidate pruning: keeping phase5 IDs [$PHASE5_CONDITIONS], dropping others"
+        log "Strategy: run all CV folds, aggregate by mean $SELECTION_METRIC, select top 2 augmentation strategies"
 
         mkdir -p "$OUTPUT_BASE/phase5"
-        run_phase_with_winners 5 "${phase4_winners[@]}"
+        run_phase_across_folds 5 "${phase4_winners[@]}"
 
         print_phase_summary 5
 
@@ -490,45 +669,42 @@ main() {
         log_success "Phase 5 complete. Top augmentation configs: $(join_by_comma "${phase5_winners[@]}")"
     fi
 
-    # ── Phase 6: Final Validation with Top 2 Winners (all 4 folds)
+    # ── Phase 6: Thesis Final Protocol (Top2 + Legacy V10 on locked test stripe)
     if [[ " ${phases_to_run[@]} " =~ " 6 " ]]; then
-        log_section "PHASE 6: FINAL VALIDATION - TOP 2 CONFIGURATIONS × 4 FOLDS = 8 runs"
+        log_section "PHASE 6: THESIS FINAL PROTOCOL (TOP2 + LEGACY V10, LOCKED TEST)"
 
-            if [ ${#phase5_winners[@]} -eq 0 ]; then
-                if winners_out=$(get_phase_winners 5 2); then
-                    readarray -t phase5_winners <<<"$winners_out"
-                else
-                    phase5_winners=()
-                fi
+        if [ ${#phase5_winners[@]} -eq 0 ]; then
+            if winners_out=$(get_phase_winners 5 2); then
+                readarray -t phase5_winners <<<"$winners_out"
+            else
+                phase5_winners=()
             fi
+        fi
 
-        log "Validating top 2 winning configurations across all folds:"
-        for winner in "${phase5_winners[@]}"; do
-            log "  - Configuration $winner → testing on folds 0,1,2,3"
+        local -a final_candidates=("${phase5_winners[@]}")
+        local has_legacy=0
+        for cfg in "${final_candidates[@]}"; do
+            if [ "$cfg" = "$LEGACY_V10_CHAIN" ]; then
+                has_legacy=1
+                break
+            fi
         done
-        log "Expected runtime: ~10 hours (2 configs × 4 folds × 1.25h per fold)"
+        if [ "$has_legacy" -eq 0 ]; then
+            final_candidates+=("$LEGACY_V10_CHAIN")
+        fi
 
-        mkdir -p "$OUTPUT_BASE/phase6"
-
-        for fold_id in 0 1 2 3; do
-            log ""
-            log "Running Phase 6 - Fold $fold_id (with both top 2 winners)"
-            FOLD=$fold_id run_phase_with_winners 6 "${phase5_winners[@]}"
+        log "Final candidate set (3-way locked-test comparison): $(join_by_comma "${final_candidates[@]}")"
+        log "No parameter edits are allowed after Phase 5 winner selection."
+        for cfg in "${final_candidates[@]}"; do
+            run_final_locked_test "$cfg"
         done
-
-        print_phase_summary 6
     fi
 
     # ── Final Report
     log_section "ABLATION STUDY COMPLETE - TOP 2 STRATEGY"
-    log "Estimated total runtime:"
-    log "  Phase 2 (5 conditions):        ~2.5h"
-    log "  Phase 3 (10 conditions):       ~7h"
-    log "  Phase 4 (16 conditions):       ~9h"
-    log "  Phase 5 (10 conditions):       ~5h"
-    log "  Phase 6 (8 folds):             ~10h"
-    log "  ──────────────────────────────────"
-    log "  TOTAL (49 conditions):         ~33.5h"
+    log "Runtime note: depends on CV_VERSION and number of conditions per phase."
+    log "  CV_VERSION=$CV_VERSION uses folds: ${cv_folds[*]}"
+    log "  Final protocol (Phase 6): top2 + legacy V10 chain on locked test stripe."
     echo "" | tee -a "$MAIN_LOG"
 
     log "Full results saved to: $OUTPUT_BASE"
@@ -544,13 +720,24 @@ Instead of greedy single-winner advancement, this study selects the **top 2 resu
 
 ## Reproducibility & Setup
 
-- **Selection metric**: validation F1 from spatial CV only.
-- **Held-out test use**: the test stripe is locked during Phases 2-6 and is evaluated only after the final configuration is fixed with \`--evaluate-test\`.
+- **Selection metric**: \`$SELECTION_METRIC\` (cross-fold mean across spatial CV folds).
+- **Held-out test use**: the test stripe is locked during Phases 2-5 and is evaluated only in final Phase 6 with \`--evaluate-test\`.
 - **Seed**: $SEED
 - **Epochs**: $EPOCHS
 - **Warmup (linear LR)**: $WARMUP
 - **SWA start epoch**: $SWA_START (set `NO_SWA=true` to disable)
-- **Cross-validation**: Vertical-stripe spatial CV (see seg_pipeline/scripts/phase2_dataset_v3.py) — stripe 0 is held-out test; folds rotate among other vertical stripes.
+- **Cross-validation**: Spatial CV version \`$CV_VERSION\` (see seg_pipeline/scripts/phase2_dataset_v3.py) — stripe 0 is held-out test and remains untouched in Phases 2-5.
+- **Conservative candidate pruning**:
+  - Phase 3: \`$PHASE3_CONDITIONS\`
+  - Phase 4: \`$PHASE4_CONDITIONS\`
+  - Phase 5: \`$PHASE5_CONDITIONS\`
+- **Parallel wall-clock speedup**: \`PARALLEL_JOBS=$PARALLEL_JOBS\` (no methodological changes; same seeds/configs/metrics).
+
+## Locked Assumptions
+
+- **Legacy comparator** is locked to \`2A__3C__4H__5D\`.
+- **Selection metric** across Phases 2-5 is \`val_cldice\` only.
+- **CV protocol** is balanced 2-fold (\`CV_VERSION=4\`).
 
 
 ## Winners by Phase
@@ -591,11 +778,11 @@ EOF
 
     cat >> "$OUTPUT_BASE/TOP2_ABLATION_SUMMARY.md" << 'EOF'
 
-### Phase 6: Final Validation (both top 2 configurations, all 4 folds = 8 runs)
+### Phase 6: Thesis Final Protocol (Top 2 from Phase 5 + legacy V10 chain on locked test stripe)
 
 ## Results Files
 
-All detailed results in: `seg_pipeline/output/ablation_v10_top2/`
+All detailed results in: `$OUTPUT_BASE`
 
 ## Strategy Rationale
 
@@ -632,17 +819,23 @@ Tests top 2 results from each phase with all next-phase conditions.
 More thorough than greedy single-winner approach.
 
 Usage:
-  bash run_full_ablation_automated_top2.sh           # All phases (33.5h)
+  bash run_full_ablation_automated_top2.sh           # All phases (2-6)
   bash run_full_ablation_automated_top2.sh 2         # Phase 2 only (2.5h)
-  bash run_full_ablation_automated_top2.sh 2 3       # Phases 2-3 (9.5h)
+  bash run_full_ablation_automated_top2.sh 2 3       # Phases 2-3
+  bash run_full_ablation_automated_top2.sh 6         # Final locked-test protocol only
   EPOCHS=5 bash run_full_ablation_automated_top2.sh 2 # Quick test (15 min)
 
 Environment variables:
-  FOLD=N           Fold to train (default: 0)
   EPOCHS=N         Epochs per condition (default: 75)
   SWA_START=N      SWA start epoch (default: 35)
   DEVICE=cuda|cpu  Device (default: cuda)
   NO_SWA=true      Disable SWA (default: false)
+  CV_VERSION=4     Locked to balanced 2-fold protocol
+  LEGACY_V10_CHAIN Run-id chain for baseline thesis comparator (default: 2A__3C__4H__5D)
+  PHASE3_CONDITIONS Conservative pruning set (default: 3B,3C,3E)
+  PHASE4_CONDITIONS Conservative pruning set (default: 4A,4D,4F,4H)
+  PHASE5_CONDITIONS Conservative pruning set (default: 5A,5D,5E)
+  PARALLEL_JOBS=N  Parallel fold jobs for wall-clock speedup (default: 1)
 
 EOF
     exit 0

@@ -413,6 +413,7 @@ class CWDSegDataset(Dataset):
         patch_size: int = PATCH_SIZE,
         in_channels: int = 4,
         augment: bool = False,
+        aug_mode: str = "full",
         buffer_px: int = BUFFER_PX,
         stripe_width: int = STRIPE_WIDTH,
         val_stripe: int | None = None,
@@ -425,6 +426,7 @@ class CWDSegDataset(Dataset):
         self.patch_size = patch_size
         self.in_channels = in_channels
         self.augment = augment
+        self.aug_mode = aug_mode
         self.buffer_px = buffer_px
         self.stripe_width = stripe_width
         self.val_stripe = val_stripe
@@ -433,8 +435,16 @@ class CWDSegDataset(Dataset):
 
         self._aug = None
         if augment:
-            from common.augmentation import get_full_aug
-            self._aug = get_full_aug()
+            if aug_mode == "none":
+                self._aug = None
+            elif aug_mode == "geometric":
+                from common.augmentation import get_geometric_aug
+                self._aug = get_geometric_aug()
+            elif aug_mode == "full":
+                from common.augmentation import get_full_aug
+                self._aug = get_full_aug()
+            else:
+                raise ValueError(f"Unknown aug_mode '{aug_mode}'. Expected one of: none, geometric, full")
 
     def __len__(self) -> int:
         return len(self.entries)

@@ -308,12 +308,15 @@ def train_fold(
     tversky_alpha: float = 0.6,
     tversky_beta: float = 0.4,
     cldice_weight: float = 0.3,
+    aug_mode: str = "full",
+    batch_aug: bool = True,
     soft_targets: bool = False,
     soft_sigma: float = 2.0,
     swa_start_epoch: int = 25,
     swa_update_freq: int = 5,
     warmup_epochs: int = 5,
     min_epochs_before_early_stop: int | None = None,
+    monitor_metric: str = "val_cldice",
 ) -> dict:
     fold_dir = output_dir / variant / f"fold{fold_id}"
     fold_dir.mkdir(parents=True, exist_ok=True)
@@ -343,7 +346,7 @@ def train_fold(
     train_ds = CWDSegDataset(
         entries=train_entries, chm_tif=chm_tif, mask_tif=mask_tif,
         band_stats=band_stats, patch_size=PATCH_SIZE, in_channels=in_channels,
-        augment=True, buffer_px=64, stripe_width=STRIPE_WIDTH,
+        augment=(aug_mode != "none"), aug_mode=aug_mode, buffer_px=64, stripe_width=STRIPE_WIDTH,
         val_stripe=val_stripe, variant=variant,
     )
     val_ds = CWDSegDataset(
@@ -385,6 +388,7 @@ def train_fold(
     best_f1 = -1.0
     best_dice = -1.0
     best_cldice = -1.0
+    best_monitor = -1.0
     best_epoch = 0
     no_improve = 0
     best_state: dict | None = None
@@ -406,7 +410,7 @@ def train_fold(
                 soft_np = np.stack([soft_fn(tgt_np[i, 0]) for i in range(len(tgt_np))])
                 target = torch.from_numpy(soft_np[:, np.newaxis]).float().to(device)
 
-            if epoch < swa_start_epoch:
+            if batch_aug and epoch < swa_start_epoch:
                 image, target = mixup(image, target)
                 image, target = cutmix(image, target)
                 image, target = gridmask(image, target)
@@ -464,8 +468,18 @@ def train_fold(
 
         train_loss = running_loss / max(1, steps)
 
+        monitor_candidates = {
+            "val_f1": val_f1,
+            "best_val_f1": val_f1,
+            "val_dice": val_dice,
+            "best_val_dice": val_dice,
+            "val_cldice": val_cldice,
+            "best_val_cldice": val_cldice,
+        }
+        current_monitor = float(monitor_candidates.get(monitor_metric, val_cldice))
+
         if warmup_epochs < epoch < swa_start_epoch:
-            plateau_sched.step(val_f1)
+            plateau_sched.step(current_monitor)
 
         writer.add_scalar("Loss/train", train_loss, epoch)
         writer.add_scalar("Dice/val", val_dice, epoch)
@@ -497,7 +511,12 @@ def train_fold(
             flush=True,
         )
 
-        if val_f1 > best_f1 + 1e-6 or (val_f1 >= best_f1 and val_dice > best_dice):
+        if (
+            current_monitor > best_monitor + 1e-6
+            or (abs(current_monitor - best_monitor) <= 1e-6 and val_f1 > best_f1 + 1e-6)
+            or (abs(current_monitor - best_monitor) <= 1e-6 and abs(val_f1 - best_f1) <= 1e-6 and val_dice > best_dice)
+        ):
+            best_monitor = current_monitor
             best_f1 = val_f1
             best_dice = val_dice
             best_cldice = val_cldice
@@ -510,7 +529,8 @@ def train_fold(
         if patience > 0 and no_improve >= patience and epoch >= min_epochs_before_early_stop:
             print(
                 f"  Early stopping at epoch {epoch} "
-                f"(patience={patience}, min_epoch={min_epochs_before_early_stop}, best_f1={best_f1:.4f})"
+                f"(patience={patience}, min_epoch={min_epochs_before_early_stop}, "
+                f"best_{monitor_metric}={best_monitor:.4f}, best_f1={best_f1:.4f})"
             )
             stop_reason = "early_stopping"
             break
@@ -572,9 +592,12 @@ def train_fold(
         "variant": variant, "fold_id": fold_id,
         "tversky_alpha": tversky_alpha, "tversky_beta": tversky_beta,
         "cldice_weight": cldice_weight, "soft_targets": soft_targets,
+        "aug_mode": aug_mode, "batch_aug": bool(batch_aug),
         "best_val_f1": float(best_f1), "best_val_dice": float(best_dice),
         "best_val_cldice": float(best_cldice),
         "val_cldice": float(best_cldice),
+        "monitor_metric": monitor_metric,
+        "best_monitor_metric_value": float(best_monitor),
         "best_epoch": int(best_epoch),
         "stop_reason": stop_reason,
         "best_threshold": float(best_thr["threshold"]),

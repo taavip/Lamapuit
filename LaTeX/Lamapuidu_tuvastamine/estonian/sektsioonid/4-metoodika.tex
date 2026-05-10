@@ -45,19 +45,19 @@ Placeholder}}
 \label{fig:labeling-heatmap}
 \end{figure}
 
-\paragraph{Mudeli interpreteeritavuse meetodid: soojuskaartede ülevaade.}
+\paragraph{Mudeli selgitatavuse meetodid: soojuskaartide ülevaade.}
 
-Lamapuidu märgistamise protsessis kasutatud soojuskaartede genereerimise meetodid kuuluvad laiemate mudeli interpreteeritavuse (ingl \textit{explainable AI}, XAI) raamistikku, mis võimaldab mõista, milliste sisendpildi piirkondade alusel tehisintellektmudelid otsuseid teevad. Käesolevas töös rakendatud meetodid olid järgmised:
+Lamapuidu märkimise protsessis kasutatud soojuskaartide loomise meetodid kuuluvad laiemasse mudeli selgitatavuse (ingl \textit{explainable AI}, XAI) valdkonda. See võimaldab mõista, milliste sisendpildi piirkondade põhjal tehisintellektimudelid otsuseid langetavad. Käesolevas töös rakendati järgmisi meetodeid:
 
-\textbf{Integrated Gradients (IntGrad)} \parencite{sundararajan2017axiomatic} arvutab sisendi ja mudeli väljundi vahelise funktsionaaltee gradiendid, akumuleerides nende informatsiooni baasjoonisest (nt nullpildi) kuni tegeliku sisendini. Meetodi tugevus on teoreetilises aluses: see rahuldab aksiomaatilisi nõudeid (sensitiivsus ja ridade muutumatus), mistõttu saadud attributsioon peegeldab usaldusväärselt mudeli otsuseid.
+\textbf{Integrated Gradients (IntGrad)} \parencite{sundararajan2017axiomatic} arvutab sisendi ja mudeli väljundi vahelise funktsionaalse tee muutumise määrad (gradiendid), kogudes teavet alates võrdluspildist (nt tühi kujutis) kuni tegeliku sisendini. Meetodi tugevus peitub selle teoreetilises põhjendatuses: see vastab matemaatilistele põhieeldustele (tundlikkus ja muutumatus teisenduste suhtes), mistõttu saadud seosed peegeldavad usaldusväärselt mudeli otsustusprotsessi.
 
-\textbf{HiResCAM} \parencite{fernandez2021hirescam} parandab klassikalisi CAM-meetodeid ja tagab kõrgema ruumilise resolutsiooni, kombineerides aktivatsioonkaarte lineaarse interpoleerimisega. See on eriti kasulik madala resolutsiooniga CHM-rastrites, kus täpne piirkonna lokalisatsioon on kriitiline.
+\textbf{HiResCAM} \parencite{fernandez2021hirescam} täiustab tavapäraseid CAM-meetodeid ja tagab suurema ruumilise lahutusvõime, ühendades aktivatsioonikaardid lineaarsete vahepealsete väärtuste leidmisega. See on eriti väärtuslik väikese lahutusvõimega taimkatte kõrgusmudeli (CHM) rastrite puhul, kus piirkonna täpne paiknemine on kriitilise tähtsusega.
 
-\textbf{GradCAM+} \parencite{chattopadhyay2018grad} laiendab GradCAM-i meetodit positiivsete raskuste kaalumisega, rõhutades kaanaleid, mis kõige tugevamalt ennustuse muutusele kaasnevad. Meetod parandab visualiseerimise konkreetsust ja on efektiivne objektide eraldamisel taustast.
+\textbf{GradCAM+} \parencite{chattopadhyay2018grad} arendab edasi GradCAM-i meetodit, kaaludes positiivseid osakaalusid ja tõstes esile need kanalid, mis mõjutavad ennustust kõige rohkem. Meetod muudab visualiseerimise täpsemaks ja aitab objekte tõhusamalt taustast eristada.
 
-\textbf{RISE} (\textit{Randomized Input Sampling for Explanation}) \parencite{petsiuk2018rise} perturpeerib sisendi juhuslikke osa ja analüüsib mudeli väljundi muutust. Meetodi eelis on mudeli arhitektuurist sõltumatus ja tugev rakendatavus erinevate neuronvõrkude tüüpidele.
+\textbf{RISE} (\textit{Randomized Input Sampling for Explanation}) \parencite{petsiuk2018rise} muudab sisendi osi juhuslikult ning analüüsib sellest tulenevat mudeli väljundi muutust. Meetodi eelis on sõltumatus mudeli ülesehitusest, mis võimaldab seda rakendada väga erinevat tüüpi närvivõrkudele.
 
-Kõigi neljale meetodi kombineeritud kasutamine märgistustööriista taustakihina võimaldas märgistajal näha eri aspektidest mudeli otsustusprotsessi, tõstes usaldusväärsust ja automatiseerimiskalde riski maandamist keeruliste ja ebaselgete juhtumite puhul.
+Nende nelja meetodi koos kasutamine märkimistööriista abikihina võimaldas märgistajal näha mudeli otsustusprotsessi eri külgi. See suurendas tulemuste usaldusväärsust ning aitas keeruliste ja ebaselgete juhtude puhul kiirenda protsessi ja juhtida tähelepanu olulistele kohtadele, et toetada otsustamist. Samuti aitas see mõista mudeli probleeme ja tugevusi.
 
 \paragraph{Esialgne märgistamisansambel.}
 Märgistamise toetamiseks loodi esialgne nelja mudeliga ansambel, mille ülesandeks oli hinnata kõigi 580\,136 treening pildi usaldusväärsust mudeli tõenäosuse (\textit{model\_prob}) kaudu ning suunata aktiivõppe valikut. Ansambel koosnes kolmest CNN-Deep-Attn mudelist (juhuseemed 42, 43, 44) ning ühest EfficientNet-B2 mudelist. Valik tugines kahele printsiibile: (1) kolm identset arhitektuuri erinevate juhuseemetega vähendavad stohhastilisest initsialiseerimisest tulenevat varieeruvust; (2) EfficientNet-B2, mis kujutab arhitektuurselt erinevat mudeliperekonda, lisab ansambli ImageNeti eelõppest saadud üldisemad tunnused ning suurendab vastupanuvõimet üksikmudelite spetsiifiliste vigade suhtes.

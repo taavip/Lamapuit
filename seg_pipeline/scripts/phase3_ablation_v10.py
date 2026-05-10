@@ -24,6 +24,7 @@ Usage:
 import argparse
 import csv
 import json
+import re
 import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
@@ -43,7 +44,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from phase2_dataset_v3 import (
     CWDSegDataset, load_patch_index, make_weighted_sampler,
-    _read_chm_path, _get_in_channels, _get_binary_bands, SpatialCVSplitterV3,
+    _read_chm_path, _get_in_channels, _get_binary_bands, SpatialCVSplitterV3, SpatialCVSplitterV4,
     STRIPE_WIDTH, TEST_STRIPE, PATCH_SIZE, STRIDE,
 )
 from phase3_train_v10 import build_model, train_fold, V7CombinedLoss
@@ -140,6 +141,7 @@ WINNER = {
     2: {"chm_variant": "composite", "in_channels": 4},  # Default assumption
     3: {"arch": "unetpp_effb2"},  # Default assumption
     4: {"alpha": 0.6, "beta": 0.4, "cldice_lambda": 0.3},  # V10.2 defaults
+    5: {"aug_mode": "full", "soft_targets": True, "batch_aug": True, "use_swa": True},
 }
 
 
@@ -160,10 +162,97 @@ class AblationConfig:
     soft_targets: Optional[bool] = None
     batch_aug: Optional[bool] = None
     folds: Optional[list[int]] = None
-    use_swa: bool = True
+    use_swa: Optional[bool] = None
 
     def to_dict(self) -> dict:
         return asdict(self)
+
+
+def _parse_phase_from_condition_token(condition_id: str) -> Optional[int]:
+    m = re.match(r"^(\d+)[A-Za-z].*$", condition_id)
+    if not m:
+        return None
+    try:
+        return int(m.group(1))
+    except Exception:
+        return None
+
+
+def _expanded_phase_cfg(phase_id: int, condition_id: str) -> Optional[dict]:
+    # 4G/4H are materialized dynamically in run_phase; provide deterministic fallback
+    # so carry-forward parsing can reconstruct these settings from run labels.
+    if phase_id == 4 and condition_id == "4G":
+        return {
+            "name": "loss_cldice_low",
+            "loss_type": "tversky",
+            "alpha": 0.6,
+            "beta": 0.4,
+            "cldice_lambda": 0.1,
+        }
+    if phase_id == 4 and condition_id == "4H":
+        return {
+            "name": "loss_cldice_v10",
+            "loss_type": "tversky",
+            "alpha": 0.6,
+            "beta": 0.4,
+            "cldice_lambda": 0.3,
+        }
+    return ALL_PHASES.get(phase_id, {}).get(condition_id)
+
+
+def _apply_condition_token_to_winner(phase_id: int, condition_id: str, winner: dict) -> None:
+    cfg = _expanded_phase_cfg(phase_id, condition_id)
+    if not cfg:
+        return
+    if phase_id == 2:
+        winner[2] = {
+            "chm_variant": cfg.get("chm_variant", winner.get(2, {}).get("chm_variant", "composite")),
+            "in_channels": cfg.get("in_channels", winner.get(2, {}).get("in_channels", 4)),
+            "condition_id": condition_id,
+        }
+    elif phase_id == 3:
+        winner[3] = {
+            "arch": cfg.get("arch", winner.get(3, {}).get("arch", "unetpp_effb2")),
+            "condition_id": condition_id,
+        }
+    elif phase_id == 4:
+        winner[4] = {
+            "alpha": cfg.get("alpha", winner.get(4, {}).get("alpha", 0.6)),
+            "beta": cfg.get("beta", winner.get(4, {}).get("beta", 0.4)),
+            "cldice_lambda": cfg.get("cldice_lambda", winner.get(4, {}).get("cldice_lambda", 0.3)),
+            "condition_id": condition_id,
+        }
+    elif phase_id == 5:
+        winner[5] = {
+            "aug_mode": cfg.get("aug_mode", winner.get(5, {}).get("aug_mode", "full")),
+            "soft_targets": cfg.get("soft_targets", winner.get(5, {}).get("soft_targets", True)),
+            "batch_aug": cfg.get("batch_aug", winner.get(5, {}).get("batch_aug", True)),
+            "use_swa": cfg.get("use_swa", winner.get(5, {}).get("use_swa", True)),
+            "condition_id": condition_id,
+        }
+
+
+def _apply_carry_winners_to_state(carry_winner: list[str], winner: dict) -> None:
+    """Apply carry-forward winner chain(s), preserving earlier phase selections."""
+    for cw in carry_winner:
+        try:
+            _, carried_id = cw.split(":", 1)
+        except ValueError:
+            continue
+        for token in [t for t in carried_id.split("__") if t]:
+            base = _base_condition_id(token)
+            phase_id = _parse_phase_from_condition_token(base)
+            if phase_id is None:
+                continue
+            _apply_condition_token_to_winner(phase_id, base, winner)
+
+
+def _metrics_row_key(row: dict) -> str:
+    run_id = row.get("run_id", row.get("condition_id", ""))
+    fold_id = row.get("fold_id", row.get("fold", None))
+    if fold_id is None or fold_id == "":
+        return str(run_id)
+    return f"{run_id}__fold{fold_id}"
 
 
 def run_condition(
@@ -188,7 +277,8 @@ def run_condition(
     condition_dir.mkdir(parents=True, exist_ok=True)
 
     protocol_suffix = "test" if args.evaluate_test else "val"
-    metrics_path = condition_dir / f"fold{args.fold}_metrics_{protocol_suffix}.json"
+    split_id = "all_train" if bool(getattr(args, "final_train_all", False)) else f"fold{args.fold}"
+    metrics_path = condition_dir / f"{split_id}_metrics_{protocol_suffix}.json"
     if metrics_path.exists():
         print(f"  ✓ Skipping {condition.condition_id} (already trained)")
         with open(metrics_path) as f:
@@ -200,6 +290,10 @@ def run_condition(
     chm_variant = condition.chm_variant or winner.get(2, {}).get("chm_variant", "composite")
     arch = condition.arch or winner.get(3, {}).get("arch", "unetpp_effb2")
     in_channels = condition.in_channels or winner.get(2, {}).get("in_channels", 4)
+    aug_mode = condition.aug_mode or winner.get(5, {}).get("aug_mode", "full")
+    soft_targets = condition.soft_targets if condition.soft_targets is not None else winner.get(5, {}).get("soft_targets", True)
+    batch_aug = condition.batch_aug if condition.batch_aug is not None else winner.get(5, {}).get("batch_aug", True)
+    use_swa = condition.use_swa if condition.use_swa is not None else winner.get(5, {}).get("use_swa", True)
 
     # Loss parameters
     if condition.loss_type == "dicefocal":
@@ -218,8 +312,22 @@ def run_condition(
     with open(band_stats_path) as f:
         band_stats_for_variant = json.load(f)
 
-    splitter = SpatialCVSplitterV3(stripe_width=STRIPE_WIDTH, test_stripe=TEST_STRIPE)
-    train_entries, val_entries = splitter.train_val_split(patch_index, val_fold=args.fold)
+    if bool(getattr(args, "final_train_all", False)):
+        train_entries = [e for e in patch_index if getattr(e, "fold_id", -1) != -1]
+        val_entries = list(train_entries)
+        split_id = "all_train"
+        print(
+            f"  [final-protocol] train_all enabled: n_train={len(train_entries)} "
+            f"(all non-test stripes), n_val_proxy={len(val_entries)}"
+        )
+    else:
+        splitter = (
+            SpatialCVSplitterV4(stripe_width=STRIPE_WIDTH, test_stripe=TEST_STRIPE)
+            if int(getattr(args, "cv_version", 4)) == 4
+            else SpatialCVSplitterV3(stripe_width=STRIPE_WIDTH, test_stripe=TEST_STRIPE)
+        )
+        train_entries, val_entries = splitter.train_val_split(patch_index, val_fold=args.fold)
+        split_id = f"fold{args.fold}"
 
     # Train
     train_lr = 1e-4
@@ -240,8 +348,12 @@ def run_condition(
             f"lr={train_lr:.1e}, warmup={train_warmup}, patience={train_patience}, "
             f"min_early_stop_epoch={min_early_stop_epoch}"
         )
+    if bool(getattr(args, "final_train_all", False)):
+        # Final protocol is post-selection; disable early stopping to run fixed epochs.
+        train_patience = 0
+        min_early_stop_epoch = None
 
-    swa_epoch = args.swa_start_epoch if condition.use_swa else -1
+    swa_epoch = args.swa_start_epoch if use_swa else -1
     best_val_result = train_fold(
         arch=arch,
         fold_id=args.fold,
@@ -260,11 +372,14 @@ def run_condition(
         tversky_alpha=alpha if alpha is not None else 0.6,
         tversky_beta=beta if beta is not None else 0.4,
         cldice_weight=cldice_lambda if cldice_lambda is not None else 0.3,
-        soft_targets=condition.soft_targets if condition.soft_targets is not None else True,
+        soft_targets=soft_targets,
+        aug_mode=aug_mode,
+        batch_aug=batch_aug,
         soft_sigma=2.0,
         swa_start_epoch=swa_epoch,
         warmup_epochs=train_warmup,
         min_epochs_before_early_stop=min_early_stop_epoch,
+        monitor_metric=args.selection_metric,
     )
     best_val_f1 = best_val_result.get("best_val_f1", 0.0)
     # Locate checkpoint for optional locked test evaluation.
@@ -288,11 +403,17 @@ def run_condition(
         "condition_id": condition.condition_id,
         "base_condition_id": _base_condition_id(condition.condition_id),
         "run_id": run_id,
+        "fold_id": split_id,
+        "cv_version": int(getattr(args, "cv_version", 4)),
         "carry_context": carry_context,
         "condition_name": condition.name,
         "selection_protocol": "heldout_test" if args.evaluate_test else "validation_only",
-        "selection_metric": "test_f1" if args.evaluate_test else "val_f1",
+        "selection_metric": "test_f1" if args.evaluate_test else args.selection_metric,
         "tuning_profile": tuning_profile,
+        "source_phase2_condition": winner.get(2, {}).get("condition_id"),
+        "source_phase3_condition": winner.get(3, {}).get("condition_id"),
+        "source_phase4_condition": winner.get(4, {}).get("condition_id"),
+        "source_phase5_condition": winner.get(5, {}).get("condition_id"),
         "chm_variant": chm_variant,
         "in_channels": int(in_channels),
         "arch": arch,
@@ -300,9 +421,10 @@ def run_condition(
         "alpha": alpha,
         "beta": beta,
         "cldice_lambda": cldice_lambda,
-        "aug_mode": condition.aug_mode or "default",
-        "soft_targets": condition.soft_targets if condition.soft_targets is not None else True,
-        "use_swa": bool(condition.use_swa),
+        "aug_mode": aug_mode,
+        "batch_aug": bool(batch_aug),
+        "soft_targets": bool(soft_targets),
+        "use_swa": bool(use_swa),
         "val_f1": float(best_val_result.get("best_val_f1", 0.0)),
         "best_val_f1": float(best_val_result.get("best_val_f1", 0.0)),
         "best_val_dice": float(best_val_result.get("best_val_dice", 0.0)),
@@ -316,24 +438,29 @@ def run_condition(
     }
     # Add eval-derived metrics (test_f1, cldice, boundary_iou, optimal_threshold, etc.)
     metrics.update({k: (None if v is None else float(v) if isinstance(v, (int, float)) else v) for k, v in eval_metrics.items()})
+    selection_metric_name = metrics["selection_metric"]
+    selection_metric_value = metrics.get(selection_metric_name, None)
+    metrics["selection_metric_value"] = (
+        float(selection_metric_value) if isinstance(selection_metric_value, (int, float)) else None
+    )
 
     # Save
     with open(metrics_path, "w") as f:
         json.dump(metrics, f, indent=2)
 
-    reported_f1 = metrics.get('test_f1') if args.evaluate_test else metrics.get('val_f1')
-    if isinstance(reported_f1, (int, float)):
-        reported_f1_str = f"{reported_f1:.4f}"
-    else:
-        reported_f1_str = str(reported_f1)
-    metric_name = "test F1" if args.evaluate_test else "validation F1"
-    print(f"    → {metric_name}: {reported_f1_str}")
     if args.evaluate_test:
-        selection_value = metrics.get("test_f1", None)
-        selection_metric_name = "test_f1"
+        primary_value = metrics.get("test_f1")
+        primary_name = "test_f1"
     else:
-        selection_metric_name = args.selection_metric
-        selection_value = metrics.get(selection_metric_name, metrics.get("val_f1", None))
+        primary_name = args.selection_metric
+        primary_value = metrics.get(primary_name, metrics.get("val_cldice"))
+    if isinstance(primary_value, (int, float)):
+        primary_str = f"{float(primary_value):.4f}"
+    else:
+        primary_str = "N/A"
+    print(f"    → primary_metric({primary_name}): {primary_str}")
+    selection_metric_name = metrics["selection_metric"]
+    selection_value = metrics.get(selection_metric_name, metrics.get("val_f1", None))
     if isinstance(selection_value, (int, float)):
         selection_value_str = f"{float(selection_value):.4f}"
     else:
@@ -374,7 +501,9 @@ def _evaluate_test_stripe(
         ).astype(np.float32)
 
     with rasterio.open(args.mask_tif) as src:
-        test_mask = src.read(1, window=((0, 5000), (0, STRIPE_WIDTH))).astype(np.uint8)
+        raw_mask = src.read([1, 2], window=((0, 5000), (0, STRIPE_WIDTH))).astype(np.float32)
+        test_mask = raw_mask[0].astype(np.uint8)
+        test_valid = (raw_mask[1] > 0.5).astype(np.uint8)
 
     # Normalize
     _, band_stats_path = _resolve_dataset_files(args.dataset_dir, chm_variant)
@@ -389,12 +518,12 @@ def _evaluate_test_stripe(
     )
 
     # Find optimal threshold
-    best_by_f1, _ = threshold_sweep([prob], [test_mask], [(test_mask > 0)])
+    best_by_f1, _ = threshold_sweep([prob], [test_mask], [test_valid])
     threshold = best_by_f1.get("threshold", 0.5)
     pred_bin = (prob >= threshold).astype(np.uint8)
 
     # Pixel-level metrics
-    metrics = accumulate_pixel_metrics([prob], [test_mask], [(test_mask > 0)], threshold=threshold)
+    metrics = accumulate_pixel_metrics([prob], [test_mask], [test_valid], threshold=threshold)
     metrics["test_f1"] = float(metrics.get("f1", 0.0))
     metrics["optimal_threshold"] = float(threshold)
 
@@ -490,13 +619,24 @@ def run_phase(phase_id: int, args: argparse.Namespace, winner: dict) -> dict:
         # Update winner tracking
         if phase_id == 2:
             winner[2] = {"chm_variant": best_metrics.get("chm_variant", "composite"),
-                         "in_channels": best_metrics.get("in_channels", 4)}
+                         "in_channels": best_metrics.get("in_channels", 4),
+                         "condition_id": best_metrics.get("base_condition_id", best_metrics.get("condition_id"))}
         elif phase_id == 3:
-            winner[3] = {"arch": best_metrics.get("arch", "unetpp_effb2")}
+            winner[3] = {"arch": best_metrics.get("arch", "unetpp_effb2"),
+                         "condition_id": best_metrics.get("base_condition_id", best_metrics.get("condition_id"))}
         elif phase_id == 4:
             winner[4] = {"alpha": best_metrics.get("alpha", 0.6),
                          "beta": best_metrics.get("beta", 0.4),
-                         "cldice_lambda": best_metrics.get("cldice_lambda", 0.3)}
+                         "cldice_lambda": best_metrics.get("cldice_lambda", 0.3),
+                         "condition_id": best_metrics.get("base_condition_id", best_metrics.get("condition_id"))}
+        elif phase_id == 5:
+            winner[5] = {
+                "aug_mode": best_metrics.get("aug_mode", "full"),
+                "soft_targets": bool(best_metrics.get("soft_targets", True)),
+                "batch_aug": bool(best_metrics.get("batch_aug", True)),
+                "use_swa": bool(best_metrics.get("use_swa", True)),
+                "condition_id": best_metrics.get("base_condition_id", best_metrics.get("condition_id")),
+            }
 
     # Save phase results
     result_suffix = "test" if args.evaluate_test else "val"
@@ -508,9 +648,9 @@ def run_phase(phase_id: int, args: argparse.Namespace, winner: dict) -> dict:
             with open(results_csv) as f:
                 existing_metrics = list(csv.DictReader(f))
 
-        merged_by_run = {row.get("run_id", row.get("condition_id", "")): row for row in existing_metrics}
+        merged_by_run = {_metrics_row_key(row): row for row in existing_metrics}
         for row in all_metrics:
-            merged_by_run[row.get("run_id", row.get("condition_id", ""))] = row
+            merged_by_run[_metrics_row_key(row)] = row
         merged_metrics = list(merged_by_run.values())
         fieldnames = []
         for row in merged_metrics:
@@ -545,7 +685,9 @@ def main():
                         help="Regenerate figures from existing results, skip training")
     parser.add_argument("--evaluate-test", action="store_true",
                         help="Evaluate the held-out test stripe. Use only after final model selection is locked.")
-    parser.add_argument("--max-ap-component-pairs", type=int, default=200000,
+    parser.add_argument("--final-train-all", action="store_true",
+                        help="Train on all non-test stripes (no CV split) for final locked test evaluation.")
+    parser.add_argument("--max-ap-component-pairs", type=int, default=50000,
                         help="Maximum predicted×GT component pairs for exact AP@IoU on the held-out test stripe.")
     parser.add_argument("--fold", type=int, default=0, help="Fold to train (default: 0)")
     parser.add_argument("--epochs", type=int, default=100, help="Training epochs (default: 100)")
@@ -572,6 +714,8 @@ def main():
     parser.add_argument("--selection-metric", type=str, default="val_cldice",
                         choices=["val_f1", "best_val_f1", "val_dice", "best_val_dice", "val_cldice", "best_val_cldice"],
                         help="Metric used to select phase winners (default: val_cldice)")
+    parser.add_argument("--cv-version", type=int, default=4, choices=[3, 4],
+                        help="Cross-validation splitter: 3=V3 (imbalanced 4-fold), 4=V4 (balanced 2-fold)")
 
     args = parser.parse_args()
     if args.condition_ids:
@@ -591,26 +735,15 @@ def main():
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
 
-    # If wrapper passed a Phase-2 carry-winner, ensure args.chm_variant matches it
-    for cw in getattr(args, 'carry_winner', []):
-        try:
-            ph, cid = cw.split(":", 1)
-            phn = int(ph)
-            base_cid = _base_condition_id(cid)
-            if phn == 2 and base_cid in ALL_PHASES[2]:
-                args.chm_variant = ALL_PHASES[2][base_cid].get('chm_variant', args.chm_variant)
-        except Exception:
-            pass
-
-    # Auto-detect CHM TIF path from variant
-    if args.chm_tif is None:
-        variant_map = {
-            "baseline": "seg_pipeline/input/baseline_chm.tif",
-            "raw": "seg_pipeline/input/raw_chm.tif",
-            "gauss": "seg_pipeline/input/gauss_chm.tif",
-            "masked": "seg_pipeline/input/masked_chm.tif",
-            "composite": "seg_pipeline/input/composite_4band.tif",
-        }
+    variant_map = {
+        "baseline": "seg_pipeline/input/baseline_chm.tif",
+        "raw": "seg_pipeline/input/raw_chm.tif",
+        "gauss": "seg_pipeline/input/gauss_chm.tif",
+        "masked": "seg_pipeline/input/masked_chm.tif",
+        "composite": "seg_pipeline/input/composite_4band.tif",
+    }
+    auto_chm_tif = args.chm_tif is None
+    if auto_chm_tif:
         args.chm_tif = Path(variant_map.get(args.chm_variant, "seg_pipeline/input/gauss_chm.tif"))
 
     # For Phase-2 single-condition runs, auto-select the condition variant before
@@ -634,24 +767,20 @@ def main():
         2: {"chm_variant": "composite", "in_channels": 4},
         3: {"arch": "unetpp_effb2"},
         4: {"alpha": 0.6, "beta": 0.4, "cldice_lambda": 0.3},
+        5: {"aug_mode": "full", "soft_targets": True, "batch_aug": True, "use_swa": True},
     }
 
-    # Apply carry-winner overrides passed from wrapper script
-    for cw in getattr(args, 'carry_winner', []):
-        try:
-            ph, cid = cw.split(":", 1)
-            phn = int(ph)
-            base_cid = _base_condition_id(cid)
-            if phn in ALL_PHASES and base_cid in ALL_PHASES[phn]:
-                cfg = ALL_PHASES[phn][base_cid]
-                if phn == 2:
-                    winner[2] = {"chm_variant": cfg.get("chm_variant"), "in_channels": cfg.get("in_channels")}
-                elif phn == 3:
-                    winner[3] = {"arch": cfg.get("arch")}
-                elif phn == 4:
-                    winner[4] = {"alpha": cfg.get("alpha"), "beta": cfg.get("beta"), "cldice_lambda": cfg.get("cldice_lambda", 0.0)}
-        except Exception:
-            print(f"Warning: failed to parse carry-winner '{cw}'", flush=True)
+    # Apply carry-winner overrides passed from wrapper script (supports full chain)
+    _apply_carry_winners_to_state(getattr(args, "carry_winner", []), winner)
+    if winner.get(2, {}).get("chm_variant"):
+        args.chm_variant = winner[2]["chm_variant"]
+        if auto_chm_tif:
+            args.chm_tif = Path(variant_map.get(args.chm_variant, "seg_pipeline/input/gauss_chm.tif"))
+
+    if args.cv_version == 4 and args.fold not in (0, 1):
+        raise ValueError(f"cv-version=4 supports folds 0 or 1 only; got fold={args.fold}")
+    if args.final_train_all and not args.evaluate_test:
+        print("Warning: --final-train-all is intended for final locked test evaluation (--evaluate-test).", flush=True)
 
     if args.all:
         for phase in [2, 3, 4, 5, 6]:
