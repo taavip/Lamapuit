@@ -87,10 +87,7 @@ Placeholder}}
     Algmudeli väljundite põhjal toetuv märgistamine kätkeb endas ohtu automatiseerimiskaldeks (ingl \textit{automation bias}), kus ekspert kiidab pimesi heaks algoritmi ennustused. Selle riski neutraliseerimiseks rakendati kahetasandilist kvaliteedikontrolli. Kasutusel olnud lamapuidu märgistamise töövoos tugineti esmalt mitmele andmekihile: madala taimkatte kõrgusmudeli raster, ortofoto kalaerofotod ja \textit{Street View} tasakaalustasid üksteist. Ebaselged olukorrad vaadati käsitsi üle. Andmekataloogi aktsepteeritud märgistustest eraldati madala mudeliusaldusväärsusega vahemikus [0,39; 0,61] paiknevad objektid detailsemaks järelhindamiseks, lisaks sekkuti 5\% juhuslikule valimile automaatselt tugeva usaldusväärsusega määratud märgistustele. Kirjeldatud meetmed kindlustas märgistatud andmestiku usaldusväärsuse.
 
     \paragraph{Andmestiku laiendamine uute märgistega.}
-    % [KIRJUTADA] Prioritiseeritud paanide manuaalne ülevaatamine ja andmestiku
-    % kasvatamine lõpliku treeningansambli jaoks.
-    % Allikad: ensemble_meta.json, labels_canonical_with_splits_retrained_ensemble.csv
-    % Sisu: 119 kaardilehe katmine -> 67 290 treeningsilti, 2. ansambel rakendamine
+    Lõpliku treenimisansambli jaoks kasvatati andmestikku oluliselt, tuginedes algmudelite tagasisidele. Prioritiseeritud ebaselged paanid vaadati manuaalselt üle ning viidi läbi täiendav interaktiivne märgistamine. Kogu protsess hõlmas 119 erinevat kaardilehte, mis esindasid ulatuslikku geograafilist ja metsanduslikku varieeruvust. Uuendatud andmestik (\texttt{labels\_canonical\_with\_splits\_retrained\_ensemble.csv}) kasvatas märgistatud tiilide baasi 580\,136 kirjeni, millest edasiseks range otsustuslävega mudelitreeninguks puhastati välja 67\,290 kõrge usaldusväärsusega sildistust. Ümberehitatud ja laiendatud märgiste kogumi pealt treeniti teise põlvkonna süvaansambel, kindlustades täpsema ja stabiilsema tuvastusvõimekuse.
 
     \subsubsection{Klassifitseerimisandmestiku ruumiline ja ajaline jaotamine}
     \label{spatial-split}
@@ -172,8 +169,9 @@ Placeholder}}
 
     Lisades mudelile infokilde mõlemast allikast (näiteks mitmekanalilises liitmudelis), võimendab baasmudeli lokaalne algoritm kõrgeid objektipunkte, samas kui harmoniseeritud CSF-põhine mudel pakub selge fooni metsaaluse mikrostruktuuri eraldamiseks tihedatest peegeldustest.
 
-    \paragraph{Variantide hindamise kriteerium.} See sammsammuline andmegeneerimise töövoog oli masinõppe mudeleid kaasavate eksperimentide, sealhulgas ablatsiooniuuringute (vt peatükki tulemusi), tehniliseks vundamendiks. Loodud variandid võimaldasid testida, kas süvaõppe algoritm eelistab realistlikku kuid lünklikku algmõõtmist, sünteetiliselt silutud ja tihendatud andmestikku või nende kahe teadlikku kombinatsiooni.
-    % [TAEIENDADA] Lisada: milline variant osutus parimaks, mis metrika jargi, kui palju paranes tulemus.
+    \paragraph{Variantide hindamise kriteerium ja tulemused.} See sammsammuline andmegeneerimise töövoog oli masinõppe mudeleid kaasavate eksperimentide, sealhulgas ablatsiooniuuringute tehniliseks vundamendiks. Loodud variandid võimaldasid testida, kas süvaõppe algoritm eelistab realistlikku, kuid lünklikku algmõõtmist, sünteetiliselt silutud ja tihendatud andmestikku või nende kahe teadlikku kombinatsiooni. 
+    
+    Paanipõhise klassifitseerimise katsete tulemused näitasid ülekaalukalt \textbf{baasmudeli (\textit{baseline\_1band})} eelist. Baasmudel saavutas kolme erineva arhitektuuriga (ConvNeXt Small, EfficientNet-B2 ja ResNet50) märkimisväärselt stabiilse F1-skoori 0,9469. Seevastu silutud andmeid sisaldav 2-kanaliline liitmudel tõi kaasa skoori languse ligikaudu 0,7427 tasemele (kuni 21,6\% absoluutne kadu). See kinnitas, et paanipõhise klassifitseerimise ülesande lahendamiseks on eelistatuim otse toorandmetest pärinev puhas geomeetriline signaal (algpunktide lokaalsed maksimumid), samas kui interpolatsiooni abil tekkinud varjundid ja silutud mustrid tekitavad mudelile mürarikast ja klassidevahelist konflikti. Sellest tulenevalt kasutati ansambleerimise ja klassifitseerimise lõpliku võrdlemise baasina vaid silumata \textit{baseline} kõrgusmudelit. Erinev dünaamika joonistus välja aga pikslipõhise segmenteerimise puhul, kus osutus otstarbekaimaks hoopis 4-kanaliline komposiitmudel (vt lõiku~\ref{subsec:metoodika-segmenteerimine}).
 
     \subsubsection{Klassifitseerimismudelite otsing, optimeerimine ja lõplik ansambel}
 
@@ -288,7 +286,7 @@ Placeholder}}
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.92\linewidth]{joonised/segmenteerimine_alusinfo/seg_top2_ablation_workflow.png}
+    \includegraphics[width=0.92\linewidth]{estonian/joonised/segmenteerimine_alusinfo/seg_top2_ablation_workflow.png}
     \caption{Automaatne ablatsiooni töövoog, kus järk-järgult optimiseeritakse andmestik, mudeli arhitektuur, kaofunktsioon ning regularisatsioon. Vaata ptk algtekste.}
     \label{fig:top2-ablation-workflow}
     \end{figure}

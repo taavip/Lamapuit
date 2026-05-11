@@ -1,15 +1,15 @@
 \section{Arutelu}
 
 \subsection{Peamised järeldused ja õppetunnid}
-Käesoleva töö eesmärk oli tuvastada Eesti oludes lamapuitu, kasutades Maa-ameti avalikke aerolaserskaneerimise (ALS) andmeid. Peamine väljakutse seisnes andmete madalas tiheduses (1–4 punkti/m$^2$), kuigi lamapuidu usaldusväärseks tuvastamiseks peetakse optimaalseks tihedust üle 10 punkti/m$^2$. 
+Käesoleva töö eesmärk oli tuvastada Eesti oludes lamapuitu, kasutades Maa-ameti avalikke aerolaserskaneerimise (ALS) andmeid. Peamine väljakutse seisnes leidmaks eesti oludesse sobivat metoodikat, et hinnata lamapuidutu.
 
-Uuringu käigus selgus, et edukaks tuvastamiseks pole määrav üksnes masinõppemudeli arhitektuur, vaid kriitilise tähtsusega on andmete eeltöötlus ja sisendandmete, eelkõige võrastikumudelite (CHM – \textit{Canopy Height Model}) kvaliteet. Harmoniseeritud kõrgusmudelite ja maapinna eemaldamise filtrite (HAG – \textit{Height Above Ground}) kasutamine aitas oluliselt eristada madalat alusmetsa maaslamavatest tüvedest. Teine oluline õppetund seondus treeningandmetega: joonte puhverdamisel tekkivad maskid olid liiga mürased, sisaldades liigselt taustinfot. Paremaid tulemusi andis spetsiaalsete tööriistadega (pintselsegmentimine, ingl \textit{brush segmentation}) loodud täpsete pikslimaskide kasutamine.
+Uuringu käigus selgus, et edukaks tuvastamiseks pole määrav üksnes masinõppemudeli arhitektuur, vaid kriitilise tähtsusega on andmete eeltöötlus ja sisendandmete, eelkõige võrastikumudelite (CHM – \textit{Canopy Height Model}) kvaliteet. Harmoniseeritud kõrgusmudelite ja maapinna eemaldamise filtrite (HAG – \textit{Height Above Ground}) kasutamine aitas oluliselt eristada madalat alusmetsa maaslamavatest tüvedest. 
 
 \subsection{Uuringu piirangud}
 \label{subsec:metoodika-piirangud}
 
 \subsubsection{Andmestiku ruumilise jaotamise piirangud}
-Andmete hulkadeks jaotamisel ilmnesid teatud piirangud. Esiteks jääb kasutatud puhvertsoon (12,8~m) alla Gu jt (2024) soovitatud 50~m lamapuidu autokorrelatsiooni vahemikule, mis võib väga täpse valideerimise korral põhjustada vähest andmeleket. Teiseks on osaliselt võimalik ajaline leke, kuna sama asukoha eri aastate andmed, mille märgistusallikas erineb (nt \textit{auto\_skip} vs \textit{auto}), võivad kuuluda erinevatesse andmehulkadesse. Mõlema piirangu täpsemaks kvantifitseerimiseks on tulevikus soovitatav viia läbi permutatsioonitest, kus mudeleid treenitakse alternatiivse 50~m puhvriga jaotuse alusel, ning võrrelda saadud jõudlust käesoleva lahendusega.
+Andmete hulkadeks jaotamisel ilmnesid teatud piirangud. Esiteks jääb kasutatud puhvertsoon (12,8~m) alla Gu jt (2024) soovitatud 50~m  autokorrelatsiooni vahemikule, mis võib väga täpse valideerimise korral põhjustada vähest andmeleket. Teiseks on osaliselt võimalik ajaline leke, kuna sama asukoha eri aastate andmed, mille märgistusallikas erineb (nt \textit{auto\_skip} vs \textit{auto}), võivad kuuluda erinevatesse andmehulkadesse. Mõlema piirangu täpsemaks kvantifitseerimiseks on tulevikus soovitatav viia läbi permutatsioonitest, kus mudeleid treenitakse alternatiivse 50~m puhvriga jaotuse alusel, ning võrrelda saadud jõudlust käesoleva lahendusega.
 
 \subsubsection{LiDAR-andmestiku piirangud}
 Tulemuste usaldusväärsust piiras peamiselt ALS-andmestiku madal punktitihedus. Väiksema läbimõõduga või osaliselt pinnasesse vajunud lamapuit oli sageli esindatud vaid üksikute punktidega, mis suurendas valepositiivsete (\textit{False Positive}) tulemuste hulka tiheda alusmetsa ja ebatasase reljeefiga aladel. 
