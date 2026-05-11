@@ -95,7 +95,7 @@ ConvNeXt-small  & Kaalutud hääletus        & [0,9839; 0,9870] & 0,9789 & $<0{,
 \subsection{Lõpliku 4-mudeline ansambli jõudlus}
 \label{lopliku-ansambli-tulemused}
 
-Märtsis 2026 kinnitatud 4-mudeline ansambel (kolm CNN-Deep-Attn, üks EfficientNet-B2), mille treenimiseks kasutati 67\,290 märgistust ruumilise jagamisega (E07), saavutas lõplikus ümberõppes F1-skoori 0,9819 ja ROC AUC väärtuse 0,9885 -- ületades esialgset märgistamisansamblit 1,2 protsendipunkti võrra.
+Märtsis 2026 kinnitatud 4-mudeline ansambel (kolm CNN-Deep-Attn, üks EfficientNet-B2), mille treenimiseks kasutati 67\,290 märgistust ruumilise ja ajalise stratifitseerimisega (jaotis~\ref{spatial-split}), saavutas lõplikus ümberõppes F1-skoori 0,9819 ja ROC AUC väärtuse 0,9885 -- ületades esialgset märgistamisansamblit 1,2 protsendipunkti võrra.
 
 Neljamudeline ansambel, mis treeniti lekkekontrolliga ruumilise jagamise alusel (67\,290 treeningmärgistust), saavutas kasutamata testandmestikul (56\,521 märgistust) äärmiselt kõrged tulemused. Mudel saavutas F1-skooriks $0,9819$ ning ROC AUC väärtuseks $0,9885$. Tulemused kinnitavad metoodikas kirjeldatud mitmeastmelise treening- ja valideerimisstrateegia efektiivsust, mis tagas mudeli stabiilse generalisatsiooni ja vältis naaberalade autokorrelatsioonist tulenevat leket.
 
