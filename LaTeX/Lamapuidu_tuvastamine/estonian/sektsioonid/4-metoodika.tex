@@ -257,42 +257,58 @@ Placeholder}}
     \subsubsection{Segmenteerimisandmestiku eraldamine ja sildistamine}
 
     \paragraph{Segmenteerimisülesande spetsiifika.}
-    % [KIRJUTADA] Lühiviide peatükile~\ref{andmed} (Ruhnu saare kaardileht 406455\_2021\_tava)
-    % + metoodiline põhjendus:
-    %   - miks valiti 1 kaardileht (pikslipõhine märgistamine on ajamahukas)
-    %   - miks klassifitseerimise tiili-sildid ei piisa (paanitasemel, mitte pikslitasemel)
-    %   - lamapuidu objektide arv ja pindala kirjeldus
+    Lamapuidu paanipõhiselt klassifitseerimiselt piksli tasandil tuvastamisele ehk semantilisele segmenteerimisele üleminek oli eeldus objektide kuju, ulatuse ja täpse asukoha tuvastamisel. Kuna pilditiilide laiaulatuslik märgistamine annab info üksnes objekti esinemisest paanis (128$\times$128 pikslit), osutus pikslimaskide loome vältimatuks, võimaldades mudelil vahetult õppida lamapuidule eriomaseid ruumilisi struktuure. Uurimisalal kasutati ühte terviklikku manuaalselt märgistatud kaardilehte (1236 lamapuidu polügooni keskmise pindalaga 5,25\,m²), mis kattis andmemahu ja ruumilise varieeruvuse tagamiseks mitmekesise metsamaastiku.
 
     \paragraph{Pikslimaskide ja CWD objektide loomine.}
-    % [KIRJUTADA] Sildistamise protsess:
-    %   - millist tööriista kasutati (pintsel / Leaflet brush segmentation / muu)
-    %   - millise CHM-variandi pealt märgistati
-    %   - 1236 CWD objekti definitsioon (kas chunk 128x128 või individuaalne tüvi)
-    %   - maski formaat (0 = taust, 1 = lamapuit, 255 = ebaselge)
+    Segmenteerimismudeli treenimise aluseks oleva rastermaski loomiseks teisendati lamapuidu vektorkujud (polügoonid) analüüsialale vastavasse rastervõrgustikku EPSG:3301 koordinaatsüsteemis. Et õhukesed ja lineaarsed lamapuidu struktuurid 0,2\,m piksli suuruse juures säiliksid, rakendati pikslite omistamisel põhimõtet, kus sildistati iga piksli ala, mida vektorjoonises kujutatud objekt puudutas (ingl \textit{all touched}).
+    
+    Loodi spetsiaalne 2-kanaliline juhendmask (kolmas kanal täideti eelnevate seadistustega ühilduvuse tagamiseks nullidega). Esimene kanal (\textit{target}) eristas lamapuidu (1) ja muud alad (0), ning teine kanal (\textit{valid\_mask}) andis teabe, millised pikslid kuuluvad usaldusväärselt testitud ja märgistatud alasse (1) ja milliseid tuleb treenimisel optimeerimisvõrrandist välja jätta (0). Kontrollitud alast väljaspool olevaid piksleid ei saanud usaldusväärselt taustana käsitleda ning nende väljajätmine aitas hoida treeningu sihipärasena ja vältida valenegatiivsete vigade sisseõppimist. Lamapuidu pikslid moodustasid vaadeldavast andmehulgast vaid 1,98\%, viidates vajadusele tugeva klasside tasakaalustamatuse metoodilise adresseerimise järele.
 
-    \subsubsection{Segmenteerimismudelite, sisendite ja parameetrite valik}
+    \subsubsection{Treeningandmete ettevalmistus ja ristvalideerimine}
 
-    \paragraph{Optimeeritud CHM-i pärandamine.}
-    % [KIRJUTADA] Klassifitseerimise etapis leitud parim CHM-variant voetud
-    % otse segmenteerimise sisendkihiks. Põhjendus: väldib topelt-optimeerimist,
-    % hoiab treeningandmed võrreldavana.
+    \paragraph{Ruumiline eraldamine püsivaks testalaks ja foldideks.}
+    Et vältida mudelivalikul andmeleket ning testiala seaduspärasustega liigset kohanemist, jagati analüüsiala vertikaalselt viieks 200 meetri laiuseks triibuks (igaüks 1000 pikslit). Läänepoolne triip (Triip 0) eemaldati treening- ja optimeerimisprotsessist täielikult, moodustades range ja sõltumatu püsiva testala. Ülejäänud neli triipu (1–4) jagati kaheks ristvalideerimise lahtriks (ingl \textit{fold}). Esimeses lahtris (\textit{Fold 0}) kasutati treenimiseks triipe 2, 3 ja 4 ning valideerimiseks triipu 1. Teises lahtris (\textit{Fold 1}) kasutati treenimiseks triipu 1 ja valideerimiseks triipe 2, 3 ja 4.
 
-    \paragraph{Arhitektuurid ja kaofunktsioonid.}
-    % [KIRJUTADA] Segmenteerimisspetsiifilised mudelid:
-    %   - arhitektuurid: U-Net, U-Net++, DeepLabV3+ või muud
-    %   - kaofunktsioonid: Dice loss, BCE, Focal+Dice kombinatsioon
-    %   - augmentatsioonid: pöörded, peegeldused, skaleerimised
+    \paragraph{Treeningpaanide moodustamine ja andmestiku eeltöötlus.}
+    Terviklik raster jaotati 256$\times$256 piksli ($51,2 \times 51,2$\,m) suurusteks paanideks, sammuga 192 pikslit (64 pikslit lokaalset ülekatet). Paanidest jäeti treenimisel ja optimeerimisel välja need aknad, kus kehtivate pikslite arv (\textit{valid\_mask}) oli alla 328, tagades seeläbi andmestiku rikkalikkuse ning välistades sisutühjade piirkondade ülekaalu mudeli kaofunktsioonis. 
 
-    \subsubsection{Ristvalideerimine ja lõplike tõenäosuskaartide väljastus}
+    \subsubsection{Automaatne ablatsiooniuuring ja lõpliku konfiguratsiooni valik}
 
-    \paragraph{Ruumiline 2-fold ristvalideerimine.}
-    % [KIRJUTADA] Segmenteerimisala jagamine kaheks sõltumatuks ruumiliseks plokiks:
-    %   - ploki suurus ja piiride määramise loogika
-    %   - treening/test jaotus igas foldis (arv, protsent)
-    %   - miks 2-fold (mitte 5-fold): andmehulk, ruumiline pidevus
+    \paragraph{Ablatsiooniprotsessi ülevaade.} Lõpliku segmenteerimismetoodika ja mudeli seadistuste väljaselgitamiseks kasutati süsteemset ja automatiseeritud ablatsiooniuuringut (haluriskriptiga \texttt{run\_full\_ablation\_automated\_top2.sh}). Vältimaks otsinguruumi liiga varajast lukustumist lokaalsetesse struktuuridesse, rakendati metoodikat, kus igast otsingufaasist pääses edasi kaks parimat lahendust (\textit{top-2 carryover}). Kogu uuring sooritati püsiva testalata, kasutades paremusjärjestuse hindamiseks eranditult treeningus osaleva kahe valideerimislahtri sooritust.
 
-    \paragraph{Lõplike segmentatsioonimaskide arvutamine.}
-    % [KIRJUTADA] Mudeli väljundite interpreteerimine:
-    %   - tõenäosuskünnise valik (precision-recall tradeoff)
-    %   - lõplike pikslipõhiste tõenäosuskaartide formaat ja salvestus
-    %   - hindamismetrika: Dice score, precision, recall testvalimil
+    Automaatse ablatsiooni töövoog jagunes kuude faasi põhjal:
+    \begin{enumerate}
+        \item \textbf{Eeltöötlus (\textit{Preflight}):} Valmistati ette andmestik, sidudes CHM sisendfailid ja ehitades iga CHM variandi jaoks vajalikud indeksid (\texttt{patch\_index\_*.csv}) ning kanalistatistika (\texttt{band\_stats\_*.json}).
+        \item \textbf{Faas 2 (Andmestiku variant):} Võrreldi viite varasemalt klassifitseerimisel kirjeldatud CHM sisendvarianti (\textit{baseline}, \textit{raw}, \textit{gauss}, \textit{masked} ja \textit{composite}), et selgitada välja varaseim parim kõrgusmudeli esitus uuele võrgustikule.
+        \item \textbf{Faas 3 (Mudeli arhitektuur):} Kahe parimaks osutunud andmestikuvariandi peal hinnati arhitektuure: lukustatud kandidaatideks olid varasemalt edukaimad paigutused, tuumaks U-Net++ või DeepLabV3+ ühendatuna jäänukvõrgustikega EfficientNet-B0 ja -B2.
+        \item \textbf{Faas 4 (Kaofunktsioon):} Välja valitud andmestike ja mudeliarhitektuuride kombinatsioonidel testiti kaofunktsioone, sealhulgas \textit{DiceFocal}, tasakaalustatud ja kõrge täpsusega \textit{Tversky} ning spetsiaalselt ruumilise topoloogia säilitamisele suunatud \textit{Tversky+clDice} lahendused.
+        \item \textbf{Faas 5 (Augmenteerimine ja regulariseerimine):} Optimeeriti treeningu rikastamist mudeli üldistuvuse suurendamiseks, testides andmeid ilma andmesuurendusteta kõrvuti laialdaste augmentatsioonide kombinatsiooniga, mis kasutas \textit{soft target} märgiseid ja stohhastilist kaalude keskmistamist (ingl \textit{Stochastic Weight Averaging, SWA}).
+        \item \textbf{Faas 6 (Lõplik hindamine testalal):} Pärast esialgset metoodilist konfiguratsiooni sooritati mudelite lõplikus järjestuses viimane faas. Kõige tugevamat sooritust näidanud hüperparameetritega treeniti lõplik mudel kõikide kättesaadavate treeningtriipude ulatuses (\textit{fold}ide üleselt), ja testhinnang toodi püsivalt puutumatul testalal (Triip 0).
+    \end{enumerate}
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.92\linewidth]{joonised/segmenteerimine_alusinfo/seg_top2_ablation_workflow.png}
+    \caption{Automaatne ablatsiooni töövoog, kus järk-järgult optimiseeritakse andmestik, mudeli arhitektuur, kaofunktsioon ning regularisatsioon. Vaata ptk algtekste.}
+    \label{fig:top2-ablation-workflow}
+    \end{figure}
+
+    \paragraph{Valikukriteerium ja kesktelje Dice-skoor (\textit{clDice}).}
+    Mudelite, andmestike ja parameetrite pingereastamisel lukustati valikumõõdikuks \textit{clDice} valideerimisskoor (\texttt{val\_cldice}). Standardsed kattuvusmõõdikud nagu \textit{Dice}-koefitsient või kattuva ja ühendatud ala suhe jäävad isomorfselt sarnaste struktuuride, eriti piklike ja katkendlike lamapuidu elementide pidevuse väärtustamisel puudulikeks. Keskteljel põhinev \textit{clDice} (\textit{centerline Dice}) hindab täpsemalt just lineaarsete objektide võrgustiku topoloogia tegelikku visuaalset ja füüsilist õigsust. 
+    
+    Arvestades automaatse voolu tulemuslikkuse mudeleid, kehtestati \textit{top-2} pingereastamisel selge hierarhiline sidemurdja (\textit{tie-break}) reeglistik:
+    \begin{enumerate}
+        \item Kõrgeim \texttt{val\_cldice} keskmine skoor üle kahe \textit{foldi};
+        \item Võrdsuse korral vaadati F1-skoori keskmist;
+        \item Teise taseme võrdsuse korral eelistati madalamat \texttt{val\_cldice} standardhälvet stabiilsuse eesmärgil;
+        \item Viimaks suuremat ridade ja foldide katvuse indikaatorit.
+    \end{enumerate}
+    Järjestus on tugevdatud rangelt akadeemilise reegliga: püsivat testala ei tohi kasutada ei andmekomplekti, arhitektuuri, kaotusfunktsiooni ega mistahes parameetrite optimeerimiseks; selle avamine toimub alles täidetud analüütilise lukustumise ehk  faasi 6 lahenduse juures.
+
+
+    \subsection{Tehisaru kasutamise deklaratsioon}
+\label{subsec:tehisaru-deklaratsioon}
+
+Käesoleva magistritöö koostamisel on kasutatud tehisintellekti (ChatGPT ja GitHub Copilot) abi teadusartiklite otsimiseks, mõtete struktureerimiseks ning koodi ja teksti vigade tuvastamiseks. Sildistamise tööriista (vt ptk \ref{subsec:metoodika-klassifitseerimine}) ja masinõppe skriptide loomisel on osaliselt rakendatud tehisaru genereeritud või optimeeritud koodi. 
+
+Autor kinnitab, et on kogu tehisaru abil loodud koodi iseseisvalt testinud, valideerinud ja mõistab selle tehnilist toimimist. Kõik sisulised valikud, tulemuste analüüs ja järelduste tegemine on autori iseseisev intellektuaalne panus ning autor kannab täielikku vastutust töö sisu ja esitatud väidete õigsuse eest. Töö käigus ei ole tehisaru süsteemidesse laaditud konfidentsiaalseid andmeid.
