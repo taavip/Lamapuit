@@ -287,11 +287,13 @@ Placeholder}}
     \end{enumerate}
 
     \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.92\linewidth]{joonised/segmenteerimine_alusinfo/seg_top2_ablation_workflow.png}
-    \caption{Automaatne ablatsiooni töövoog, kus järk-järgult optimiseeritakse andmestik, mudeli arhitektuur, kaofunktsioon ning regularisatsioon. Vaata ptk algtekste.}
-    \label{fig:top2-ablation-workflow}
+        \centering
+    
+        \includegraphics[width=0.92\linewidth]{estonian/joonised/segmenteerimine_alusinfo/seg_top2_ablation_workflow.png}
+        \caption{Automaatne ablatsiooni töövoog, kus järk-järgult optimiseeritakse andmestik, mudeli arhitektuur, kaofunktsioon ning regularisatsioon. Vaata ptk algtekste.}
+        \label{fig:top2-ablation-workflow}
     \end{figure}
+
 
     \paragraph{Valikukriteerium ja kesktelje Dice-skoor (\textit{clDice}).}
     Mudelite, andmestike ja parameetrite pingereastamisel lukustati valikumõõdikuks \textit{clDice} valideerimisskoor (\texttt{val\_cldice}). Standardsed kattuvusmõõdikud nagu \textit{Dice}-koefitsient või kattuva ja ühendatud ala suhe jäävad isomorfselt sarnaste struktuuride, eriti piklike ja katkendlike lamapuidu elementide pidevuse väärtustamisel puudulikeks. Keskteljel põhinev \textit{clDice} (\textit{centerline Dice}) hindab täpsemalt just lineaarsete objektide võrgustiku topoloogia tegelikku visuaalset ja füüsilist õigsust. 
@@ -306,9 +308,9 @@ Placeholder}}
     Järjestus on tugevdatud rangelt akadeemilise reegliga: püsivat testala ei tohi kasutada ei andmekomplekti, arhitektuuri, kaotusfunktsiooni ega mistahes parameetrite optimeerimiseks; selle avamine toimub alles täidetud analüütilise lukustumise ehk  faasi 6 lahenduse juures.
 
 
-    \subsection{Tehisaru kasutamise deklaratsioon}
+    \subsection{Tehisaru kasutamine}
 \label{subsec:tehisaru-deklaratsioon}
 
-Käesoleva magistritöö koostamisel on kasutatud tehisintellekti (ChatGPT ja GitHub Copilot) abi teadusartiklite otsimiseks, mõtete struktureerimiseks ning koodi ja teksti vigade tuvastamiseks. Sildistamise tööriista (vt ptk \ref{subsec:metoodika-klassifitseerimine}) ja masinõppe skriptide loomisel on osaliselt rakendatud tehisaru genereeritud või optimeeritud koodi. 
+Käesoleva magistritöö koostamisel on kasutatud tehisintellekti (ChatGPT ja GitHub Copilot) abi teadusartiklite otsimiseks, mõtete struktureerimiseks ning koodi ja teksti vigade tuvastamiseks ja parendamiseks. Sildistamise tööriista (vt ptk \ref{subsec:metoodika-klassifitseerimine}) ja masinõppe skriptide loomisel on osaliselt rakendatud tehisaru genereeritud või optimeeritud koodi. 
 
 Autor kinnitab, et on kogu tehisaru abil loodud koodi iseseisvalt testinud, valideerinud ja mõistab selle tehnilist toimimist. Kõik sisulised valikud, tulemuste analüüs ja järelduste tegemine on autori iseseisev intellektuaalne panus ning autor kannab täielikku vastutust töö sisu ja esitatud väidete õigsuse eest. Töö käigus ei ole tehisaru süsteemidesse laaditud konfidentsiaalseid andmeid.
