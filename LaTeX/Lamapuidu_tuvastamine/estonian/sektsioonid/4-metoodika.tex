@@ -1,7 +1,7 @@
 \section{Metoodika}
 \label{metoodika}
 
-Selles peatükis kirjeldatakse lamapuidu tuvastamise masinõppe töövoogu, sealhulgas andmete eeltöötlust, märgistuste kvaliteedikontrolli, ruumilise valideerimise loogikat ning lõpliku mudeliarhitektuuri valikut. 
+Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja semantilise segmenteerimise töövooge, sealhulgas andmete eeltöötlust, ruumilise valideerimise loogikat ning lõpliku mudeliarhitektuuri valikut. Klasifitseerimise ja segmenteerimise andmeid sildistati eraldi erinevate lahendustega.
 
 \begin{figure}[h!]
 \centering
@@ -12,19 +12,17 @@ Placeholder}}
 \label{fig:workflow}
 \end{figure}
 
-\subsection{Andmete märgistamine ja aktiivõppe töövoog}
 
+\subsection{Andmete sildistamine klasifitseerimis ülesande jaoks ja aktiivõppe töövoog}
 Metoodika aluseks on iteratiivne töövoog. Esmalt treeniti esialgne mudel väiksemal käsitsi märgistatud andmestikul. Seejärel kasutati saadud mudeli väljundeid sildistamistööriistas abikihina, lihtsustades uute objektide leidmist. Pärast märgistuste süstemaatilist kvaliteedikontrolli treeniti rangete ruumiliste jaotusreeglite (test/treening/puhver) abil lõplik ansambelmudel. Kirjeldatud protsess võimaldab terviklikult ühendada andmete ettevalmistuse, aktiivõppe elementidega sildistamise ja lõpliku hindamise.
 
-Lamapuidu usaldusväärseks ja efektiivseks märgistamiseks arendati käesoleva töö raames spetsiaalne brauseripõhine sildistamistarkvara, mille arhitektuur tugineb FastAPI raamistikul töötavale taustaserverile ning Konva.js teegiga realiseeritud interaktiivsele esiosale (HTML5 lõuendil). Loodud rakendus ühendas ja esitas sünkroniseeritult mitmeid ruumilisi andmekihte, eesmärgiga tasakaalustada märgistaja tähelepanu erinevate andmeallikate vahel ning toetada visuaalset otsustamist.
+Lamapuidu usaldusväärseks ja efektiivseks märgistamiseks arendati käesoleva töö raames lokaalselt jooksutatavad Pythoni skriptid, mis koondasid sünkroniseeritult mitmeid ruumilisi andmekihte, tasakaalustades märgistaja tähelepanu erinevate andmeallikate vaheltegemist oli kokreetse töö jaoks loodud lihtsa ja kiire pildiaknast lähtuva rakendusega.
 
-Sildistamistööriista tuumfunktsionaalsus hõlmas mitmeid töövoogu ja aktiivõpet optimeerivaid komponente:
+Loodud sildistamistööriist tükeldas taimkattemudeli (CHM) rasterfailid kattuvateks 128$\times$128 piksli suurusteks tiilideks. Kasutajale kuvati korraga ühte paani ning märgistamiseks kasutati klaviatuuri klahve (paremnool = lamapuit olemas, vasaknool = lamapuit puudub, ülesnool = ebaselge). Skript haldas kõikide piltide läbimist orkestreerijana ja salvestas edenemist faili, mis võimaldas tööd paindlikult peatada ja jätkata. Märgistatud andmed salvestati lokaalsetesse CSV-failidesse, mis sisaldasid paani asukohta, määratud klassi (lamapuit, taust või ebaselge), märgistamise allikat (käsitsi või automaatne) ja mudeli esialgset tõenäosust. Kuvatud andmekihid toetasid visuaalset otsustamist:
 \begin{itemize}
-    \item \textbf{Intellektuaalne märgistamisjärjekord:} Serveri andmebaas töötles geomeetrilisi kriteeriume (kõrgusjaotus, servade tugevused) ja varajaste algmudelite ennustusi, tekitades dünaamiliselt tähtsuse järjekorra. See suunas eksperdi fookuse esmalt tiilidele, kus CWD esinemise tõenäosus oli suurim või mudeli hinnang kõige ebakindlam.
-    \item \textbf{Ajaline ja tootevaade:} Sama asukohta sai vaadelda analüüsitava pildi ajarea kaudu (erinevate aastate skaneeringud) või toodete vaates (toorandmed vs. Gaussi silumisega CHM), mis lihtsustas juhuslikust mürast püsivate tüvede eristamist. 
-    \item \textbf{Ruumilise konteksti kihid:} Lisaks madala taimkatte kõrgusmudelile kuvati 3D-varjundeid (\textit{hillshade}), Maa-ameti WMS-teenustest pärinevat ortofotot ja 3$\times$3 maatriksina naaberpiltide konteksti. Vajadusel hõlbustasid valideerimist ka kaldaerofotod või Google Street View välised lingid.
-    \item \textbf{Pintsliga segmenteerimine (ingl \textit{brush segmentation}):} Tavapäraste piirdekastide (\textit{bounding box}) asemel kasutas sildistaja pidevalt muudetava läbimõõduga pintslitööriista, märkides lõuendil konkreetsed pikslid kaheklassilisse vormingusse (lamapuit, taust või ignoreeritav ala). Tulemus salvestati serverisse koos metaandmetega otse PNG-formaadis.
-    \item \textbf{Mudeli soojuskaardi ülekate:} Esialgse mudeli arvutatud klassi aktiveerimiskaardid (ingl \textit{class activation maps - CAM}) visualiseeriti sildistamisprotsessis abistavate soojuskaartidena (režiimides nagu \textit{IntGrad}, \textit{HiResCAM} ja \textit{RISE}). Need suunasid spetsialisti tähelepanu potentsiaalsete objektide asukohtadele ning tõstsid eelmärgistamise kiirust.
+    \item \textbf{Dünaamiline visuaalne esitus ja paanide vahelejätmine:} Kõrgusmudel kuvati kohandatud värviskaalaga (0--1,3\,m). Andmemüra vähendamiseks muudeti madalaimad (alla 0,15\,m) pikslid sujuvalt tumedamaks. Piirkonnad, mis koosnesid täielikult maapinnast, tuvastati koheselt ja jäeti märgistusprotsessis automaatselt vahele kui kõrgus oli maksimaalselt 0,15m antud paanil nin märgiti automaatselt sildistatuks ja lamapuit puudub.
+    \item \textbf{Ajaline ja kontekstivaade:} Tööriist võimaldas piltide vahetamist varasemate aastate madala taimkattemudeliga, aidates eristada samal asukohal paiknevat lamapuitu andmemürast. Samuti integreeriti Maa-ameti WMS-teenus, kuvades märgistajale orientiiriks vastava asukoha ortofotode kattuvust.
+    \item \textbf{Taustal toimiv mudeli tugi (aktiivõpe):} Sisseehitatud konvolutsiooninärvivõrk (CNN) arvutas märgistamise ajal taustal iga paani kohta lamapuidu esinemise tõenäosust. Mudel võimaldas kõrge kindlusega kergemaid alasid automaatselt sildistada ning näitas väljakutsuvamate tiilide juures soojuskaarte (\textit{IntGrad}, \textit{HiResCAM}, \textit{GradCAM+}, \textit{RISE}), viidates piirkondadele, mille alusel tehisintellekt järelduseni jõudis.
 \end{itemize}
 
 Lõplik märgistamisotsus tugines siiski alati mitme andmekihi (taimkatemudel, ortofoto, ajaloolised taimkattemudelid ja mudeli soojuskaart) visuaalsele sünteesile, minimeerides ohtu automatiseerimiskaldeks (ingl \textit{automation bias}), kus andmestik hakkaks peegeldama ainult mudeli esialgseid ennustusi. Kuna kõige värskemad avalikud andmed olid 2 aastat vanad (2024), siis katsetati ka välitöödega, mis kahjuks majandatavates metsades toimuvate kiirete muutuste tõttu efektiivseks ei osutunud, sest olukord maastikul oli pärast andmete kogumist oluliselt muutunud.
@@ -46,6 +44,20 @@ Placeholder}}
 \caption{Mudeli soojuskaardi kasutamine sildistamise abikihina.}
 \label{fig:labeling-heatmap}
 \end{figure}
+
+\paragraph{Mudeli selgitatavuse meetodid: soojuskaartide ülevaade.}
+
+Lamapuidu märkimise protsessis kasutatud soojuskaartide loomise meetodid kuuluvad laiemasse mudeli selgitatavuse (ingl \textit{explainable AI}, XAI) valdkonda. See võimaldab mõista, milliste sisendpildi piirkondade põhjal tehisintellektimudelid otsuseid langetavad. Käesolevas töös rakendati järgmisi meetodeid:
+
+\textbf{Integrated Gradients (IntGrad)} \parencite{sundararajan2017axiomatic} arvutab sisendi ja mudeli väljundi vahelise funktsionaalse tee muutumise määrad (gradiendid), kogudes teavet alates võrdluspildist (nt tühi kujutis) kuni tegeliku sisendini. Meetodi tugevus peitub selle teoreetilises põhjendatuses: see vastab matemaatilistele põhieeldustele (tundlikkus ja muutumatus teisenduste suhtes), mistõttu saadud seosed peegeldavad usaldusväärselt mudeli otsustusprotsessi.
+
+\textbf{HiResCAM} \parencite{fernandez2021hirescam} täiustab tavapäraseid CAM-meetodeid ja tagab suurema ruumilise lahutusvõime, ühendades aktivatsioonikaardid lineaarsete vahepealsete väärtuste leidmisega. See on eriti väärtuslik väikese lahutusvõimega taimkatte kõrgusmudeli (CHM) rastrite puhul, kus piirkonna täpne paiknemine on kriitilise tähtsusega.
+
+\textbf{GradCAM+} \parencite{chattopadhyay2018grad} arendab edasi GradCAM-i meetodit, kaaludes positiivseid osakaalusid ja tõstes esile need kanalid, mis mõjutavad ennustust kõige rohkem. Meetod muudab visualiseerimise täpsemaks ja aitab objekte tõhusamalt taustast eristada.
+
+\textbf{RISE} (\textit{Randomized Input Sampling for Explanation}) \parencite{petsiuk2018rise} muudab sisendi osi juhuslikult ning analüüsib sellest tulenevat mudeli väljundi muutust. Meetodi eelis on sõltumatus mudeli ülesehitusest, mis võimaldab seda rakendada väga erinevat tüüpi närvivõrkudele.
+
+Nende nelja meetodi koos kasutamine märkimistööriista abikihina võimaldas märgistajal näha mudeli otsustusprotsessi eri külgi. See suurendas tulemuste usaldusväärsust ning aitas keeruliste ja ebaselgete juhtude puhul kiirenda protsessi ja juhtida tähelepanu olulistele kohtadele, et toetada otsustamist. Samuti aitas see mõista mudeli probleeme ja tugevusi.
 
 \paragraph{Esialgne märgistamisansambel.}
 Märgistamise toetamiseks loodi esialgne nelja mudeliga ansambel, mille ülesandeks oli hinnata kõigi 580\,136 treening pildi usaldusväärsust mudeli tõenäosuse (\textit{model\_prob}) kaudu ning suunata aktiivõppe valikut. Ansambel koosnes kolmest CNN-Deep-Attn mudelist (juhuseemed 42, 43, 44) ning ühest EfficientNet-B2 mudelist. Valik tugines kahele printsiibile: (1) kolm identset arhitektuuri erinevate juhuseemetega vähendavad stohhastilisest initsialiseerimisest tulenevat varieeruvust; (2) EfficientNet-B2, mis kujutab arhitektuurselt erinevat mudeliperekonda, lisab ansambli ImageNeti eelõppest saadud üldisemad tunnused ning suurendab vastupanuvõimet üksikmudelite spetsiifiliste vigade suhtes.
