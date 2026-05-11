@@ -9,7 +9,7 @@ Selles peatükis esitatakse lamapuidu klassifitseerimis- ja segmenteerimismudeli
 \subsection{Esialgse märgistamisansambli tulemused}
 \label{esialgse-ansambli-tulemused}
 
-Esialgne märgistamisansambel (märts 2026, 15\,850 treeningtiili) saavutas testvalimil (2\,186 tiili) F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987. Ansambel ületas kõiki üksikmudeleid: parim CNN-Deep-Attn (seeme 44) saavutas valideerimisvalimil F1-skoori 0,9596, EfficientNet-B2 aga 0,9463 -- seejuures andis nelja mudeli TTA-põhine keskmistamine selge lisaväärtuse (Tabel~\ref{tab:initial-ensemble}).
+Esialgne märgistamisansambel (märts 2026, 15\,850 treeningpaani) saavutas testvalimil (2\,186 paani) F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987. Ansambel ületas kõiki üksikmudeleid: parim CNN-Deep-Attn (seeme 44) saavutas valideerimisvalimil F1-skoori 0,9596, EfficientNet-B2 aga 0,9463 -- seejuures andis nelja mudeli TTA-põhine keskmistamine selge lisaväärtuse (Tabel~\ref{tab:initial-ensemble}).
 
 \begin{table}[h!]
 \centering
@@ -34,11 +34,11 @@ EfficientNet-B2           & 0,9963 & 0,9463 & 0,72 \\
 
 Metoodikas kirjeldatud kolmeetapiline otsinguprotsess (vt jaotis~\ref{mudeli-valik}) võimaldas süstemaatiliselt põhjendada lõpliku ansamblemudeli arhitektuuri.
 
-Parima mudeli otsing (19\,812 tiili, 11 rasterikiht) kinnitas CNN-Deep-Attn perekonna juhtpositsiooni: viie parima mudeli virnaansambel saavutas testvalimil F1-skoori 0,9672 ning pehme hääletus F1-skoori 0,9646, ületades mõlemad parima üksikmudeli (CNN-Deep-Attn-headwide: 0,9644) -- tõendus, et ensamblistrateegia annab selles ülesandes järjekindlalt parema tulemuse kui ükski üksik mudel (Tabel~\ref{tab:model-search-v1}).
+Parima mudeli otsing (19\,812 paani, 11 rasterikiht) kinnitas CNN-Deep-Attn perekonna juhtpositsiooni: viie parima mudeli virnaansambel saavutas testvalimil F1-skoori 0,9672 ning pehme hääletus F1-skoori 0,9646, ületades mõlemad parima üksikmudeli (CNN-Deep-Attn-headwide: 0,9644) -- tõendus, et ensamblistrateegia annab selles ülesandes järjekindlalt parema tulemuse kui ükski üksik mudel (Tabel~\ref{tab:model-search-v1}).
 
 \begin{table}[h!]
 \centering
-\caption{Parima mudeli otsingu tulemusnäitajad (19\,812 treeningtiili, 11 rasterikiht). Testvalimi tulemused põhinevad 2\,186 tiilil; ${}^{\dagger}$ tähistab 5-kordse ristvalideerimise keskmist (mudelit ei hinnatud eraldi testvalimil).}
+\caption{Parima mudeli otsingu tulemusnäitajad (19\,812 treeningpaani, 11 rasterikiht). Testvalimi tulemused põhinevad 2\,186 paanil; ${}^{\dagger}$ tähistab 5-kordse ristvalideerimise keskmist (mudelit ei hinnatud eraldi testvalimil).}
 \label{tab:model-search-v1}
 \begin{tabular}{lllll}
 \hline
