@@ -89,10 +89,10 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
     \subsubsection{Klassifitseerimisandmestiku ruumiline ja ajaline jaotamine}
     \label{spatial-split}
 
-    \paragraph{Andmelekke (data leakage) probleem} Süvaõppemudelite treenimine lamapuidu tuvastamiseks madala tihedusega LiDAR-andmetest nõuab hoolikat ruumilist ja ajalist jaotamist \parencite{roberts2017cross}. Kuna treeningaknad on 50\% ulatuses kattuvad (samm ehk \textit{stride} = 64~px, paani suurus ehk \textit{chunk} = 128~px) ja samu asukohti on vaadeldud mitmel aastal, tekitaks juhuslik jaotamine tõsiseid andmelekkeid:
+    \paragraph{Andmelekke oht} Süvaõppemudelite õpetamine lamapuidu tuvastamiseks hõredate LiDAR-andmete põhjal eeldab andmestiku hoolikat ruumilist ja ajalist jaotamist \parencite{roberts2017cross}. Kuna õppeaknad kattuvad 50\% ulatuses (samm = 64~pikslit, paani suurus = 128~pikslit) ning samu asukohti on vaadeldud mitmel erineval aastal, põhjustaks andmestiku juhuslik jaotamine ulatuslikke andmelekkeid:
     \begin{itemize}
-        \item \textbf{Ruumiline leke:} Sama asukoha kattuvad paanid satuvad nii treening- kui testiandmetesse, põhjustades tugevalt korreleerunud tunnuste tõttu ülepakutud tulemusi \parencite{kattenborn2022review}.
-        \item \textbf{Ajaline leke:} Sama asukoha eri aastate vaatlused jaotatakse eri hulkadesse, võimaldades mudelil asukoha spetsiifilisi omadusi memoreerida.
+        \item \textbf{Ruumiline leke:} Sama asukoha kattuvad paanid satuvad nii õppe- kui ka hindamisandmestikku, mis toob omavahel tugevalt seotud tunnuste tõttu kaasa tulemuste ülehindamise \parencite{kattenborn2022review}.
+        \item \textbf{Ajaline leke:} Sama asukoha eri aastate vaatlused jaotatakse erinevatesse andmehulkadesse, võimaldades mudelil asukohapõhiseid eripärasid meelde jätta.
     \end{itemize}
 
     \paragraph{Ruumilise eraldatuse strateegia} Pikslikoordinaadid teisendati sammupõhisteks koordinaatideks:
