@@ -1,40 +1,14 @@
 \section{Tulemused}
 \label{tulemused}
 
-Selles peatükis esitatakse lamapuidu klassifitseerimis- ja segmenteerimismudelite kvantitatiivsed tulemused, mudelite otsinguprotsessi analüüs, valideerimine ja vigade uurimine. Peatükk jaguneb kaheks osaks: klassifitseerimismudelite arenduse ja lõppliku jõudluse tulemustes ning segmenteerimismudelite valideerimise tulemused.
+Selles peatükis esitatakse lamapuidu klassifitseerimis- ja segmenteerimismudelite kvantitatiivsed tulemused, mudelite otsinguprotsessi analüüs, valideerimine ja vigade uurimine. Peatükk jaguneb kaheks osaks: klassifitseerimismudelite arenduse ja lõplikud tulemused ning segmenteerimismudelite valideerimise tulemused.
 
-\section{Klassifitseerimise tulemused}
+\subsection{Klassifitseerimise tulemused}
 \label{klassifitseerimise-tulemused}
 
-\subsection{Esialgse märgistamisansambli tulemused}
-\label{esialgse-ansambli-tulemused}
 
-Esialgne märgistamisansambel (märts 2026, 15\,850 treeningpaani) saavutas testvalimil (2\,186 paani) F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987. Ansambel ületas kõiki üksikmudeleid: parim CNN-Deep-Attn (seeme 44) saavutas valideerimisvalimil F1-skoori 0,9596, EfficientNet-B2 aga 0,9463 -- seejuures andis nelja mudeli TTA-põhine keskmistamine selge lisaväärtuse (Tabel~\ref{tab:initial-ensemble}).
 
-\begin{table}[h!]
-\centering
-\caption{Esialgse märgistamisansambli üksikmudelite tulemusnäitajad valideerimisvalimil.}
-\label{tab:initial-ensemble}
-\begin{tabular}{llll}
-\hline
-\textbf{Mudel} & \textbf{Val AUC} & \textbf{Val F1} & \textbf{Otsustuslävi} \\
-\hline
-CNN-Deep-Attn (seeme 42) & 0,9969 & 0,9580 & 0,87 \\
-CNN-Deep-Attn (seeme 43) & 0,9972 & 0,9570 & 0,81 \\
-CNN-Deep-Attn (seeme 44) & 0,9974 & 0,9596 & 0,83 \\
-EfficientNet-B2           & 0,9963 & 0,9463 & 0,72 \\
-\hline
-\textbf{Ansambel (TTA)}   & \textbf{0,9987} & \textbf{0,9701} & \textbf{0,68} \\
-\hline
-\end{tabular}
-\end{table}
 
-\subsection{Mudeli otsinguprotsess ja arhitektuuride võrdlus}
-\label{mudeli-otsinguprotsess}
-
-Metoodikas kirjeldatud kolmeetapiline otsinguprotsess (vt jaotis~\ref{mudeli-valik}) võimaldas süstemaatiliselt põhjendada lõpliku ansamblemudeli arhitektuuri.
-
-Parima mudeli otsing (19\,812 paani, 11 rasterikiht) kinnitas CNN-Deep-Attn perekonna juhtpositsiooni: viie parima mudeli virnaansambel saavutas testvalimil F1-skoori 0,9672 ning pehme hääletus F1-skoori 0,9646, ületades mõlemad parima üksikmudeli (CNN-Deep-Attn-headwide: 0,9644) -- tõendus, et ensamblistrateegia annab selles ülesandes järjekindlalt parema tulemuse kui ükski üksik mudel (Tabel~\ref{tab:model-search-v1}).
 
 \begin{table}[h!]
 \centering
@@ -62,10 +36,10 @@ DenseNet-121${}^{\dagger}$    & 0,9912 & 0,9454 & 0,9640 & 0,9276 \\
 \end{tabular}
 \end{table}
 
-\subsection{Ansambli agregeerimismeetodite rigoouurne võrdlus}
+\subsubsection{esialgsete mudelite ja ansambli võrdlus}
 \label{ansambli-agregeerimise-tulemused}
 
-Metoodikas kirjeldatud rigorne võrdlusuuring neljanda ansambli liikme ja agregeerimismeetodi valikuks näitas, et kõik täiustatud agregeerimismeetodid edestavad statistiliselt oluliselt lihtsat pehmet hääletust ($p<0{,}01$ kõigil kandidaatidel). Parima üldise tulemuse saavutas \textbf{EfficientNet-B2 koos kaalutud hääletusega}: F1-skoor $0{,}9866 \pm 0{,}0042$, 95\% usaldusvahemik [0,9849; 0,9883], AUC $0{,}9810$ (Tabel~\ref{tab:ensemble-methods-comparison}). Kandidaatide ristvõrdlusel edestas EfficientNet-B2 ConvNeXt-tiny mudelit statistiliselt oluliselt ($\Delta F1 = +0{,}0029$, $p<0{,}001$) ning ConvNeXt-small mudelit ($\Delta F1 = +0{,}0008$, $p=0{,}008$). Need tulemused kinnitavad empiiriliselt EfficientNet-B2 sobivust neljandaks ansambli liikmeks ning näitavad, et lõpliku tuvastusahela tootmisversioonis on otstarbekas asendada lihtne pehme hääletus kaalutud hääletusega, mis annab F1-skoorile umbes $+0{,}004$ punkti paranduse usaldusväärsel statistilisel alusel ($p<0{,}001$). Kaalutud hääletus on logistilise regressiooni virnaansambliga praktiliselt samaväärne ($\Delta F1 < 0{,}001$), kuid arvutuslikult lihtsam ja tõlgendatavam.
+Parima üldise tulemuse saavutas \textbf{EfficientNet-B2 koos kaalutud hääletusega}: F1-skoor $0{,}9866 \pm 0{,}0042$, 95\% usaldusvahemik [0,9849; 0,9883], AUC $0{,}9810$ (Tabel~\ref{tab:ensemble-methods-comparison}). Kandidaatide ristvõrdlusel edestas EfficientNet-B2 ConvNeXt-tiny mudelit statistiliselt oluliselt ($\Delta F1 = +0{,}0029$, $p<0{,}001$) ning ConvNeXt-small mudelit ($\Delta F1 = +0{,}0008$, $p=0{,}008$). Need tulemused kinnitavad empiiriliselt EfficientNet-B2 sobivust neljandaks ansambli liikmeks ning näitavad, et lõpliku tuvastusahela tootmisversioonis on otstarbekas asendada lihtne pehme hääletus kaalutud hääletusega, mis annab F1-skoorile umbes $+0{,}004$ punkti paranduse usaldusväärsel statistilisel alusel ($p<0{,}001$). Kaalutud hääletus on logistilise regressiooni virnaansambliga praktiliselt samaväärne ($\Delta F1 < 0{,}001$), kuid arvutuslikult lihtsam ja tõlgendatavam.
 
 \begin{table}[h!]
 \centering
@@ -92,10 +66,40 @@ ConvNeXt-small  & Kaalutud hääletus        & [0,9839; 0,9870] & 0,9789 & $<0{,
 \end{tabular}
 \end{table}
 
-\subsection{Lõpliku 4-mudeline ansambli jõudlus}
+\subsubsection{Mudeli otsinguprotsess ja arhitektuuride võrdlus}
+\label{mudeli-otsinguprotsess}
+
+Metoodikas kirjeldatud kolmeetapiline otsinguprotsess (vt \autoref{sec:klassifitseerimismudelite-otsing}) võimaldas süstemaatiliselt põhjendada lõpliku ansamblemudeli arhitektuuri.
+
+Parima mudeli otsing (19\,812 paani, 11 rasterikiht) kinnitas CNN-Deep-Attn perekonna juhtpositsiooni: viie parima mudeli virnaansambel saavutas testvalimil F1-skoori 0,9672 ning pehme hääletus F1-skoori 0,9646, ületades mõlemad parima üksikmudeli (CNN-Deep-Attn-headwide: 0,9644) -- tõendus, et ensamblistrateegia annab selles ülesandes järjekindlalt parema tulemuse kui ükski üksik mudel (Tabel~\ref{tab:model-search-v1}).
+
+\subsubsection{Esialgse märgistamisansambli tulemused}
+\label{esialgse-ansambli-tulemused}
+
+Esialgne märgistamisansambel ( 15\,850 treeningpaani) saavutas testvalimil (2\,186 paani) F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987. Ansambel ületas kõiki üksikmudeleid: parim CNN-Deep-Attn (seeme 44) saavutas valideerimisvalimil F1-skoori 0,9596, EfficientNet-B2 aga 0,9463 -- seejuures andis nelja mudeli TTA-põhine keskmistamine selge lisaväärtuse (Tabel~\ref{tab:initial-ensemble}).
+
+\begin{table}[h!]
+\centering
+\caption{Esialgse märgistamisansambli üksikmudelite tulemusnäitajad valideerimisvalimil.}
+\label{tab:initial-ensemble}
+\begin{tabular}{llll}
+\hline
+\textbf{Mudel} & \textbf{Val AUC} & \textbf{Val F1} & \textbf{Otsustuslävi} \\
+\hline
+CNN-Deep-Attn (seeme 42) & 0,9969 & 0,9580 & 0,87 \\
+CNN-Deep-Attn (seeme 43) & 0,9972 & 0,9570 & 0,81 \\
+CNN-Deep-Attn (seeme 44) & 0,9974 & 0,9596 & 0,83 \\
+EfficientNet-B2           & 0,9963 & 0,9463 & 0,72 \\
+\hline
+\textbf{Ansambel (TTA)}   & \textbf{0,9987} & \textbf{0,9701} & \textbf{0,68} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Lõpliku 4-mudeline ansambli jõudlus}
 \label{lopliku-ansambli-tulemused}
 
-Märtsis 2026 kinnitatud 4-mudeline ansambel (kolm CNN-Deep-Attn, üks EfficientNet-B2), mille treenimiseks kasutati 67\,290 märgistust ruumilise jagamisega (E07), saavutas lõplikus ümberõppes F1-skoori 0,9819 ja ROC AUC väärtuse 0,9885 -- ületades esialgset märgistamisansamblit 1,2 protsendipunkti võrra.
+kinnitatud 4-mudeline ansambel (kolm CNN-Deep-Attn, üks EfficientNet-B2), mille treenimiseks kasutati 67\,290 märgistust ruumilise test ja treening andmete jagamisega, saavutas lõplikus ümberõppes F1-skoori 0,9819 ja ROC AUC väärtuse 0,9885 -- ületades esialgset märgistamisansamblit 1,2 protsendipunkti võrra.
 
 Neljamudeline ansambel, mis treeniti lekkekontrolliga ruumilise jagamise alusel (67\,290 treeningmärgistust), saavutas kasutamata testandmestikul (56\,521 märgistust) äärmiselt kõrged tulemused. Mudel saavutas F1-skooriks $0,9819$ ning ROC AUC väärtuseks $0,9885$. Tulemused kinnitavad metoodikas kirjeldatud mitmeastmelise treening- ja valideerimisstrateegia efektiivsust, mis tagas mudeli stabiilse generalisatsiooni ja vältis naaberalade autokorrelatsioonist tulenevat leket.
 
@@ -110,14 +114,14 @@ Placeholder}}
 
 Ansambli lähenemine aitas eeskätt vähendada valepositiivseid ennustusi raskesti eristatavatel maastikel, näiteks tugeva noorendikuga kaetud raiesmikel, kus üksikmudelid võiksid takerduda spetsiifilisse lokaalsesse müra taha. Nelja mudeli (3$\times$ CNN, 1$\times$ EfficientNet) keskmistatud ennustus silus efektiivselt potentsiaalsed anomaaliad.
 
-\subsection{CHM variantide võrdlus klassifitseerimises}
+\subsubsection{CHM variantide võrdlus klassifitseerimises}
 \label{chm-variantide-klassifitseerimise-tulemused}
 
 Treeningfaasi esialgsetes eksperimentides vaadeldi mitmeid CHM-i arvutusmudeleid (näiteks erineva kõrgusfiltriga rastersisendid ja mitmekanalilised komposiidid). Lõplikus arenduses ja andmete märgistamise töövoos rakendati 20 cm resolutsiooniga 0--1,31 m kõrguseid filtreerivat künnisest kõrgemate eemaldamise meetodit (ingl \textit{drop-above-threshold}).
 
 Eksperimendid mitme kanaliga (koondades suhtelisikõrguseid ja lamendatud (ingl \textit{smoothed}) väärtusi) pakkusid küll marginaalset täpsuse kasvu (alla 1\% F1 suhtes), kuid suurendasid andmemahtu ja iteratsioonide aega enam kui kolm korda. Tehtud kuluanalüüsist lähtuvalt otsustati 1-kanalise 20 cm rasteri kasuks, mis pakub kõige efektiivsema tasakaalu andmelihtsuse, arvutusresursside ja lõpliku tuvastusvõimekuse vahel.
 
-\subsection{Klassifitseerimismudelis esinevate vigade analüüs}
+\subsubsection{Klassifitseerimismudelis esinevate vigade analüüs}
 \label{klassifitseerimise-vigade-analüüs}
 
 Vaatamata kõrgele F1-skoorile esines mudeli ennustustes mõningaid iseloomulikke veamustreid, mille analüüsimine pakub olulist sisendit nii metsamajanduse praktikale kui ka edasistele uurimissuundadele. Vead saab valdavalt kategoriseerida lamapuiduga sarnase kujuga objektide väärtuvastamiseks (valepositiivsed) ning tugeva võrastiku/alusmetsa varju jäävate või tugevalt lagunenud lamapuude märkamata jätmiseks (valenegatiivsed).
@@ -135,33 +139,34 @@ Placeholder}}
 \label{fig:error-analysis}
 \end{figure}
 
-\section{Segmenteerimise tulemused}
+\subsection{Segmenteerimise tulemused}
 \label{segmenteerimise-tulemused}
 
-\subsection{Segmenteerimisandmestiku ja valideerimise metoodika}
+\subsubsection{Segmenteerimisandmestiku ja valideerimise metoodika}
 \label{segmenteerimise-andmestik-metoodika}
 
 % [KIRJUTADA] Valideerimisel kasutatud kaardilehe info (406455_2021_tava / Ruhnu), selle eraldamine klassifitseerimisandmestikust, 1,236 CWD objekti pikslimaskide kirjeldus, 2-fold ristvalideerimise jagamise metoodika
 
-\subsection{Segmenteerimismudelite otsing ja parameetrite võrdlus}
+\subsubsection{Segmenteerimismudelite otsing ja parameetrite võrdlus}
 \label{segmenteerimise-mudeli-otsing}
 
-\subsubsection{Testitud arhitektuurid ja sisendvariandid}
+\subsubsubsection{Testitud arhitektuurid ja sisendvariandid}
 % [KIRJUTADA] U-Net variatsioonid, DeepLabV3+, FPN, või muud testitud arhitektuurid. Klassifitseerimisest päritud CHM variandid. Parameetrite sweep tulemused.
 
-\subsubsection{Kaofunktsioonid ja augmentatsioonid}
+\subsubsubsection{Kaofunktsioonid ja augmentatsioonid}
 % [KIRJUTADA] Testitud kaofunktsioonid (Dice, CrossEntropy, Focal, kombinatsioonid). Augmentatsioonistrateegiad. Ristvalideerimise tulemustabel.
 
-\subsection{Lõpliku segmenteerimismudelite jõudlus}
+\subsubsection{Lõpliku segmenteerimismudelite jõudlus}
 \label{segmenteerimise-lopliku-joudlus}
 
-\subsubsection{Parim mudeli konfiguratsioon ja test-set tulemused}
+\subsubsubsection{Parim mudeli konfiguratsioon ja test-set tulemused}
 % [KIRJUTADA] Parim arhitektuur + CHM variant + kaofunktsioon + augmentatsioonid. Valideerimise Dice skoor, IoU, täpsus, tagasikutse. Tõenäosuskaardid ja segmentatsiooni väljundid.
 
-\subsubsection{Võrdlus klassifitseerimise baaslähenemisega}
+\subsubsubsection{Võrdlus klassifitseerimise baaslähenemisega}
 % [KIRJUTADA] Kuivõrd segmenteerimise otsepõhine lähenemisviis parandab pixel-level täpsust võrreldes klassifitseerimisele baseeruvate maskidega? Table tulemustest.
 
-\subsection{Generaliseerimuse valideerimise tulemused}
+\subsubsection{Generaliseerimuse valideerimise tulemused}
 \label{segmenteerimise-generaliseerimine}
 
 % [KIRJUTADA] Kas sõltumatu kaardilehe valideerimine toetab üldistatavuse väiteid? Mudeli robustuse käitumise analüüs eri metsatüüpide puhul (kõrgustes, tihedas võrastikus, erineva vanusega puistutes). Piirtingimuste käitumine (edge cases).
+\newpage
