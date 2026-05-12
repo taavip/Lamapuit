@@ -112,18 +112,17 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
         "decision": "#F3F4F6",
     }
 
-    b1 = Box(9, 41, 13.5, 8.5, "Algandmed", colors["data"])
-    b2 = Box(24, 41, 13.5, 8.5, "Esmane mudel", colors["model"])
-    b3 = Box(39, 41, 13.5, 8.5, "Hinda andmed", colors["data"])
-    b4 = Box(54, 41, 13.5, 8.5, "Vali ebakindlad", colors["data"])
-    b5 = Box(69, 41, 13.5, 8.5, "Inimene\nmärgistab", colors["human"])
-    b6 = Box(84, 41, 13.5, 8.5, "Uuenda mudel", colors["model"])
-    output = Box(95, 23, 9.0, 7.0, "Lõppmudel /\nväljund", colors["model"])
+    b1 = Box(10.0, 39.0, 12.0, 8.4, "Algandmed", colors["data"])
+    b2 = Box(26.0, 39.0, 15.0, 8.4, "Inimene märgistab\nja kontrollib", colors["human"])
+    b3 = Box(44.0, 39.0, 15.0, 8.4, "Mudel\n(treeni/uuenda)", colors["model"])
+    b4 = Box(61.0, 39.0, 12.0, 8.4, "Hinda andmed", colors["data"])
+    b5 = Box(78.0, 39.0, 12.0, 8.4, "Vali ebakindlad", colors["data"])
+    output = Box(87.5, 23.0, 13.5, 8.4, "Lõppmudel /\nväljund", colors["model"])
 
-    for box in (b1, b2, b3, b4, b5, b6, output):
+    for box in (b1, b2, b3, b4, b5, output):
         _add_box(ax, box)
 
-    diamond_center = (84, 23)
+    diamond_center = (61.0, 23.0)
     diamond_w = 10.0
     diamond_h = 7.2
     diamond = Polygon(
@@ -155,9 +154,7 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
     _add_arrow(ax, (b1.right, b1.y), (b2.left, b2.y))
     _add_arrow(ax, (b2.right, b2.y), (b3.left, b3.y))
     _add_arrow(ax, (b3.right, b3.y), (b4.left, b4.y))
-    _add_arrow(ax, (b4.right, b4.y), (b5.left, b5.y))
-    _add_arrow(ax, (b5.right, b5.y), (b6.left, b6.y))
-    _add_arrow(ax, (b6.x, b6.bottom), (diamond_center[0], diamond_center[1] + diamond_h / 2.0))
+    _add_arrow(ax, (b4.x, b4.bottom), (diamond_center[0], diamond_center[1] + diamond_h / 2.0))
 
     # Decision branches.
     _add_arrow(
@@ -165,32 +162,41 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
         (diamond_center[0] + diamond_w / 2.0, diamond_center[1]),
         (output.left, output.y),
         label="Jah",
-        label_pos=(89.7, 25.6),
+        label_pos=(74.0, 25.7),
     )
     _add_arrow(
         ax,
-        (diamond_center[0] - diamond_w / 2.0, diamond_center[1]),
-        (b4.x, b4.bottom),
-        lw=2.2,
-        connectionstyle="arc3,rad=0.45",
+        (diamond_center[0], diamond_center[1] + diamond_h / 2.0),
+        (b5.x - 0.8, b5.bottom),
+        lw=1.9,
+        connectionstyle="arc3,rad=-0.15",
         label="Ei",
-        label_pos=(69.5, 22.3),
+        label_pos=(67.7, 31.2),
+    )
+    _add_arrow(
+        ax,
+        (b5.x - 0.5, b5.top),
+        (b2.x + 0.2, b2.top),
+        lw=2.4,
+        connectionstyle="arc3,rad=0.35",
+        label="Korduv tsükkel",
+        label_pos=(50.0, 48.5),
     )
 
     # Dashed quality-check arrow.
     _add_arrow(
         ax,
-        (b3.x, b3.bottom),
-        (b5.x, b5.bottom),
+        (b4.right, b4.y),
+        (b5.left, b5.y),
         style=(0, (5, 3)),
         lw=1.6,
         color="#475569",
-        connectionstyle="arc3,rad=-0.65",
+        connectionstyle="arc3,rad=0.0",
     )
 
     ax.text(
         50,
-        53.5,
+        56.8,
         "Aktiivõppe töövoog (lihtne korduskasutatav mall)",
         ha="center",
         va="center",

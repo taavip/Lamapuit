@@ -121,6 +121,7 @@ Thumbs.db
 *.png
 *.jpg
 !docs/*.png
+!LaTeX/Lamapuidu_tuvastamine/estonian/joonised/aktiivope_toovoog_mall.png
 
 # Local scratch/output trees
 tmp/
