@@ -1,0 +1,6 @@
+role,patches,positive_patches,positive_patch_pct,positive_px_in_patches,valid_px_in_patches
+Püsiv testala,130,81,62.30769230769231,103252,8519680
+Fold 0 treening,95,77,81.05263157894737,110536,4505505
+Fold 0 valideerimine,118,108,91.52542372881356,173474,6901546
+Fold 1 treening,118,108,91.52542372881356,173474,6901546
+Fold 1 valideerimine,95,77,81.05263157894737,110536,4505505

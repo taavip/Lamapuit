@@ -46,7 +46,7 @@ SEED=${SEED:-42}
 SWA_START=${SWA_START:-35}
 DEVICE=${DEVICE:-cuda}
 NO_SWA=${NO_SWA:-false}
-CV_VERSION=${CV_VERSION:-4}
+CV_VERSION=${CV_VERSION:-5}
 LEGACY_V10_CHAIN=${LEGACY_V10_CHAIN:-2A__3C__4H__5D}
 PARALLEL_JOBS=${PARALLEL_JOBS:-1}
 
@@ -66,8 +66,8 @@ if [ "$SELECTION_METRIC" != "val_cldice" ]; then
     echo "ERROR: Locked protocol requires SELECTION_METRIC=val_cldice (got '$SELECTION_METRIC')." >&2
     exit 1
 fi
-if [ "$CV_VERSION" -ne 4 ]; then
-    echo "ERROR: Locked protocol requires CV_VERSION=4 (balanced 2-fold)." >&2
+if [[ "$CV_VERSION" -ne 4 && "$CV_VERSION" -ne 5 ]]; then
+    echo "ERROR: Supported CV_VERSION values are 4 (balanced 2-fold) or 5 (3x3 block 3-fold)." >&2
     exit 1
 fi
 
@@ -107,6 +107,8 @@ join_by_comma() {
 cv_folds_for_version() {
     if [ "$CV_VERSION" -eq 4 ]; then
         echo "0 1"
+    elif [ "$CV_VERSION" -eq 5 ]; then
+        echo "0 1 2"
     else
         echo "0 1 2 3"
     fi
@@ -127,19 +129,27 @@ prepare_inputs_and_dataset() {
     fi
 
     if [ "$REBUILD_DATASET" = "true" ]; then
+        local dataset_args=""
+        if [ "$CV_VERSION" -eq 5 ]; then
+            dataset_args="--patch-size 256 --stride 256"
+        fi
         local cmd="
 source /opt/conda/etc/profile.d/conda.sh
 conda activate cwd-detect
 set -e
 mkdir -p '$DATASET_DIR'
 for v in baseline raw gauss masked composite; do
-  python3 $SCRIPT_DIR/phase2_dataset_v3.py --chm-variant \$v --cv-version $CV_VERSION --output-dir '$DATASET_DIR'
+  python3 $SCRIPT_DIR/phase2_dataset_v3.py --chm-variant \$v --cv-version $CV_VERSION --output-dir '$DATASET_DIR' $dataset_args
 done
 "
         docker run "${DOCKER_OPTS[@]}" "$DOCKER_IMAGE" bash -c "$cmd" 2>&1 | tee -a "$MAIN_LOG"
     fi
 
-    log "Balanced-fold preflight check (variant=composite, cv_version=$CV_VERSION)"
+    if [ "$CV_VERSION" -eq 5 ]; then
+        log "Block-CV preflight check (variant=composite, cv_version=$CV_VERSION)"
+    else
+        log "Balanced-fold preflight check (variant=composite, cv_version=$CV_VERSION)"
+    fi
     local validate_cmd="
 source /opt/conda/etc/profile.d/conda.sh
 conda activate cwd-detect
@@ -510,7 +520,7 @@ main() {
     log "Main log: $MAIN_LOG"
     log "Configuration: epochs=$EPOCHS, device=$DEVICE, cv_version=$CV_VERSION"
     log "Selection metric: $SELECTION_METRIC"
-    log "Locked assumptions: legacy=$LEGACY_V10_CHAIN, selection_metric=val_cldice, cv_version=4"
+    log "Locked assumptions: legacy=$LEGACY_V10_CHAIN, selection_metric=val_cldice, cv_version=$CV_VERSION"
     echo "" | tee -a "$MAIN_LOG"
 
     local phases_to_run=(2 3 4 5 6)
@@ -521,7 +531,11 @@ main() {
     log "Will execute phases: ${phases_to_run[*]}"
     log "Strategy: Select top 2 winners per phase, then run locked test once with Top2 + legacy baseline"
     log "Selection tie-break (locked): mean($SELECTION_METRIC) > mean(val_f1) > lower std($SELECTION_METRIC)"
-    log "Academic guardrail: test stripe is untouched in Phases 2-5 and used only in final Phase 6"
+    if [ "$CV_VERSION" -eq 5 ]; then
+        log "Academic guardrail: held-out test blocks are untouched in Phases 2-5 and used only in final Phase 6"
+    else
+        log "Academic guardrail: test stripe is untouched in Phases 2-5 and used only in final Phase 6"
+    fi
     log "Pruning (locked defaults): phase3=$PHASE3_CONDITIONS phase4=$PHASE4_CONDITIONS phase5=$PHASE5_CONDITIONS"
     log "Parallel speed mode: PARALLEL_JOBS=$PARALLEL_JOBS (same configs/seeds/metrics; wall-clock only)"
     echo "" | tee -a "$MAIN_LOG"
@@ -704,7 +718,11 @@ main() {
     log_section "ABLATION STUDY COMPLETE - TOP 2 STRATEGY"
     log "Runtime note: depends on CV_VERSION and number of conditions per phase."
     log "  CV_VERSION=$CV_VERSION uses folds: ${cv_folds[*]}"
-    log "  Final protocol (Phase 6): top2 + legacy V10 chain on locked test stripe."
+    if [ "$CV_VERSION" -eq 5 ]; then
+        log "  Final protocol (Phase 6): top2 + legacy V10 chain on held-out test blocks."
+    else
+        log "  Final protocol (Phase 6): top2 + legacy V10 chain on locked test stripe."
+    fi
     echo "" | tee -a "$MAIN_LOG"
 
     log "Full results saved to: $OUTPUT_BASE"
@@ -721,12 +739,12 @@ Instead of greedy single-winner advancement, this study selects the **top 2 resu
 ## Reproducibility & Setup
 
 - **Selection metric**: \`$SELECTION_METRIC\` (cross-fold mean across spatial CV folds).
-- **Held-out test use**: the test stripe is locked during Phases 2-5 and is evaluated only in final Phase 6 with \`--evaluate-test\`.
+- **Held-out test use**: locked hold-out split is untouched during Phases 2-5 and evaluated only in final Phase 6 with \`--evaluate-test\`.
 - **Seed**: $SEED
 - **Epochs**: $EPOCHS
 - **Warmup (linear LR)**: $WARMUP
 - **SWA start epoch**: $SWA_START (set `NO_SWA=true` to disable)
-- **Cross-validation**: Spatial CV version \`$CV_VERSION\` (see seg_pipeline/scripts/phase2_dataset_v3.py) — stripe 0 is held-out test and remains untouched in Phases 2-5.
+- **Cross-validation**: Spatial CV version \`$CV_VERSION\` (see seg_pipeline/scripts/phase2_dataset_v3.py).
 - **Conservative candidate pruning**:
   - Phase 3: \`$PHASE3_CONDITIONS\`
   - Phase 4: \`$PHASE4_CONDITIONS\`
@@ -737,7 +755,7 @@ Instead of greedy single-winner advancement, this study selects the **top 2 resu
 
 - **Legacy comparator** is locked to \`2A__3C__4H__5D\`.
 - **Selection metric** across Phases 2-5 is \`val_cldice\` only.
-- **CV protocol** is balanced 2-fold (\`CV_VERSION=4\`).
+- **CV protocol**: \`CV_VERSION=$CV_VERSION\` (4=balanced 2-fold stripes, 5=3x3 block 3-fold with held-out test blocks).
 
 
 ## Winners by Phase
@@ -830,7 +848,7 @@ Environment variables:
   SWA_START=N      SWA start epoch (default: 35)
   DEVICE=cuda|cpu  Device (default: cuda)
   NO_SWA=true      Disable SWA (default: false)
-  CV_VERSION=4     Locked to balanced 2-fold protocol
+  CV_VERSION=5     3x3 block 3-fold protocol with held-out test blocks
   LEGACY_V10_CHAIN Run-id chain for baseline thesis comparator (default: 2A__3C__4H__5D)
   PHASE3_CONDITIONS Conservative pruning set (default: 3B,3C,3E)
   PHASE4_CONDITIONS Conservative pruning set (default: 4A,4D,4F,4H)

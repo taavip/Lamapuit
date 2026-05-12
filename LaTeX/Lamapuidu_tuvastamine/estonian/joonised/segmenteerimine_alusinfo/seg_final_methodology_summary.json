@@ -1,0 +1,179 @@
+{
+  "document": "/workspace/LaTeX/Lamapuidu_tuvastamine/estonian/segmenteerimise_metoodika_alusinfo.md",
+  "figure_dir": "/workspace/LaTeX/Lamapuidu_tuvastamine/estonian/joonised/segmenteerimine_alusinfo",
+  "n_label_objects": 1236,
+  "label_area_m2": 6491.993697839943,
+  "valid_area_m2": 457768.95162491273,
+  "mask_meta": {
+    "source_chm": "seg_pipeline/input/baseline_chm.tif",
+    "source_area_gpkg": "data/labels/valid_area.gpkg",
+    "source_gpkg": "data/labels/cdw_labels_MP.gpkg",
+    "method": "area-masked (no ensemble)",
+    "n_valid": 11444080,
+    "n_positive": 226584,
+    "n_negative": 11217496,
+    "n_ignored": 13555920,
+    "smoke_test": false
+  },
+  "stripe_pixel_stats": [
+    {
+      "stripe": 0,
+      "cols": "0-999",
+      "role": "test",
+      "positive_px": 61844,
+      "negative_px": 4938156,
+      "ignored_px": 0,
+      "valid_px": 5000000,
+      "total_px": 5000000,
+      "positive_valid_pct": 1.23688,
+      "valid_total_pct": 100.0
+    },
+    {
+      "stripe": 1,
+      "cols": "1000-1999",
+      "role": "fold0 val / fold1 train",
+      "positive_px": 101104,
+      "negative_px": 3901241,
+      "ignored_px": 997655,
+      "valid_px": 4002345,
+      "total_px": 5000000,
+      "positive_valid_pct": 2.5261190626994923,
+      "valid_total_pct": 80.0469
+    },
+    {
+      "stripe": 2,
+      "cols": "2000-2999",
+      "role": "fold0 train / fold1 val",
+      "positive_px": 21950,
+      "negative_px": 1483285,
+      "ignored_px": 3494765,
+      "valid_px": 1505235,
+      "total_px": 5000000,
+      "positive_valid_pct": 1.4582440615584942,
+      "valid_total_pct": 30.1047
+    },
+    {
+      "stripe": 3,
+      "cols": "3000-3999",
+      "role": "fold0 train / fold1 val",
+      "positive_px": 26043,
+      "negative_px": 495003,
+      "ignored_px": 4478954,
+      "valid_px": 521046,
+      "total_px": 5000000,
+      "positive_valid_pct": 4.998215128798609,
+      "valid_total_pct": 10.42092
+    },
+    {
+      "stripe": 4,
+      "cols": "4000-4999",
+      "role": "fold0 train / fold1 val",
+      "positive_px": 15643,
+      "negative_px": 399811,
+      "ignored_px": 4584546,
+      "valid_px": 415454,
+      "total_px": 5000000,
+      "positive_valid_pct": 3.7652784664487524,
+      "valid_total_pct": 8.30908
+    }
+  ],
+  "role_pixel_stats": [
+    {
+      "role": "Püsiv testala",
+      "stripes": "0",
+      "positive_px": 61844,
+      "negative_px": 4938156,
+      "ignored_px": 0,
+      "valid_px": 5000000,
+      "total_px": 5000000,
+      "positive_valid_pct": 1.23688,
+      "valid_total_pct": 100.0
+    },
+    {
+      "role": "Fold 0 treening",
+      "stripes": "2, 3, 4",
+      "positive_px": 63636,
+      "negative_px": 2378099,
+      "ignored_px": 12558265,
+      "valid_px": 2441735,
+      "total_px": 15000000,
+      "positive_valid_pct": 2.6061796222767826,
+      "valid_total_pct": 16.278233333333333
+    },
+    {
+      "role": "Fold 0 valideerimine",
+      "stripes": "1",
+      "positive_px": 101104,
+      "negative_px": 3901241,
+      "ignored_px": 997655,
+      "valid_px": 4002345,
+      "total_px": 5000000,
+      "positive_valid_pct": 2.5261190626994923,
+      "valid_total_pct": 80.0469
+    },
+    {
+      "role": "Fold 1 treening",
+      "stripes": "1",
+      "positive_px": 101104,
+      "negative_px": 3901241,
+      "ignored_px": 997655,
+      "valid_px": 4002345,
+      "total_px": 5000000,
+      "positive_valid_pct": 2.5261190626994923,
+      "valid_total_pct": 80.0469
+    },
+    {
+      "role": "Fold 1 valideerimine",
+      "stripes": "2, 3, 4",
+      "positive_px": 63636,
+      "negative_px": 2378099,
+      "ignored_px": 12558265,
+      "valid_px": 2441735,
+      "total_px": 15000000,
+      "positive_valid_pct": 2.6061796222767826,
+      "valid_total_pct": 16.278233333333333
+    }
+  ],
+  "role_patch_stats": [
+    {
+      "role": "Püsiv testala",
+      "patches": 130,
+      "positive_patches": 81,
+      "positive_patch_pct": 62.30769230769231,
+      "positive_px_in_patches": 103252,
+      "valid_px_in_patches": 8519680
+    },
+    {
+      "role": "Fold 0 treening",
+      "patches": 95,
+      "positive_patches": 77,
+      "positive_patch_pct": 81.05263157894737,
+      "positive_px_in_patches": 110536,
+      "valid_px_in_patches": 4505505
+    },
+    {
+      "role": "Fold 0 valideerimine",
+      "patches": 118,
+      "positive_patches": 108,
+      "positive_patch_pct": 91.52542372881356,
+      "positive_px_in_patches": 173474,
+      "valid_px_in_patches": 6901546
+    },
+    {
+      "role": "Fold 1 treening",
+      "patches": 118,
+      "positive_patches": 108,
+      "positive_patch_pct": 91.52542372881356,
+      "positive_px_in_patches": 173474,
+      "valid_px_in_patches": 6901546
+    },
+    {
+      "role": "Fold 1 valideerimine",
+      "patches": 95,
+      "positive_patches": 77,
+      "positive_patch_pct": 81.05263157894737,
+      "positive_px_in_patches": 110536,
+      "valid_px_in_patches": 4505505
+    }
+  ]
+}

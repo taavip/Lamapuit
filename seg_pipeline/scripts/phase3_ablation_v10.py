@@ -37,6 +37,7 @@ from scipy.ndimage import label as label_components
 from torch import nn
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.utils.data import DataLoader
 
 # Add scripts to path
 ROOT = Path(__file__).parent.parent
@@ -44,7 +45,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from phase2_dataset_v3 import (
     CWDSegDataset, load_patch_index, make_weighted_sampler,
-    _read_chm_path, _get_in_channels, _get_binary_bands, SpatialCVSplitterV3, SpatialCVSplitterV4,
+    _read_chm_path, _get_in_channels, _get_binary_bands,
+    SpatialCVSplitterV3, SpatialCVSplitterV4, SpatialCVSplitterV5,
     STRIPE_WIDTH, TEST_STRIPE, PATCH_SIZE, STRIDE,
 )
 from phase3_train_v10 import build_model, train_fold, V7CombinedLoss
@@ -321,11 +323,13 @@ def run_condition(
             f"(all non-test stripes), n_val_proxy={len(val_entries)}"
         )
     else:
-        splitter = (
-            SpatialCVSplitterV4(stripe_width=STRIPE_WIDTH, test_stripe=TEST_STRIPE)
-            if int(getattr(args, "cv_version", 4)) == 4
-            else SpatialCVSplitterV3(stripe_width=STRIPE_WIDTH, test_stripe=TEST_STRIPE)
-        )
+        cvv = int(getattr(args, "cv_version", 4))
+        if cvv == 5:
+            splitter = SpatialCVSplitterV5(tile_size=256, block_tiles=3, test_ratio=0.2, seed=args.seed)
+        elif cvv == 4:
+            splitter = SpatialCVSplitterV4(stripe_width=STRIPE_WIDTH, test_stripe=TEST_STRIPE)
+        else:
+            splitter = SpatialCVSplitterV3(stripe_width=STRIPE_WIDTH, test_stripe=TEST_STRIPE)
         train_entries, val_entries = splitter.train_val_split(patch_index, val_fold=args.fold)
         split_id = f"fold{args.fold}"
 
@@ -394,7 +398,7 @@ def run_condition(
     eval_metrics = {}
     if args.evaluate_test and ckpt_path is not None and ckpt_path.exists():
         try:
-            eval_metrics = _evaluate_test_stripe(ckpt_path, condition, args, winner)
+            eval_metrics = _evaluate_test_holdout(ckpt_path, condition, args, winner)
         except Exception as e:
             print(f"    Warning: test stripe evaluation failed: {e}")
 
@@ -551,6 +555,98 @@ def _evaluate_test_stripe(
         print(f"    Warning: Extended metrics failed: {e}")
 
     return metrics
+
+
+def _evaluate_test_entries(
+    ckpt_path: Path,
+    condition: AblationConfig,
+    args: argparse.Namespace,
+    winner: dict,
+) -> dict:
+    """Evaluate checkpoint on held-out test entries (fold_id = -1)."""
+    arch = condition.arch or winner[3].get("arch", "unetpp_effb2")
+    chm_variant = condition.chm_variant or winner[2].get("chm_variant", "composite")
+    in_channels = condition.in_channels or winner[2].get("in_channels", _get_in_channels(chm_variant))
+
+    patch_index_path, band_stats_path = _resolve_dataset_files(args.dataset_dir, chm_variant)
+    patch_index = load_patch_index(patch_index_path)
+    test_entries = [e for e in patch_index if getattr(e, "fold_id", -1) == -1]
+    if not test_entries:
+        raise RuntimeError("No held-out test entries (fold_id=-1) found for CVv5")
+
+    with open(band_stats_path) as f:
+        band_stats = json.load(f)
+
+    model = build_model(arch, in_channels=in_channels, pretrained=False).to(args.device)
+    ckpt = torch.load(ckpt_path, map_location=args.device, weights_only=False)
+    model.load_state_dict(ckpt["state_dict"])
+    model.eval()
+
+    ds = CWDSegDataset(
+        entries=test_entries,
+        chm_tif=args.chm_tif,
+        mask_tif=args.mask_tif,
+        band_stats=band_stats,
+        patch_size=PATCH_SIZE,
+        in_channels=in_channels,
+        augment=False,
+        variant=chm_variant,
+    )
+    loader = DataLoader(ds, batch_size=16, shuffle=False, num_workers=0)
+
+    prob_list: list[np.ndarray] = []
+    tgt_list: list[np.ndarray] = []
+    val_list: list[np.ndarray] = []
+    with torch.no_grad():
+        for batch in loader:
+            image = batch["image"].to(args.device, non_blocking=True)
+            logits = model(image)
+            probs = torch.sigmoid(logits).detach().cpu().numpy()[:, 0]
+            for k in range(len(probs)):
+                prob_list.append(probs[k])
+                tgt_list.append(batch["target"][k, 0].numpy())
+                val_list.append(batch["valid"][k, 0].numpy())
+
+    best_by_f1, _ = threshold_sweep(prob_list, tgt_list, val_list)
+    threshold = float(best_by_f1.get("threshold", 0.5))
+    metrics = accumulate_pixel_metrics(prob_list, tgt_list, val_list, threshold=threshold)
+    metrics["test_f1"] = float(metrics.get("f1", 0.0))
+    metrics["optimal_threshold"] = threshold
+
+    # Patch-level extended metrics aggregation for CVv5 held-out entries.
+    cl_vals: list[float] = []
+    bnd_vals: list[float] = []
+    pred_components = 0
+    gt_components = 0
+    for p, t, v in zip(prob_list, tgt_list, val_list):
+        pred_bin = ((p >= threshold) & (v > 0.5)).astype(np.uint8)
+        gt_bin = ((t > 0.5) & (v > 0.5)).astype(np.uint8)
+        cl_vals.append(float(cldice_metric(pred_bin, gt_bin)))
+        bnd_vals.append(float(boundary_iou(pred_bin, gt_bin)))
+        _, npred = label_components(pred_bin.astype(bool))
+        _, ngt = label_components(gt_bin.astype(bool))
+        pred_components += int(npred)
+        gt_components += int(ngt)
+
+    metrics["cldice"] = float(np.mean(cl_vals)) if cl_vals else 0.0
+    metrics["boundary_iou"] = float(np.mean(bnd_vals)) if bnd_vals else 0.0
+    metrics["n_pred_components"] = float(pred_components)
+    metrics["n_gt_components"] = float(gt_components)
+    metrics["ap_iou_25"] = None
+    metrics["ap_iou_50"] = None
+    return metrics
+
+
+def _evaluate_test_holdout(
+    ckpt_path: Path,
+    condition: AblationConfig,
+    args: argparse.Namespace,
+    winner: dict,
+) -> dict:
+    """Route test evaluation by CV protocol."""
+    if int(getattr(args, "cv_version", 4)) == 5:
+        return _evaluate_test_entries(ckpt_path, condition, args, winner)
+    return _evaluate_test_stripe(ckpt_path, condition, args, winner)
 
 
 def run_phase(phase_id: int, args: argparse.Namespace, winner: dict) -> dict:
@@ -714,8 +810,8 @@ def main():
     parser.add_argument("--selection-metric", type=str, default="val_cldice",
                         choices=["val_f1", "best_val_f1", "val_dice", "best_val_dice", "val_cldice", "best_val_cldice"],
                         help="Metric used to select phase winners (default: val_cldice)")
-    parser.add_argument("--cv-version", type=int, default=4, choices=[3, 4],
-                        help="Cross-validation splitter: 3=V3 (imbalanced 4-fold), 4=V4 (balanced 2-fold)")
+    parser.add_argument("--cv-version", type=int, default=4, choices=[3, 4, 5],
+                        help="Cross-validation splitter: 3=V3, 4=V4, 5=V5 (3x3 block CV + held-out blocks)")
 
     args = parser.parse_args()
     if args.condition_ids:
@@ -779,6 +875,8 @@ def main():
 
     if args.cv_version == 4 and args.fold not in (0, 1):
         raise ValueError(f"cv-version=4 supports folds 0 or 1 only; got fold={args.fold}")
+    if args.cv_version == 5 and args.fold not in (0, 1, 2):
+        raise ValueError(f"cv-version=5 supports folds 0,1,2 only; got fold={args.fold}")
     if args.final_train_all and not args.evaluate_test:
         print("Warning: --final-train-all is intended for final locked test evaluation (--evaluate-test).", flush=True)
 

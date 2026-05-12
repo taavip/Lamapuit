@@ -39,6 +39,8 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
+import random
 import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
@@ -256,6 +258,110 @@ class SpatialCVSplitterV4:
         return [e for e in entries if e.fold_id == -1]
 
 
+class SpatialCVSplitterV5:
+    """3-fold block CV using non-overlapping 256x256 tiles grouped into 3x3 blocks.
+
+    Protocol:
+      1) Tile full raster into non-overlapping 256x256 tiles.
+      2) Group tiles into non-overlapping 3x3 blocks (block size 768x768 px).
+      3) Randomly assign ~20% of blocks to held-out test (fold_id=-1).
+      4) Assign remaining blocks to folds 0/1/2 (round-robin after shuffle).
+
+    Notes:
+      - Uses a fixed seed for deterministic split reproducibility.
+      - No stripe buffer masking is used for this protocol.
+    """
+
+    def __init__(
+        self,
+        tile_size: int = 256,
+        block_tiles: int = 3,
+        test_ratio: float = 0.2,
+        seed: int = 42,
+    ) -> None:
+        self.tile_size = tile_size
+        self.block_tiles = block_tiles
+        self.test_ratio = test_ratio
+        self.seed = seed
+        self._prepared = False
+        self._block_to_fold: dict[int, int] = {}
+        self._n_blocks_cols = 0
+
+    def prepare(self, width: int, height: int, patch_size: int) -> None:
+        if patch_size != self.tile_size:
+            raise ValueError(
+                f"CVv5 requires patch_size={self.tile_size} (got {patch_size})"
+            )
+        n_tiles_x = int(math.ceil(width / self.tile_size))
+        n_tiles_y = int(math.ceil(height / self.tile_size))
+        n_blocks_x = int(math.ceil(n_tiles_x / self.block_tiles))
+        n_blocks_y = int(math.ceil(n_tiles_y / self.block_tiles))
+        self._n_blocks_cols = n_blocks_x
+
+        block_ids = list(range(n_blocks_x * n_blocks_y))
+        rng = random.Random(self.seed)
+        rng.shuffle(block_ids)
+
+        n_test = max(1, int(round(len(block_ids) * self.test_ratio)))
+        test_blocks = set(block_ids[:n_test])
+        train_blocks = block_ids[n_test:]
+
+        self._block_to_fold = {}
+        for bid in test_blocks:
+            self._block_to_fold[bid] = -1
+        for i, bid in enumerate(train_blocks):
+            self._block_to_fold[bid] = i % 3
+        self._prepared = True
+
+    def grid_positions(
+        self,
+        height: int,
+        width: int,
+        patch_size: int,
+        stride: int,
+    ) -> tuple[list[int], list[int]]:
+        if patch_size != self.tile_size or stride != self.tile_size:
+            raise ValueError(
+                f"CVv5 requires non-overlap tiles: patch_size=stride={self.tile_size} "
+                f"(got patch_size={patch_size}, stride={stride})"
+            )
+        ys = list(range(0, height, patch_size))
+        xs = list(range(0, width, patch_size))
+        return ys, xs
+
+    def assign_patch(self, col_off: int, row_off: int, patch_size: int) -> tuple[int, int]:
+        if not self._prepared:
+            raise RuntimeError("SpatialCVSplitterV5.prepare(...) must be called first")
+        if patch_size != self.tile_size:
+            raise ValueError(f"CVv5 requires patch_size={self.tile_size}")
+        tile_x = col_off // self.tile_size
+        tile_y = row_off // self.tile_size
+        block_x = tile_x // self.block_tiles
+        block_y = tile_y // self.block_tiles
+        block_id = block_y * self._n_blocks_cols + block_x
+        fold_id = self._block_to_fold.get(block_id, -1)
+        return block_id, fold_id
+
+    def train_val_split(
+        self, entries: list[PatchEntry], val_fold: int
+    ) -> tuple[list[PatchEntry], list[PatchEntry]]:
+        if val_fold not in (0, 1, 2):
+            raise ValueError(f"Invalid fold for CVv5: {val_fold}. Must be 0/1/2.")
+        train: list[PatchEntry] = []
+        val: list[PatchEntry] = []
+        for e in entries:
+            if e.fold_id == -1:
+                continue
+            if e.fold_id == val_fold:
+                val.append(e)
+            else:
+                train.append(e)
+        return train, val
+
+    def test_entries(self, entries: list[PatchEntry]) -> list[PatchEntry]:
+        return [e for e in entries if e.fold_id == -1]
+
+
 # ---------------------------------------------------------------------------
 # CHM variant helpers (shared with V2 — kept in sync)
 # ---------------------------------------------------------------------------
@@ -323,9 +429,15 @@ def build_patch_index(
     with rasterio.open(chm_tif) as src:
         H, W = src.height, src.width
 
+    if hasattr(splitter, "prepare"):
+        splitter.prepare(W, H, patch_size)
+
     entries: list[PatchEntry] = []
-    ys = _grid_positions(H, patch_size, stride)
-    xs = _grid_positions(W, patch_size, stride)
+    if hasattr(splitter, "grid_positions"):
+        ys, xs = splitter.grid_positions(H, W, patch_size, stride)
+    else:
+        ys = _grid_positions(H, patch_size, stride)
+        xs = _grid_positions(W, patch_size, stride)
 
     with rasterio.open(mask_tif) as msrc:
         for y0 in ys:
@@ -346,8 +458,11 @@ def build_patch_index(
                     continue
 
                 n_pos = int(((target_p > 0.5) & (valid_after_conflict > 0.5)).sum())
-                stripe = splitter.stripe_of(x0, patch_size)
-                fold_id = splitter.fold_id_of(stripe)
+                if hasattr(splitter, "assign_patch"):
+                    stripe, fold_id = splitter.assign_patch(x0, y0, patch_size)
+                else:
+                    stripe = splitter.stripe_of(x0, patch_size)
+                    fold_id = splitter.fold_id_of(stripe)
 
                 entries.append(PatchEntry(
                     row_off=y0, col_off=x0,
@@ -550,8 +665,13 @@ def parse_args() -> argparse.Namespace:
         default=ROOT / "seg_pipeline" / "output" / "phase2_dataset_v3",
     )
     p.add_argument(
-        "--cv-version", type=int, default=4, choices=[3, 4],
-        help="Cross-validation strategy: 3=V3 (imbalanced 4-fold), 4=V4 (balanced 2-fold, recommended)"
+        "--cv-version", type=int, default=4, choices=[3, 4, 5],
+        help=(
+            "Cross-validation strategy: "
+            "3=V3 (imbalanced 4-fold), "
+            "4=V4 (balanced 2-fold), "
+            "5=V5 (3x3 block split, held-out test blocks + 3-fold CV)"
+        )
     )
     p.add_argument("--patch-size", type=int, default=PATCH_SIZE)
     p.add_argument("--stride", type=int, default=STRIDE)
@@ -570,7 +690,15 @@ def main() -> None:
         sys.exit(1)
 
     # Select CV strategy
-    if args.cv_version == 4:
+    if args.cv_version == 5:
+        splitter = SpatialCVSplitterV5(tile_size=256, block_tiles=3, test_ratio=0.2, seed=42)
+        n_folds = 3
+        if args.patch_size != 256 or args.stride != 256:
+            print("CVv5 enforces non-overlapping 256x256 tiles; overriding patch-size/stride to 256.")
+            args.patch_size = 256
+            args.stride = 256
+        print("Using block-based 3-fold CV (V5): 3x3 tile blocks, 20% held-out test blocks")
+    elif args.cv_version == 4:
         splitter = SpatialCVSplitterV4()
         n_folds = 2
         print(f"Using balanced 2-fold CV (V4)")
@@ -600,7 +728,10 @@ def main() -> None:
     test_e = splitter.test_entries(entries)
     print(f"\nVariant: {args.chm_variant}  (in_channels={in_channels})")
     print(f"Total patches:  {len(entries):,}")
-    print(f"Test (stripe 0): {len(test_e):,} ({sum(1 for e in test_e if e.n_positive>0):,} positive)")
+    if args.cv_version == 5:
+        print(f"Test (held-out blocks): {len(test_e):,} ({sum(1 for e in test_e if e.n_positive>0):,} positive)")
+    else:
+        print(f"Test (stripe 0): {len(test_e):,} ({sum(1 for e in test_e if e.n_positive>0):,} positive)")
     for fold in range(n_folds):
         train_e, val_e = splitter.train_val_split(entries, fold)
         n_pos_tr = sum(1 for e in train_e if e.n_positive > 0)
