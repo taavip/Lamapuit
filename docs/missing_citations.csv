@@ -1,0 +1,38 @@
+Võti,Kategooria,Kasutuse kontekst,Prioriteet,Märkused
+chattopadhyay2018grad,XAI-meetod,GradCAM+ selgitamine,KÕRGE,Chattopadhyay et al. 2018 - on vaja
+fernandez2021hirescam,XAI-meetod,HiResCAM CAM-meetod,KÕRGE,Fernández et al. 2021 - on vaja
+sundararajan2017axiomatic,XAI-meetod,Integrated Gradients,KÕRGE,Sundararajan et al. 2017 - on vaja
+petsiuk2018rise,XAI-meetod,RISE juhusliku sisendi,KÕRGE,Petsiuk et al. 2018 - on vaja
+milletari2016vnet,Kaofunktsioon,V-Net ja DiceFocal loss,KÕRGE,Milletari et al. 2016 - on vaja
+lin2017focal,Kaofunktsioon,Focal Loss,KÕRGE,Lin et al. 2017 - on vaja
+salehi2017tversky,Kaofunktsioon,Tversky loss,KÕRGE,Salehi et al. 2017 - on vaja
+muller2019labelsmoothing,Regularisatsioon,Label smoothing,KÕRGE,Müller et al. 2019 - on vaja
+zhang2018mixup,Augmenteerimine,MixUp andmesuurendus,KÕRGE,Zhang et al. 2018 - on vaja
+loshchilov2019adamw,Optimeerimisalgoritm,AdamW optimeeija,KÕRGE,Loshchilov & Hutter 2019 - on vaja
+izmailov2018swa,Treening-tehnika,Stochastic Weight Averaging,KÕRGE,Izmailov et al. 2018 - on vaja
+wang2018tta,Treening-tehnika,Test-Time Augmentation,KÕRGE,Wang et al. 2018 - on vaja
+efron1993bootstrap,Statistika,Bootstrap järelproovid,KÕRGE,Efron 1993 - on vaja
+wilcoxon1945ranking,Statistika,Wilcoxoni test,KÕRGE,Wilcoxon 1945 - on vaja
+zhang2016,LiDAR töötlus,Cloth Simulation Filter,KÕRGE,Zhang et al. 2016 CSF - on vaja
+sotoodeh2006,LiDAR töötlus,Median Absolute Deviation,KESMINE,Sotoodeh et al. 2006 - on vaja
+zhang2020,LiDAR töötlus,Pit-free DEM,KESMINE,Zhang et al. 2020 - on vaja
+nystrom_2014,Lamapuu-meetod,Joonsegmentide analüüs,KESMINE,Nyström et al. 2014 - on vaja
+guo_2011,Lamapuu-meetod,OBIA klassifikatsiioon,KESMINE,Guo et al. 2011 - on vaja
+mucke_2013,Lamapuu-meetod,OBIA intensiivsus,KESMINE,Mücke et al. 2013 - on vaja
+lindberg_2013,Lamapuu-meetod,Automaatne sobitamine,KESMINE,Lindberg et al. 2013 - on vaja
+zhu_2021,Lamapuu-meetod,Mask R-CNN,KESMINE,Zhu et al. 2021 - on vaja
+duan_2023,Lamapuu-meetod,PointNet++,KESMINE,Duan et al. 2023 - on vaja
+lassauce_deadwood_2011,Biodiversiteet,Surnud puidu elurikkus,KESMINE,Lassauce et al. 2011 - on vaja
+stokland_biodiversity_2012,Biodiversiteet,Saproksüülne elurikkus,KESMINE,Stokland et al. 2012 - on vaja
+Vilhelmsson2013,Biodiversiteet,Saproksüülsed liigid,KESMINE,Vilhelmsson 2013 - on vaja
+fradette2019,DTM töötlus,DTM harmoniseerimine,KESMINE,Fradette et al. 2019 - on vaja
+riofrio2022,DTM töötlus,DTM harmoniseerimine,KESMINE,Riofrio et al. 2022 - on vaja
+shi2025,DTM töötlus,DTM harmoniseerimine,KESMINE,Shi et al. 2025 - on vaja
+helm_eesti_2023,Eesti andmed,ELME ökosüsteemid,KESMINE,Helm et al. 2023 - Eesti allikas
+SMI2024,Eesti andmed,Metsainventuri juhend,KÕRGE,Statistilise metsainventuuri 2024 - KRIITILINE Eesti allikas
+kliimaministeerium_looduse_2024,Eesti andmed,Looduse taastamise kava,KÕRGE,"Kliimaministeerium 2024 - KRIITILINE Eesti allikas"
+kliimaministeerium_metsaokosusteemid_2026,Eesti andmed,Metsaökosüsteemide strateegia,KÕRGE,"Kliimaministeerium 2026 - KRIITILINE Eesti allikas"
+laarmann_looduse_2026,Eesti andmed,Lamapuidu baastase,KÕRGE,"Laarmann et al. 2026 - KRIITILINE Eesti andmed"
+graves_strategic_2012,Juhend,Tehniline kirjutamine,MADAL,Graves & Graves 2012 - juhend
+tamara_munzner_keynote_2012,Juhend,Visualiseerimise põhimõtted,MADAL,Tamara Munzner 2012 - konverentsi ettekanne
+mosier1996,Psühholoogia,Automation bias,MADAL,Mosier 1996 - on vaja
