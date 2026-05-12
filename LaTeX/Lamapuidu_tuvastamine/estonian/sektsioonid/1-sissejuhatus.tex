@@ -7,29 +7,33 @@ Metsade süsinikuvaru ja selle muutuste hindamine on oluline nii kliimapoliitika
 
 Viimastel aastatel on lamapuidu kaardistamine muutunud strateegiliselt oluliseks nii Euroopa Liidu kui ka Eesti siseriiklikus poliitikas. Euroopa Liidu looduse taastamise määruse (Nature Restoration Law) ning sellega seonduva Eesti looduse taastamise kava raames nähakse lamapuidu ja seisva surnud puidu koguse suurendamist kui üht peamist indikaatorit metsaökosüsteemide taastamisel. Strateegilistes dokumentides rõhutatakse eriti jämedamõõtmelise lamapuidu (läbimõõduga alates u 30 cm) säilitamist, mis on kriitiline paljudele ohustatud liikidele \parencite{kliimaministeerium_metsaokosusteemid_2026}. Nende eesmärkide saavutamiseks on strateegilistes aruteludes käsitletud vajadust määratleda
 mõõdetavad sihttasemed ning tagada nende seireks usaldusväärsed andmed. Näitena on
-lamapuidu puhul esile toodud 2024. aasta baastase 8,7 m\textsuperscript{3}/ha, mida saab kasutada võimalike sihttasemete kujundamise lähtekohana \parencite{laarmann_looduse_2026}.
+lamapuidu puhul esile toodud 2024. aasta võrdlusalus 8,7 m\textsuperscript{3}/ha, mida saab kasutada võimalike sihttasemete kujundamise lähtekohana \parencite{laarmann_looduse_2026}.
 
 Eestis on lamapuit leidnud rakendust ka ökosüsteemiteenuste üleriigilisel hindamisel ELME projekti raames, kus seda kasutatakse indikaatorina ökosüsteemide seisundi ja hüvede määramisel \parencite{helm_eesti_2023}. Vaatamata poliitilisele tähtsusele on lamapuidu täpne ruumiline hindamine jätkuvalt keerukas. Traditsioonilised välitöödel põhinevad meetodid on ajamahukad ja katavad vaid murdosa metsadest, mis võib raskendada taastamiskavade täitmise operatiivset kontrolli.
 
-Aerolaserskaneerimise (LiDAR) tehnoloogia pakub siin uusi võimalusi, kuid üleriigilise lennu punktitihedus (ALS IV ring, u 2,1 punkti/m\textsuperscript{2}) seab piirid väiksemate objektide tuvastamisele \parencite{maa-ja_ruumiamet_als_nodate}. Käesolev töö keskendub Maa- ja Ruumiameti madallendude andmestikule (punktitihedus üle 18 p/m\textsuperscript{2}), et uurida, mil määral võimaldavad masinnägemise meetodid liikuda üksikute tüvede automaatse tuvastamise ja segmenteerimise suunas.
+Aerolaserskaneerimise (LiDAR) tehnoloogia pakub siin uusi võimalusi, kuid üleriigilise lennu punktitihedus (ALS IV ring, u 2,1 punkti/m\textsuperscript{2}) seab piirid väiksemate objektide tuvastamisele \parencite{maa-ja_ruumiamet_als_nodate}. Käesolev töö keskendub Maa- ja Ruumiameti tihedamatele madallendude andmetele, et uurida, mil määral võimaldavad LiDAR-andmetest tuletatud madala taimkatte kõrgusmudelid ning masinnägemise meetodid liikuda lamapuidu automaatse tuvastamise ja segmenteerimise suunas. Töö ei käsitle lõpliku üleriigilise lamapuidu mahuarvestuse loomist, vaid loob ja hindab metoodilist raamistikku, mida saab kasutada edasiste seire- ja valideerimisuuringute alusena.
 
 \subsection{Töö eesmärk ja uurimisküsimused}
 
-Käesoleva magistritöö eesmärk on katsetada ja hinnata metoodikaid lamapuidu automaatseks tuvastamiseks, kasutades kõrge punktitihedusega aerolaserskaneerimise andmeid. Töö fookuses on demonstreerida masinnägemise meetodite potentsiaali Eesti oludes ja luua märgistatud treeningandmestik, mis võiks olla eeskujuks edaspidistele üleriigilistele seiresüsteemidele.
+Käesoleva magistritöö eesmärk on katsetada ja hinnata metoodikaid lamapuidu automaatseks tuvastamiseks Eesti aerolaserskaneerimise andmetest. Töö fookuses on luua korratav töövoog, mis ühendab LiDAR-punktipilvede eeltöötluse, madala taimkatte kõrgusmudelite koostamise, märgistatud treeningandmestiku loomise, ruumiliselt kontrollitud valideerimise ning masinnägemise mudelite võrdlemise. Eraldi käsitletakse kahte seotud ülesannet: paanipõhist klassifitseerimist, mille eesmärk on hinnata lamapuidu esinemist pildiaknas, ja semantilist segmenteerimist, mille eesmärk on tuvastada lamapuidu ruumiline ulatus pikslitasandil.
 
 Töös püütakse vastata järgmistele uurimisküsimustele:
 \begin{itemize}
-    \item Millist täpsust on võimalik saavutada lamapuidu objektide tuvastamisel ja segmenteerimisel tiheda punktipilve (18+ p/m\textsuperscript{2}) põhjal?
-    \item Kas masinnägemise mudelid suudavad usaldusväärselt eristada lamapuitu muudest maapinnalähedastest objektidest (rattaroopad, madal taimestik) Eesti erinevates metsatüüpides?
-    \item Kuidas saab loodud treeningandmestikku ja metoodilisi katsetusi rakendada edaspidises töös, et toetada looduse taastamise kavas seatud monitooringueesmärke?
+    \item Millise täpsusega on võimalik tuvastada lamapuidu esinemist LiDAR-andmetest tuletatud 20 cm kõrgusmudeli paanidel?
+    \item Kui hästi on võimalik liikuda paanipõhiselt tuvastuselt pikslitasandi semantilise segmenteerimiseni, kus hinnatakse ka lamapuidu kuju ja ruumilist ulatust?
+    \item Kuidas mõjutavad kõrgusmudeli eeltöötlus, märgistuse kvaliteet ja ruumilis-ajaline train/val/test jaotus lamapuidu tuvastamise usaldusväärsust?
+    \item Millised on peamised veatüübid ja piirangud, mis takistavad lamapuidu eristamist muudest maapinnalähedastest struktuuridest Eesti metsaoludes?
+    \item Kuidas saab loodud andmestikku, märgistamistööriista ja valideerimisprotokolli kasutada edaspidises töös looduse taastamise ja metsaseire monitooringueesmärkide toetamiseks?
 \end{itemize}
 
 \subsection{Uurimisülesanded}
 
 Töö eesmärgi saavutamiseks on kavandatud järgmised uurimisülesanded:
 \begin{itemize}
-    \item teostada kõrge punktitihedusega LiDAR-punktipilvede eeltöötlus ja normaliseerimine;
-    \item koostada ja märgistada esinduslik treeningandmestik lamapuidu objektidest;
-    \item katsetada valitud masinõppe mudeleid lamapuidu automaatseks segmenteerimiseks;
-    \item hinnata metoodika usaldusväärsust ning analüüsida selle potentsiaalset lisaväärtust riikliku metsaseire täiendamisel.
+    \item teostada LiDAR-punktipilvede eeltöötlus, kõrguste normaliseerimine ja madala taimkatte kõrgusmudelite loomine;
+    \item koostada lamapuidu märgistamiseks töövoog ja märgistamistööriist, mis toetab nii käsitsi märgistamist kui ka mudeli abil prioriseeritud aktiivõpet;
+    \item moodustada klassifitseerimise treening-, valideerimis- ja testandmestik ning rakendada ruumilis-ajalist jaotust, mis vähendab kattuvatest paanidest ja korduvmõõdistustest tulenevat andmeleket;
+    \item võrrelda kõrgusmudeli sisendvariante ja masinnägemise arhitektuure ning treenida lõplik paanipõhine klassifitseerimisansambel;
+    \item luua eraldi pikslitasandi segmenteerimisandmestik, katsetada semantilise segmenteerimise mudeleid ning hinnata nende üldistusvõimet lukustatud testalal;
+    \item analüüsida mudelite tüüpilisi vigu, andmestiku piiranguid ja metoodika rakendatavust edaspidises metsaseires.
 \end{itemize}
