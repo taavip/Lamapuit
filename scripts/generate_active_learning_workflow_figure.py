@@ -55,7 +55,8 @@ def _add_box(ax, box: Box, edge: str = "#334155") -> None:
         box.label,
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=9.5,
+        linespacing=1.08,
         color="#0F172A",
         zorder=3,
     )
@@ -90,19 +91,20 @@ def _add_arrow(
             label_pos[0],
             label_pos[1],
             label,
-            fontsize=9,
+            fontsize=8.6,
             color="#334155",
             ha="center",
             va="center",
+            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.82, "pad": 1.2},
         )
 
 
 def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
     plt.rcParams["font.family"] = "DejaVu Sans"
 
-    fig, ax = plt.subplots(figsize=(16, 7))
+    fig, ax = plt.subplots(figsize=(14, 5.6))
     ax.set_xlim(0, 100)
-    ax.set_ylim(0, 60)
+    ax.set_ylim(0, 52)
     ax.axis("off")
 
     colors = {
@@ -112,19 +114,20 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
         "decision": "#F3F4F6",
     }
 
-    b1 = Box(10.0, 39.0, 12.0, 8.4, "Algandmed", colors["data"])
-    b2 = Box(26.0, 39.0, 15.0, 8.4, "Inimene märgistab\nja kontrollib", colors["human"])
-    b3 = Box(44.0, 39.0, 15.0, 8.4, "Mudel\n(treeni/uuenda)", colors["model"])
-    b4 = Box(61.0, 39.0, 12.0, 8.4, "Hinda andmed", colors["data"])
-    b5 = Box(78.0, 39.0, 12.0, 8.4, "Vali ebakindlad", colors["data"])
-    output = Box(87.5, 23.0, 13.5, 8.4, "Lõppmudel /\nväljund", colors["model"])
+    # Akadeemilisem terminoloogia
+    b1 = Box(10.5, 31.5, 12.0, 7.8, "Algandmed", colors["data"])
+    b2 = Box(27.0, 31.5, 15.5, 7.8, "Eksperthinnang\nja märgistamine", colors["human"])
+    b3 = Box(44.5, 31.5, 15.0, 7.8, "Mudeli treenimine\nja uuendamine", colors["model"])
+    b4 = Box(61.5, 31.5, 12.5, 7.8, "Tulemuste\nvalideerimine", colors["data"])
+    b5 = Box(79.0, 31.5, 13.5, 7.8, "Ebakindlate\nobjektide valik", colors["data"])
+    output = Box(86.5, 18.5, 14.0, 7.8, "Lõppmudel ja\ntulemused", colors["model"])
 
     for box in (b1, b2, b3, b4, b5, output):
         _add_box(ax, box)
 
-    diamond_center = (61.0, 23.0)
-    diamond_w = 10.0
-    diamond_h = 7.2
+    diamond_center = (61.5, 18.5)
+    diamond_w = 11.0
+    diamond_h = 7.0
     diamond = Polygon(
         [
             (diamond_center[0], diamond_center[1] + diamond_h / 2.0),
@@ -142,7 +145,7 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
     ax.text(
         diamond_center[0],
         diamond_center[1],
-        "Kas tulemus\npiisav?",
+        "Kas täpsus\non piisav?",
         ha="center",
         va="center",
         fontsize=9.5,
@@ -162,7 +165,7 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
         (diamond_center[0] + diamond_w / 2.0, diamond_center[1]),
         (output.left, output.y),
         label="Jah",
-        label_pos=(74.0, 25.7),
+        label_pos=(73.4, 21.2),
     )
     _add_arrow(
         ax,
@@ -171,16 +174,16 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
         lw=1.9,
         connectionstyle="arc3,rad=-0.15",
         label="Ei",
-        label_pos=(67.7, 31.2),
+        label_pos=(69.4, 26.7),
     )
     _add_arrow(
         ax,
         (b5.x - 0.5, b5.top),
         (b2.x + 0.2, b2.top),
         lw=2.4,
-        connectionstyle="arc3,rad=0.35",
-        label="Korduv tsükkel",
-        label_pos=(50.0, 48.5),
+        connectionstyle="arc3,rad=0.34",
+        label="Aktiivõppe iteratsioon",
+        label_pos=(53.0, 42.7),
     )
 
     # Dashed quality-check arrow.
@@ -194,10 +197,11 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
         connectionstyle="arc3,rad=0.0",
     )
 
+    # Korrektne pealkiri
     ax.text(
         50,
-        56.8,
-        "Aktiivõppe töövoog (lihtne korduskasutatav mall)",
+        49.0,
+        "Aktiivõppe metoodiline töövoog",
         ha="center",
         va="center",
         fontsize=13,
@@ -208,7 +212,7 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
     # Compact legend and note.
     ax.text(
         3.0,
-        8.0,
+        5.8,
         "Legend:",
         fontsize=9,
         fontweight="bold",
@@ -216,20 +220,21 @@ def generate_figure(out_png: Path, out_svg: Path, dpi: int) -> None:
         ha="left",
         va="center",
     )
-    ax.plot([10.5, 14.0], [8.0, 8.0], color="#1F2937", lw=1.8)
-    ax.text(14.6, 8.0, "täisnool = põhiprotsess", fontsize=8.5, ha="left", va="center", color="#334155")
+    ax.plot([10.5, 14.0], [5.8, 5.8], color="#1F2937", lw=1.8)
+    ax.text(14.6, 5.8, "Pidev joon = põhiprotsess", fontsize=8.0, ha="left", va="center", color="#334155")
 
-    ax.plot([39.5, 43.0], [8.0, 8.0], color="#475569", lw=1.6, linestyle=(0, (5, 3)))
-    ax.text(43.6, 8.0, "katkendnool = kontroll/ülevaatus", fontsize=8.5, ha="left", va="center", color="#334155")
+    ax.plot([39.0, 42.5], [5.8, 5.8], color="#475569", lw=1.6, linestyle=(0, (5, 3)))
+    ax.text(43.1, 5.8, "Katkendjoon = hindamine ja valik", fontsize=8.0, ha="left", va="center", color="#334155")
 
-    ax.plot([74.0, 77.5], [8.0, 8.0], color="#1F2937", lw=2.2)
-    ax.text(78.1, 8.0, "tagasisidekaar = iteratsioon", fontsize=8.5, ha="left", va="center", color="#334155")
+    ax.plot([74.0, 77.5], [5.8, 5.8], color="#1F2937", lw=2.2)
+    ax.text(78.1, 5.8, "Tagasisidekaar = iteratsioon", fontsize=8.0, ha="left", va="center", color="#334155")
 
+    # Akadeemiliselt sõnastatud märkus
     ax.text(
         3.0,
-        3.2,
-        "Selgitus: Ebakindlad = madala kindlusega juhtumid. Mudel uuendatakse pärast uusi märgiseid.",
-        fontsize=8.5,
+        2.2,
+        "Märkus: madala kindlustasemega ennustused suunatakse järgmises iteratsioonis tagasi eksperdile.",
+        fontsize=8.0,
         color="#475569",
         ha="left",
         va="center",
