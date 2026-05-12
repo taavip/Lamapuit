@@ -145,7 +145,7 @@ Placeholder}}
 \subsubsection{Segmenteerimisandmestiku ja valideerimise metoodika}
 \label{segmenteerimise-andmestik-metoodika}
 
-Segmenteerimiskatse viidi läbi logifailis \texttt{logs/ablation\_top2\_20260511\_105703.log} dokumenteeritud protokolli alusel. Mudelite valik (faasid 2--5) tehti ainult ristvalideerimise põhjal ning lukustatud testplokke kasutati üksnes lõpphinnanguks faasis 6. Selline protseduur väldib testileket ning hoiab mudeli valiku ja lõpphinnangu rangelt lahus.
+Segmenteerimiskatse viidi läbi välistamisanalüüsi protokolli alusel, kus igast otsingu faasist pääses edasi kaks parimat lahendust. Mudelite valik (faasid 2--5) tehti ainult ristvalideerimise põhjal ning lukustatud testplokke kasutati üksnes lõpphinnanguks faasis 6. Selline protseduur väldib testileket ning hoiab mudeli valiku ja lõpphinnangu rangelt lahus.
 
 Kasutati ruumilist CVv5 jaotust: kogu ala jagati mittekattuvateks 256$\times$256 paanideks, paanid agregeeriti 3$\times$3 plokkideks, millest ligikaudu 20\% lukustati testiks. Iga CHM-variandi puhul oli paane kokku 202, neist 42 kuulusid lukustatud testikomplekti (34 positiivset). Mudelivalikuks jäid 160 paani, mis jaotati kolme ruumilise osa (ingl \textit{fold}) vahel (0, 1, 2). Finaalfaasis treeniti mudelid kõigil mitte-test plokkidel ja hinnati üks kord lukustatud testplokkidel.
 
@@ -303,7 +303,7 @@ Placeholder}}
 
 Käesolevas logipõhises välistamisanalüüsis (ingl \textit{ablation}) ei hinnatud eraldi klassifitseerimisest tuletatud pikslimaski (s.t. otsene pikslitasandi (ingl \textit{pixel-level}) võrdlus klassifitseerimisahelaga puudub). Seetõttu on kvantitatiivne võrdlus selles alapeatükis piiratud kolme segmenteerimiskonfiguratsiooni omavahelise võrdlusega (kaks top-kandidaati + varasem V10 ahel).
 
-Akadeemiliselt korrektne järeldus selle uuringu põhjal on järgmine: top-2 otsinguprotokoll leidis varasemast lahendusest (ingl \textit{legacy}) oluliselt tugevama segmenteerimiskonfiguratsiooni. Otsene väide ``segmenteerimine vs klassifitseerimine'' eeldab siiski täiendavat kontrollkatset, kus samal lukustatud testialal mõõdetakse paralleelselt ka klassifitseerimispõhise maski \textit{clDice}, IoU ja F1.
+Akadeemiliselt korrektne järeldus selle uuringu põhjal on järgmine: protokoll, kus igast faasist pääses edasi kaks parimat lahendust, leidis varasemast lahendusest (ingl \textit{legacy}) oluliselt tugevama segmenteerimiskonfiguratsiooni. Otsene väide ``segmenteerimine vs klassifitseerimine'' eeldab siiski täiendavat kontrollkatset, kus samal lukustatud testialal mõõdetakse paralleelselt ka klassifitseerimispõhise maski \textit{clDice}, IoU ja F1.
 
 \subsubsection{Generaliseerimuse valideerimise tulemused}
 \label{segmenteerimise-generaliseerimine}

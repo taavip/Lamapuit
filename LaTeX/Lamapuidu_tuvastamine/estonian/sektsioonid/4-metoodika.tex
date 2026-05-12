@@ -281,7 +281,7 @@ Placeholder}}
 
     \subsubsection{Automaatne välistamisanalüüs ja lõpliku konfiguratsiooni valik}
 
-    \paragraph{Välistamisanalüüsi protsessi ülevaade} Lõpliku segmenteerimismetoodika ja mudeli seadistuste väljaselgitamiseks kasutati süsteemset ja automatiseeritud välistamisanalüüsi. Vältimaks otsinguruumi liiga varajast lukustumist lokaalsetesse või suboptimaalsetesse struktuuridesse, rakendati metoodikat, kus igast otsingufaasist pääses edasi kaks parimat lahendust (ingl \textit{top-2 carryover}). Kogu mudelivaliku uuring sooritati puutumatut testandmestikku kaasamata, kasutades paremusjärjestuse hindamiseks eranditult kolme ristvalideerimise osa ristkontrolli sooritusi.
+    \paragraph{Välistamisanalüüsi protsessi ülevaade} Lõpliku segmenteerimismetoodika ja mudeli seadistuste väljaselgitamiseks kasutati süsteemset ja automatiseeritud välistamisanalüüsi. Vältimaks otsinguruumi liiga varajast lukustumist lokaalsetesse või suboptimaalsetesse struktuuridesse, rakendati metoodikat, kus igast otsingufaasist pääses edasi kaks parimat lahendust. Kogu mudelivaliku uuring sooritati puutumatut testandmestikku kaasamata, kasutades paremusjärjestuse hindamiseks eranditult kolme ristvalideerimise osa ristkontrolli sooritusi.
 
     Automaatse välistamisanalüüsi töövoog jagunes kuue faasi põhjal:
     \begin{enumerate}
@@ -297,13 +297,13 @@ Placeholder}}
     \centering
     \includegraphics[width=0.92\linewidth]{estonian/joonised/segmenteerimine_alusinfo/seg_top2_ablation_workflow.png}
     \caption{Automaatne välistamisanalüüsi töövoog, kus järk-järgult optimiseeritakse andmestik, mudeli arhitektuur, kaofunktsioon ning regularisatsioon.}
-    \label{fig:top2-ablation-workflow}
+    \label{fig:ablation-workflow}
     \end{figure}
 
     \paragraph{Valikukriteerium ja kesktelje Dice-skoor (\textit{clDice})}
     Mudelite, andmestike ja parameetrite pingereastamisel kasutati valikumõõdikuks \textit{clDice}. Standardsed kattuvusmõõdikud nagu \textit{Dice}-koefitsient või kattuva ja ühendatud ala suhe jäävad isomorfselt sarnaste struktuuride, eriti piklike ja katkendlike lamapuidu elementide pidevuse väärtustamisel puudulikeks. Keskteljel põhinev \textit{clDice} (ingl \textit{centerline Dice}) hindab täpsemalt just lineaarsete objektide võrgustiku topoloogia tegelikku visuaalset ja füüsilist õigsust. 
     
-    Arvestades automaatse töövoo tulemuslikkuse mudeleid, kehtestati \textit{top-2} pingereastamisel selge hierarhiline sidemurdja (\textit{tie-break}) reeglistik:
+    Arvestades automaatse töövoo tulemuslikkuse mudeleid, kehtestati kahe parima lahenduse valikusel selge hierarhiline sidemurdja (\textit{tie-break}) reeglistik:
     \begin{enumerate}
         \item Kõrgeim valideerimise \textit{clDice} keskmine skoor üle kõigi kolme hindamisosa;
         \item Võrdsuse korral vaadati F1-skoori keskmist;
