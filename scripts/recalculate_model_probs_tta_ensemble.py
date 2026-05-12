@@ -15,6 +15,14 @@ Usage:
     --labels data/chm_variants/labels_canonical_with_splits.csv \\
     --baseline-chm-dir data/lamapuit/chm_max_hag_13_drop \\
     --output data/chm_variants/labels_canonical_with_splits_tta_ensemble.csv
+
+  python scripts/recalculate_model_probs_tta_ensemble.py \\
+    --labels data/chm_variants/labels_canonical_with_splits.csv \\
+    --baseline-chm-dir data/lamapuit/chm_max_hag_13_drop \\
+    --model-dir output/tile_labels_spatial_splits \\
+    --model-checkpoints cnn_seed42_spatial.pt cnn_seed43_spatial.pt cnn_seed44_spatial.pt effnet_b2_spatial.pt \\
+    --model-name "Ensemble(4-spatial-TTA)" \\
+    --output data/chm_variants/labels_canonical_with_splits_spatial_ensemble.csv
 """
 
 import sys
@@ -41,15 +49,18 @@ def load_chm_window(chm_dir: Path, raster_name: str, row_off: int, col_off: int)
 
     try:
         with rasterio.open(chm_path) as src:
-            window = Window(col_off, row_off, 128, 128)
-            data = src.read(1, window=window).astype(np.float32)
-            if src.nodata is not None:
-                data[data == src.nodata] = np.nan
-            # Replace NaN with 0 to avoid numerical issues
-            data = np.nan_to_num(data, nan=0.0)
-            return data
+            return load_chm_window_from_src(src, row_off, col_off)
     except Exception:
         return None
+
+
+def load_chm_window_from_src(src, row_off: int, col_off: int) -> np.ndarray:
+    """Load a 128x128 CHM window from an already opened rasterio dataset."""
+    window = Window(col_off, row_off, 128, 128)
+    data = src.read(1, window=window).astype(np.float32)
+    if src.nodata is not None:
+        data[data == src.nodata] = np.nan
+    return np.nan_to_num(data, nan=0.0)
 
 
 def normalize_chm(tile: np.ndarray) -> np.ndarray:
@@ -108,12 +119,40 @@ def predict_proba_cdw_tta(model: nn.Module, device, chm_tile: np.ndarray) -> flo
         return None
 
 
-def recalculate_probabilities_tta_ensemble(df, baseline_chm_dir, device):
+def predict_proba_cdw_tta_batch(model: nn.Module, device, chm_tiles: list[np.ndarray]) -> np.ndarray:
+    """
+    Compute P(CDW) for a batch using 8x TTA.
+
+    This uses the same views as predict_proba_cdw_tta, but runs them in batches
+    so full-dataset inference can use the GPU efficiently.
+    """
+    batch = np.stack([normalize_chm(tile) for tile in chm_tiles]).astype(np.float32)
+    x = torch.from_numpy(batch[:, np.newaxis]).to(device)
+
+    with torch.no_grad():
+        views = []
+        for k in range(4):
+            v = torch.rot90(x, k, [-2, -1])
+            views.append(torch.softmax(model(v), dim=1)[:, 1])
+            views.append(torch.softmax(model(torch.flip(v, [-1])), dim=1)[:, 1])
+
+        probs = torch.stack(views, dim=0).mean(dim=0)
+        return probs.detach().cpu().numpy()
+
+
+def recalculate_probabilities_tta_ensemble(
+    df,
+    baseline_chm_dir,
+    device,
+    model_specs=None,
+    model_name: str = "Ensemble(4-TTA)",
+    batch_size: int = 256,
+):
     """Recalculate model_prob using exact TTA + soft-voting ensemble."""
     df = df.copy()
 
     # Load all 4 models
-    models_to_load = [
+    models_to_load = model_specs or [
         ("cnn_seed42", Path("output/tile_labels/cnn_seed42.pt")),
         ("cnn_seed43", Path("output/tile_labels/cnn_seed43.pt")),
         ("cnn_seed44", Path("output/tile_labels/cnn_seed44.pt")),
@@ -143,61 +182,79 @@ def recalculate_probabilities_tta_ensemble(df, baseline_chm_dir, device):
     prob_changed = 0
     prob_changes = []
 
-    print("Processing labels with 8x TTA + soft-voting (this will take a while)...")
+    print("Processing labels with 8x TTA + soft-voting (this will take a while)...", flush=True)
+    print(f"Batch size: {batch_size}", flush=True)
     total = len(df)
 
-    for idx, row in df.iterrows():
-        if (idx + 1) % max(1, total // 20) == 0:  # Progress every 5%
-            pct = 100.0 * (idx + 1) / total
-            print(f"  [{idx + 1}/{total}] {pct:.1f}% | processed={processed}, changed={prob_changed}, failed={failed}")
-
-        raster_name = row["raster"]
-        row_off = int(row["row_off"])
-        col_off = int(row["col_off"])
+    def process_batch(batch_indices, batch_tiles, batch_old_probs):
+        nonlocal processed, failed, prob_changed
+        if not batch_indices:
+            return
 
         try:
-            # Load CHM window
-            chm_tile = load_chm_window(baseline_chm_dir, raster_name, row_off, col_off)
-            if chm_tile is None:
-                skipped += 1
-                continue
-
-            # Run TTA inference on all 4 models and soft-vote
-            ensemble_probs = []
+            ensemble_probs = np.zeros(len(batch_tiles), dtype=np.float32)
             for model in models.values():
-                prob = predict_proba_cdw_tta(model, device, chm_tile)
-                if prob is None:
-                    failed += 1
-                    break
-                ensemble_probs.append(prob)
+                ensemble_probs += predict_proba_cdw_tta_batch(model, device, batch_tiles)
+            ensemble_probs /= len(models)
+        except Exception as e:
+            raise RuntimeError(f"Failed to process batch of {len(batch_indices)} rows") from e
 
-            if len(ensemble_probs) != len(models):
-                failed += 1
-                continue
-
-            # Soft-vote: average probabilities across all 4 models
-            prob_cwd = float(np.mean(ensemble_probs))
-
-            # Track old vs new
-            old_prob = float(row["model_prob"]) if pd.notna(row["model_prob"]) else None
-            prob_diff = None
+        for row_idx, prob_cwd, old_prob in zip(batch_indices, ensemble_probs, batch_old_probs):
+            prob_cwd = float(prob_cwd)
             if old_prob is not None:
                 prob_diff = abs(prob_cwd - old_prob)
                 prob_changes.append(prob_diff)
-                if prob_diff > 0.01:  # Changed by >1%
+                if prob_diff > 0.01:
                     prob_changed += 1
 
-            # Update row
-            df.at[idx, "model_prob"] = prob_cwd
-            df.at[idx, "model_name"] = "Ensemble(4-TTA)"
-            df.at[idx, "timestamp"] = timestamp
-
+            df.at[row_idx, "model_prob"] = prob_cwd
+            df.at[row_idx, "model_name"] = model_name
+            df.at[row_idx, "timestamp"] = timestamp
             processed += 1
 
-        except Exception as e:
-            failed += 1
-            if idx < 5:
-                print(f"    Error row {idx}: {e}")
+    batch_indices = []
+    batch_tiles = []
+    batch_old_probs = []
+    n_seen = 0
+    progress_step = max(1, total // 20)
+
+    for raster_name, raster_df in df.groupby("raster", sort=False):
+        chm_path = baseline_chm_dir / raster_name
+        if not chm_path.exists():
+            raise FileNotFoundError(f"CHM raster not found: {chm_path}")
+
+        with rasterio.open(chm_path) as src:
+            for idx, row in raster_df.iterrows():
+                n_seen += 1
+                if n_seen % progress_step == 0:  # Progress every 5%
+                    pct = 100.0 * n_seen / total
+                    print(
+                        f"  [{n_seen}/{total}] {pct:.1f}% | processed={processed}, "
+                        f"changed={prob_changed}, failed={failed}",
+                        flush=True,
+                    )
+
+                try:
+                    chm_tile = load_chm_window_from_src(src, int(row["row_off"]), int(row["col_off"]))
+                except Exception as e:
+                    failed += 1
+                    if failed <= 5:
+                        print(f"    Error row {idx}: {e}", flush=True)
+                    continue
+
+                old_prob = float(row["model_prob"]) if pd.notna(row["model_prob"]) else None
+
+                batch_indices.append(idx)
+                batch_tiles.append(chm_tile)
+                batch_old_probs.append(old_prob)
+
+                if len(batch_indices) >= batch_size:
+                    process_batch(batch_indices, batch_tiles, batch_old_probs)
+                    batch_indices = []
+                    batch_tiles = []
+                    batch_old_probs = []
+
+    process_batch(batch_indices, batch_tiles, batch_old_probs)
 
     print(f"\nProcessing complete:")
     print(f"  Total processed: {processed:,}")
@@ -280,6 +337,29 @@ def main():
         type=Path,
         help="Output path (default: overwrite input)",
     )
+    parser.add_argument(
+        "--model-dir",
+        type=Path,
+        default=Path("output/tile_labels"),
+        help="Directory containing ensemble checkpoint files",
+    )
+    parser.add_argument(
+        "--model-checkpoints",
+        nargs="+",
+        default=["cnn_seed42.pt", "cnn_seed43.pt", "cnn_seed44.pt", "effnet_b2.pt"],
+        help="Checkpoint file names or paths to load for the soft-vote ensemble",
+    )
+    parser.add_argument(
+        "--model-name",
+        default="Ensemble(4-TTA)",
+        help="Value written to the output CSV model_name column",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=256,
+        help="Number of CHM tiles to evaluate per GPU batch",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Show stats without writing")
     parser.add_argument(
         "--sample",
@@ -302,8 +382,27 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}\n")
 
+    model_specs = []
+    for checkpoint in args.model_checkpoints:
+        path = Path(checkpoint)
+        if not path.is_absolute():
+            path = args.model_dir / path
+        model_specs.append((path.stem, path))
+
+    print("Model checkpoints:")
+    for name, path in model_specs:
+        print(f"  {name}: {path}")
+    print()
+
     # Recalculate probabilities with TTA
-    df = recalculate_probabilities_tta_ensemble(df, args.baseline_chm_dir, device)
+    df = recalculate_probabilities_tta_ensemble(
+        df,
+        args.baseline_chm_dir,
+        device,
+        model_specs=model_specs,
+        model_name=args.model_name,
+        batch_size=args.batch_size,
+    )
 
     # Print stats
     print_stats(df)
