@@ -43,7 +43,7 @@ Parima üldise tulemuse saavutas \textbf{EfficientNet-B2 koos kaalutud hääletu
 
 \begin{table}[h!]
 \centering
-\caption{Ansambli agregeerimismeetodite rigorne võrdlus 5$\times$5 ristvalideerimisel (25 hindamist meetodi kohta). Kõik täiustatud meetodid edestavad lihtsat pehmet hääletust statistiliselt olulisel määral (paaritud Wilcoxoni test).}
+\caption{Ansambli agregeerimismeetodite põhjalik võrdlus 5$\times$5 ristvalideerimisel (25 hindamist meetodi kohta). Kõik täiustatud meetodid edestavad lihtsat pehmet hääletust statistiliselt olulisel määral (paaritud Wilcoxoni test).}
 \label{tab:ensemble-methods-comparison}
 \begin{tabular}{lllcc}
 \hline
@@ -145,28 +145,181 @@ Placeholder}}
 \subsubsection{Segmenteerimisandmestiku ja valideerimise metoodika}
 \label{segmenteerimise-andmestik-metoodika}
 
-% [KIRJUTADA] Valideerimisel kasutatud kaardilehe info (406455_2021_tava / Ruhnu), selle eraldamine klassifitseerimisandmestikust, 1,236 CWD objekti pikslimaskide kirjeldus, 2-fold ristvalideerimise jagamise metoodika
+Segmenteerimiskatse viidi läbi logifailis \texttt{logs/ablation\_top2\_20260511\_105703.log} dokumenteeritud protokolli alusel. Mudelite valik (faasid 2--5) tehti ainult ristvalideerimise põhjal ning lukustatud testplokke kasutati üksnes lõpphinnanguks faasis 6. Selline protseduur väldib testileket ning hoiab mudeli valiku ja lõpphinnangu rangelt lahus.
+
+Kasutati ruumilist CVv5 jaotust: kogu ala jagati mittekattuvateks 256$\times$256 paanideks, paanid agregeeriti 3$\times$3 plokkideks, millest ligikaudu 20\% lukustati testiks. Iga CHM-variandi puhul oli paane kokku 202, neist 42 kuulusid lukustatud testikomplekti (34 positiivset). Mudelivalikuks jäid 160 paani, mis jaotati kolme ruumilise osa (ingl \textit{fold}) vahel (0, 1, 2). Finaalfaasis treeniti mudelid kõigil mitte-test plokkidel ja hinnati üks kord lukustatud testplokkidel.
+
+\begin{table}[h!]
+\centering
+\caption{CVv5 andmejaotuse kokkuvõte segmenteerimiskatsetes (logi preflight-statistika). Positiivsete all mõeldakse paane, milles esineb vähemalt üks lamapuidu piksel.}
+\label{tab:seg-cvv5-split}
+\begin{tabular}{llll}
+\hline
+\textbf{Jaotus} & \textbf{Paanide arv} & \textbf{Positiivseid} & \textbf{Kommentaar} \\
+\hline
+Kokku & 202 & --- & ühe CHM-variandi paanid \\
+Lukustatud test & 42 & 34 & kasutati ainult faasis 6 \\
+Treening+valik kokku & 160 & --- & kasutati faasides 2--5 \\
+Osa 0 (val) & 54 & 36 & train 106, suhe 1,96 \\
+Osa 1 (val) & 69 & 49 & train 91, suhe 1,32 \\
+Osa 2 (val) & 37 & 31 & train 123, suhe 3,32 \\
+\hline
+\end{tabular}
+\end{table}
+
+Valikukriteerium lukustati enne jooksu: primaarne mõõdik oli \texttt{val\_cldice}; viigimurdmine toimus järjekorras \texttt{mean(val\_cldice)} $\rightarrow$ \texttt{mean(val\_f1)} $\rightarrow$ väiksem \texttt{std(val\_cldice)}. Lisaks rakendati konservatiivset kandidaatide kärpimist arvutusaja vähendamiseks (faas 3: 3B/3C/3E; faas 4: 4A/4D/4F/4H; faas 5: 5A/5D/5E), mis säilitas varasemates katsetes kõige konkurentsivõimelisema otsinguruumi.
 
 \subsubsection{Segmenteerimismudelite otsing ja parameetrite võrdlus}
 \label{segmenteerimise-mudeli-otsing}
 
-\subsubsubsection{Testitud arhitektuurid ja sisendvariandid}
-% [KIRJUTADA] U-Net variatsioonid, DeepLabV3+, FPN, või muud testitud arhitektuurid. Klassifitseerimisest päritud CHM variandid. Parameetrite sweep tulemused.
+\paragraph{Testitud arhitektuurid ja sisendvariandid.}
 
-\subsubsubsection{Kaofunktsioonid ja augmentatsioonid}
-% [KIRJUTADA] Testitud kaofunktsioonid (Dice, CrossEntropy, Focal, kombinatsioonid). Augmentatsioonistrateegiad. Ristvalideerimise tulemustabel.
+Faasis 2 hinnati viit CHM-sisendit (2A--2E), hoides ülejäänud seadistuse fikseerituna (Unet++ EfficientNet-B2, Tversky $\alpha{=}0{,}6$, $\beta{=}0{,}4$, \textit{clDice}-komponent $\lambda{=}0{,}3$). Tabel~\ref{tab:seg-phase2} näitab, et parimad keskmised \texttt{val\_cldice} väärtused saadi \texttt{composite} ja \texttt{baseline} sisendiga. \texttt{masked} variant jäi selgelt nõrgemaks.
+
+\begin{table}[h!]
+\centering
+\caption{Faas 2 (CHM variandid): tulemused mõõdikul \texttt{val\_cldice} (koondades kolm osa keskmiseks).}
+\label{tab:seg-phase2}
+\begin{tabular}{llllll}
+\hline
+\textbf{Koht} & \textbf{Tingimus} & \textbf{CHM} & \textbf{Mean} & \textbf{SD} & \textbf{Osad (0/1/2)} \\
+\hline
+1 & 2E & composite & 0,2311 & 0,0476 & 0,2091 / 0,1869 / 0,2972 \\
+2 & 2A & baseline  & 0,2206 & 0,0482 & 0,1991 / 0,1754 / 0,2873 \\
+3 & 2C & gauss     & 0,2161 & 0,0385 & 0,2022 / 0,1774 / 0,2687 \\
+4 & 2B & raw       & 0,2138 & 0,0417 & 0,1924 / 0,1769 / 0,2721 \\
+5 & 2D & masked    & 0,1185 & 0,0204 & 0,1046 / 0,1036 / 0,1473 \\
+\hline
+\end{tabular}
+\end{table}
+
+Faasis 3 võrreldi kahte edasi liikunud CHM-kandidaati kolme arhitektuuriga (Unet++B0, Unet++B2, DeepLabV3+B2; kokku 6 kombinatsiooni). Parima tulemuse andis \texttt{2E\_\_3B} (Unet++B0 + composite), mis ületas teist kohta \texttt{2A\_\_3C} marginaalselt, kuid stabiilsemalt (madalam hajuvus kui mitmel alternatiivil).
+
+\begin{table}[h!]
+\centering
+\caption{Faas 3 (arhitektuur + CHM): \texttt{val\_cldice} järjestus.}
+\label{tab:seg-phase3}
+\begin{tabular}{llllll}
+\hline
+\textbf{Koht} & \textbf{Kombinatsioon} & \textbf{Arhitektuur} & \textbf{Mean} & \textbf{SD} & \textbf{Osad (0/1/2)} \\
+\hline
+1 & 2E\_\_3B & Unet++ EffB0    & 0,2645 & 0,0482 & 0,2410 / 0,2209 / 0,3317 \\
+2 & 2A\_\_3C & Unet++ EffB2    & 0,2277 & 0,0714 & 0,1782 / 0,1763 / 0,3286 \\
+3 & 2E\_\_3E & DeepLabV3+ EffB2& 0,2224 & 0,0437 & 0,1952 / 0,1880 / 0,2841 \\
+4 & 2A\_\_3B & Unet++ EffB0    & 0,2221 & 0,0515 & 0,1960 / 0,1763 / 0,2940 \\
+5 & 2A\_\_3E & DeepLabV3+ EffB2& 0,2146 & 0,0512 & 0,1873 / 0,1702 / 0,2862 \\
+6 & 2E\_\_3C & Unet++ EffB2    & 0,2131 & 0,0358 & 0,1851 / 0,1905 / 0,2636 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Kaofunktsioonid ja augmentatsioonid.}
+
+Faasis 4 testiti nelja kaofunktsiooni seadistust mõlemal faasi-3 võitjal (kokku 8 konfiguratsiooni). Tabel~\ref{tab:seg-phase4} järgi osutusid tugevaimaks kaks \texttt{2E\_\_3B} haru: \texttt{4H} (Tversky + \textit{clDice}) ja \texttt{4A} (DiceFocal). See näitab, et kaofunktsiooni mõju sõltus oluliselt eelnevast arhitektuuri- ja sisendivalikust (interaktsiooniefekt), mitte ainult üksikust kaotüübist.
+
+\begin{table}[h!]
+\centering
+\caption{Faas 4 (kaofunktsioonid): \texttt{val\_cldice} tulemused.}
+\label{tab:seg-phase4}
+\begin{tabular}{llllll}
+\hline
+\textbf{Koht} & \textbf{Kombinatsioon} & \textbf{Kaofunktsioon} & \textbf{Mean} & \textbf{SD} & \textbf{Osad (0/1/2)} \\
+\hline
+1 & 2E\_\_3B\_\_4H & Tversky + clDice & 0,2551 & 0,0434 & 0,2221 / 0,2268 / 0,3164 \\
+2 & 2E\_\_3B\_\_4A & DiceFocal        & 0,2442 & 0,0448 & 0,2288 / 0,1987 / 0,3051 \\
+3 & 2E\_\_3B\_\_4F & Tversky (0,7/0,3)& 0,2367 & 0,0615 & 0,2282 / 0,1658 / 0,3159 \\
+4 & 2A\_\_3C\_\_4H & Tversky + clDice & 0,2194 & 0,0324 & 0,2328 / 0,1748 / 0,2507 \\
+5 & 2A\_\_3C\_\_4A & DiceFocal        & 0,2002 & 0,0427 & 0,1804 / 0,1608 / 0,2595 \\
+6 & 2E\_\_3B\_\_4D & Tversky (0,5/0,5)& 0,1839 & 0,0259 & 0,1643 / 0,1668 / 0,2205 \\
+7 & 2A\_\_3C\_\_4D & Tversky (0,5/0,5)& 0,1774 & 0,0130 & 0,1695 / 0,1669 / 0,1957 \\
+8 & 2A\_\_3C\_\_4F & Tversky (0,7/0,3)& 0,1633 & 0,0192 & 0,1548 / 0,1452 / 0,1899 \\
+\hline
+\end{tabular}
+\end{table}
+
+Faasis 5 hinnati augmentatsiooni/regulariseerimise seadistusi kahel kaofunktsiooni finalistil (kokku 6 konfiguratsiooni). Tulemused (Tabel~\ref{tab:seg-phase5}) näitavad järjepidevalt, et \texttt{5E} (täisaugmentatsioon + pehmed sihtväärtused, SWA välja lülitatud) andis mõlemas harus kõige tugevama \texttt{val\_cldice}. Teise olulise tähelepanekuna olid mõlemad \texttt{5D} variandid (pehmed sihtväärtused + SWA) selgelt nõrgimad.
+
+\begin{table}[h!]
+\centering
+\caption{Faas 5 (augmentatsioon/regulariseerimine): \texttt{val\_cldice} tulemused.}
+\label{tab:seg-phase5}
+\begin{tabular}{llllll}
+\hline
+\textbf{Koht} & \textbf{Kombinatsioon} & \textbf{Seadistus} & \textbf{Mean} & \textbf{SD} & \textbf{Osad (0/1/2)} \\
+\hline
+1 & 2E\_\_3B\_\_4H\_\_5E & full+soft, SWA off & 0,3270 & 0,0554 & 0,2876 / 0,2879 / 0,4053 \\
+2 & 2E\_\_3B\_\_4A\_\_5E & full+soft, SWA off & 0,3101 & 0,0600 & 0,2650 / 0,2705 / 0,3949 \\
+3 & 2E\_\_3B\_\_4H\_\_5A & no aug             & 0,2980 & 0,0516 & 0,2862 / 0,2415 / 0,3662 \\
+4 & 2E\_\_3B\_\_4A\_\_5A & no aug             & 0,2765 & 0,0480 & 0,2653 / 0,2240 / 0,3400 \\
+5 & 2E\_\_3B\_\_4H\_\_5D & full+soft+SWA      & 0,2222 & 0,0298 & 0,2254 / 0,1841 / 0,2570 \\
+6 & 2E\_\_3B\_\_4A\_\_5D & full+soft+SWA      & 0,2005 & 0,0271 & 0,2041 / 0,1658 / 0,2318 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 5.X.} Faaside 2--5 paremusjärjestuste visualiseering (\texttt{mean val\_cldice}): horisontaalsed punktdiagrammid iga faasi kandidaatide kohta, koos SD veeribadega.\
+Placeholder}}
+\caption{Mudelivaliku dünaamika faasides 2--5 ja kandidaatidevahelised erinevused.}
+\label{fig:seg-phase-ranking}
+\end{figure}
 
 \subsubsection{Lõpliku segmenteerimismudelite jõudlus}
 \label{segmenteerimise-lopliku-joudlus}
 
-\subsubsubsection{Parim mudeli konfiguratsioon ja test-set tulemused}
-% [KIRJUTADA] Parim arhitektuur + CHM variant + kaofunktsioon + augmentatsioonid. Valideerimise Dice skoor, IoU, täpsus, tagasikutse. Tõenäosuskaardid ja segmentatsiooni väljundid.
+\paragraph{Parim mudeli konfiguratsioon ja test-set tulemused.}
 
-\subsubsubsection{Võrdlus klassifitseerimise baaslähenemisega}
-% [KIRJUTADA] Kuivõrd segmenteerimise otsepõhine lähenemisviis parandab pixel-level täpsust võrreldes klassifitseerimisele baseeruvate maskidega? Table tulemustest.
+Pärast faasi 5 võitjate lukustamist viidi faasis 6 läbi üksik lõpphindamine eraldatud testvalimil (ingl \textit{held-out test}) kolmele eeldefineeritud mudelile: kaks top-kombinatsiooni ja eelnev standardkonfiguratsioon (\texttt{2A\_\_3C\_\_4H\_\_5D}). Tabel~\ref{tab:seg-final-test} koondab lõppnäitajad.
+
+\begin{table}[h!]
+\centering
+\caption{Lukustatud testikomplekti tulemused faasis 6 (paremusjärjestus \texttt{test\_f1} järgi).}
+\label{tab:seg-final-test}
+\begin{tabular}{llllllll}
+\hline
+\textbf{Mudel} & \textbf{F1} & \textbf{clDice} & \textbf{IoU} & \textbf{Täpsus} & \textbf{Tagasik.} & \textbf{Lävi} & \textbf{Komponendid} \\
+\hline
+2E\_\_3B\_\_4H\_\_5E\_\_6 & 0,5750 & 0,4173 & 0,4035 & 0,5832 & 0,5671 & 0,50 & 674 \\
+2E\_\_3B\_\_4A\_\_5E\_\_6 & 0,5490 & 0,4031 & 0,3784 & 0,5290 & 0,5707 & 0,30 & 1076 \\
+2A\_\_3C\_\_4H\_\_5D\_\_6 & 0,4881 & 0,3490 & 0,3229 & 0,4602 & 0,5197 & 0,50 & 1348 \\
+\hline
+\end{tabular}
+\end{table}
+
+Parimaks osutus \texttt{2E\_\_3B\_\_4H\_\_5E\_\_6}, mille test-F1 oli 0,5750 ja test-\textit{clDice} 0,4173. Võrreldes eelneva standardkonfiguratsiooniga paranesid F1 (+0,0869; +17,8\%), \textit{clDice} (+0,0684; +19,6\%) ja IoU (+0,0806; +25,0\%). Samas oli ka parimal mudelil piirjoonte kvaliteedi mõõdik (\textit{boundary IoU}) madal (0,0570), mis viitab, et objektide globaalne tabamine paranes rohkem kui täpne kontuuripõhine kuju taastamine.
+
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 5.X.} Parima segmenteerimismudeli (\texttt{2E\_\_3B\_\_4H\_\_5E\_\_6}) kvalitatiivne võrdlus: sisend-CHM, tõene mask, ennustatud tõenäosuskaart ja binaarmask. Näidata vähemalt 4 juhtumit: 2 edukat, 2 keerulist.\
+Placeholder}}
+\caption{Parima mudeli kvalitatiivsed tulemused lukustatud testplokkidel.}
+\label{fig:seg-best-qualitative}
+\end{figure}
+
+\paragraph{Võrdlus klassifitseerimise baaslähenemisega.}
+
+Käesolevas logipõhises välistamisanalüüsis (ingl \textit{ablation}) ei hinnatud eraldi klassifitseerimisest tuletatud pikslimaski (s.t. otsene pikslitasandi (ingl \textit{pixel-level}) võrdlus klassifitseerimisahelaga puudub). Seetõttu on kvantitatiivne võrdlus selles alapeatükis piiratud kolme segmenteerimiskonfiguratsiooni omavahelise võrdlusega (kaks top-kandidaati + varasem V10 ahel).
+
+Akadeemiliselt korrektne järeldus selle uuringu põhjal on järgmine: top-2 otsinguprotokoll leidis varasemast lahendusest (ingl \textit{legacy}) oluliselt tugevama segmenteerimiskonfiguratsiooni. Otsene väide ``segmenteerimine vs klassifitseerimine'' eeldab siiski täiendavat kontrollkatset, kus samal lukustatud testialal mõõdetakse paralleelselt ka klassifitseerimispõhise maski \textit{clDice}, IoU ja F1.
 
 \subsubsection{Generaliseerimuse valideerimise tulemused}
 \label{segmenteerimise-generaliseerimine}
 
-% [KIRJUTADA] Kas sõltumatu kaardilehe valideerimine toetab üldistatavuse väiteid? Mudeli robustuse käitumise analüüs eri metsatüüpide puhul (kõrgustes, tihedas võrastikus, erineva vanusega puistutes). Piirtingimuste käitumine (edge cases).
+Generaliseerimisvõime hindamiseks oli oluline, et testplokid olid mudelivalikust täielikult eraldatud. Faaside 2--5 valik tehti ainult \texttt{val\_cldice} põhjal ristvalideerimise osades ning alles pärast võitjate lukustamist hinnati mudeleid testil. Seega peegeldavad tabeli~\ref{tab:seg-final-test} tulemused realistlikku üldistusvõimet, mitte validatsiooni ületreenimist.
+
+Samas ilmnes märgatav ruumiline heterogeensus: peaaegu kõigis faasides andis osa 2 oluliselt kõrgema \texttt{val\_cldice} kui osad 0 ja 1. See viitab, et osad plokid on struktuurilt lihtsamad (või parema signaali-müra suhtega) kui teised. Selline muster ei invalideeri tulemust, kuid tähendab, et lõpphinnangu kõrval tuleb raporteerida ka osadevaheline hajuvus (mida tehti kõikides faasitabelites SD kaudu).
+
+Lisaks näitab komponentide arv testis (674 vs 222 tõelist objekti ka parima mudeli puhul), et mudel kipub jätkuvalt üle-segmenteerima peenstruktuure. Seetõttu on järgmise iteratsiooni kriitiline suund piiri- ja objektitaseme regulariseerimine (nt komponentide postprotsess, ühenduvuspõhised piirangud, boundary-loss), mitte üksnes globaalse F1 maksimeerimine.
+
+\begin{figure}[h!]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering
+\textbf{Joonis 5.X.} Vigade analüüsi paneel segmenteerimisele: (a) üle-segmenteerimine (FP fragmendid), (b) ühenduvuse katkemine, (c) kontuurinihe servades, (d) keerukas alusmets.\
+Placeholder}}
+\caption{Generaliseerimise kitsaskohad lukustatud testplokkidel.}
+\label{fig:seg-error-panel}
+\end{figure}
 \newpage

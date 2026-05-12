@@ -18,14 +18,12 @@ Placeholder}}
 \label{subsec:workflow-base-chm}
 
     \subsubsection{Töövoo üldine ülesehitus}
-    \paragraph{Korduv (iteratiivne) metoodika.} Metoodika aluseks on korduv töövoog. Esmalt treeniti esialgne mudel väiksemal käsitsi märgistatud andmestikul. Seejärel kasutati saadud mudeli väljundeid märgistamistööriistas abikihina, lihtsustades uute objektide leidmist. Pärast märgistuste süstemaatilist kvaliteedikontrolli treeniti rangete ruumiliste jaotusreeglite (test/treening/puhver) abil lõplik ansambelmudel. Kirjeldatud protsess võimaldab terviklikult ühendada andmete ettevalmistuse, aktiivõppe elementidega märgistamise ja lõpliku hindamise.
-    
-\subsection{Metoodika üldskeem ja kõrgusmudeli (CHM) baasandmete loomine}
+    \paragraph{Korduv (iteratiivne) metoodika} Metoodika aluseks on korduv töövoog. Esmalt treeniti esialgne mudel väiksemal käsitsi märgistatud andmestikul. Seejärel kasutati saadud mudeli väljundeid märgistamistööriistas abikihina, lihtsustades uute objektide leidmist. Pärast märgistuste süstemaatilist kvaliteedikontrolli treeniti rangete ruumiliste jaotusreeglite (test/treening/puhver) abil lõplik ansambelmudel. Kirjeldatud protsess võimaldab terviklikult ühendada andmete ettevalmistuse, aktiivõppe elementidega märgistamise ja lõpliku hindamise.
 
     \subsubsection{ALS lähteandmed ja esmane maapinna normaliseerimine}
-    \paragraph{Punktipilve eeltöötlus.} LiDAR-punktipilve filtreerimine, maapinnamudeli (DTM) eraldamine ning kõrguse maapinnast (HAG) normaliseerimine on üksikasjalikult kirjeldatud peatükis~\ref{andmed}. Kõik käesolevas töös kasutatavad kõrgusmudeli variandid põhinevad samas eeltöötluse töövooskeemis.
+    \paragraph{Punktipilve eeltöötlus} LiDAR-punktipilve filtreerimine, maapinnamudeli (DTM) eraldamine ning kõrguse maapinnast (HAG) normaliseerimine on üksikasjalikult kirjeldatud peatükis~\ref{andmed}. Kõik käesolevas töös kasutatavad kõrgusmudeli variandid põhinevad samas eeltöötluse töövooskeemis.
 
-    \paragraph{Baas-CHM-i genereerimine.} Esmase madala taimkatte kõrgusmudeli (CHM) arvutamine 20~cm pikslisuurusega, sealhulgas paanide loomine 128$\times$128 piksli suuruses formaadis 50\% ülekattega, on kirjeldatud peatükis~\ref{andmed}. See baasmudel on alus nii käsitsi märgistamistööle kui ka mudeli sisendvariantide väljatöötamisele.
+    \paragraph{Baas-CHM-i genereerimine} Esmase madala taimkatte kõrgusmudeli (CHM) arvutamine 20~cm pikslisuurusega, sealhulgas paanide loomine 128$\times$128 piksli suuruses formaadis 50\% ülekattega, on kirjeldatud peatükis~\ref{andmed}. See baasmudel on alus nii käsitsi märgistamistööle kui ka mudeli sisendvariantide väljatöötamisele.
 
 
 % ---------------------------------------------------------
@@ -33,11 +31,11 @@ Placeholder}}
 \label{subsec:metoodika-klassifitseerimine}
 
     \subsubsection{Andmete sildistamine ja märgistustööriist}
-    \paragraph{Märgistamistööriista tehniline lahendus.} Lamapuidu usaldusväärseks ja efektiivseks märgistamiseks arendati käesoleva töö raames lokaalselt jooksutatavad Pythoni skriptid, mis koondasid sünkroniseeritult mitmeid ruumiandmeid, tasakaalustades märgistaja tähelepanu erinevate andmeallikate vahel ja toetades otsustus protsessi. Tegemist oli konkreetse ülesande jaoks loodud lihtsa ja kiire Matplotlib teegi pildiaknast lähtuva rakendusega.
+    \paragraph{Märgistamistööriista tehniline lahendus} Lamapuidu usaldusväärseks ja efektiivseks märgistamiseks arendati käesoleva töö raames lokaalselt jooksutatavad Pythoni skriptid, mis koondasid sünkroniseeritult mitmeid ruumiandmeid, tasakaalustades märgistaja tähelepanu erinevate andmeallikate vahel ja toetades otsustus protsessi. Tegemist oli konkreetse ülesande jaoks loodud lihtsa ja kiire Matplotlib teegi pildiaknast lähtuva rakendusega.
 
     Loodud märgistamistööriist tükeldas taimkattemudeli (CHM) rasterfailid kattuvateks 128$\times$128 piksli suurusteks paanideks. Märgistajale kuvati korraga ühte paani koos lähiümbrusega ning märgistamiseks kasutati klaviatuuri klahve (paremnool = lamapuit olemas, vasaknool = lamapuit puudub, ülesnool = ebaselge). Skript haldas kõikide piltide läbimist orkestreerijana ja salvestas edenemist faili, mis võimaldas tööd paindlikult peatada ja jätkata. Märgistatud andmed salvestati lokaalsetesse CSV-failidesse, mis sisaldasid paani asukohta, määratud klassi (lamapuit, taust või ebaselge), märgistamise allikat (käsitsi või automaatne) ja mudeli esialgset tõenäosust.
 
-    \paragraph{Visuaalsete otsustuskihtide komplekt.} Kuvatud andmekihid toetasid visuaalset otsustamist:
+    \paragraph{Visuaalsete otsustuskihtide komplekt} Kuvatud andmekihid toetasid visuaalset otsustamist:
     \begin{itemize}
         \item \textbf{Visuaalne esitus ja paanide vahelejätmine:} Kõrgusmudel kuvati kohandatud värviskaalaga (0--1,3\,m). Andmemüra vähendamiseks muudeti madalaimad (alla 0,15\,m) pikslid sujuvalt tumedamaks. Paanid, mis hõlmasid täielikult vaid maapinda, tuvastati koheselt ja jäeti märgistusprotsessis automaatselt vahele tingimusel, kui paani kõrgus oli maksimaalselt 0,15\,m ning märgiti automaatselt märgistatuks kui puuduva lamapuiduga paan.
         \item \textbf{Ajalugu ja ortofoto:} Tööriist võimaldas piltide vahetamist varasemate aastate madala taimkattemudeliga, aidates eristada samal asukohal paiknevat lamapuitu andmemürast. Samuti integreeriti Maa-ameti WMS-teenus, kuvades märgistajale abistamiseks vastava asukoha ortofoto, mis oli kogutud aerolaserskaneerimisega samal ajal.
@@ -48,23 +46,19 @@ Placeholder}}
 
     \begin{figure}[h!]
     \centering
-    \fbox{\parbox{0.92\linewidth}{\centering
-    \textbf{Joonis 4.2.} Märgistamise kasutajaliidese ekraanitõmmis, kus on näha CHM, ortofoto, ajalooline vaade .\\
-    Placeholder}}
-    \caption{Märgistamistööriista kasutajaliides ja kontekstivaated.}
+    \includegraphics[width=0.92\textwidth]{estonian/joonised/labeler.png}
+    \caption{Märgistamistööriista kasutajaliides ja kontekstivaated. Näha on CHM, ortofoto ja ajaloolise vaade kõrvuti.}
     \label{fig:labeling-ui}
     \end{figure}
 
     \begin{figure}[h!]
     \centering
-    \fbox{\parbox{0.92\linewidth}{\centering
-    \textbf{Joonis 4.3.} Mudeli soojuskaardi integratsioon tööriistas: kuidas mudel suunas märgistaja tähelepanu.\\
-    Placeholder}}
-    \caption{Mudeli soojuskaardi kasutamine märgistamise abikihina.}
+    \includegraphics[width=0.92\textwidth, angle=90]{estonian/joonised/labeler_orto_intgrad.png}
+    \caption{Mudeli soojuskaardi (IntGrad selgitavus) integratsioon tööriistas: kuidas mudel suunas märgistaja tähelepanu, näidates ennustuste alust.}
     \label{fig:labeling-heatmap}
     \end{figure}
 
-    \paragraph{Mudeli selgitatavuse (XAI) soojuskaardid.}
+    \paragraph{Mudeli selgitatavuse (XAI) soojuskaardid}
 
     Lamapuidu märkimise protsessis kasutatud soojuskaartide loomise meetodid kuuluvad laiemasse mudeli selgitatavuse (ingl \textit{explainable AI}, XAI) valdkonda. See võimaldab mõista, milliste sisendpildi piirkondade põhjal sügavõppemudelid masinnägemises otsuseid langetavad. Käesolevas töös rakendati järgmisi meetodeid:
 
@@ -82,27 +76,27 @@ Placeholder}}
 
     \subsubsection{Aktiivõppe korduv töövoog}
 
-    \paragraph{Esialgne märgistamine ja baasansambel.}
+    \paragraph{Esialgne märgistamine ja baasansambel}
     Märgistamise toetamiseks loodi esialgne mudel, mille ülesandeks oli hinnata kõigi 580\,136 paani usaldusväärsust mudeli tõenäosuse (\textit{model\_prob}) kaudu ning suunata aktiivõppe valikut. Ansambel koosnes kolmest CNN-Deep-Attn mudelist (juhuseemed 42, 43, 44) ning ühest EfficientNet-B2 mudelist. Valik tugines kahele printsiibile: (1) kolm identset arhitektuuri erinevate juhuseemetega vähendavad stohhastilisest initsialiseerimisest tulenevat varieeruvust; (2) EfficientNet-B2, mis kujutab arhitektuurselt erinevat mudeliperekonda, lisab ansambli ImageNeti eelõppest saadud üldisemad tunnused ning suurendab vastupanuvõimet üksikmudelite spetsiifiliste vigade suhtes.
 
     Ansambel treeniti 15\,850 käsitsi märgistatud õpepildil (valideerimisvalim 3\,962 pilti; CNN 50 epohhi, EfficientNet-B2 30 epohhi, märgiste silumine (ingl \textit{label smoothing}) 0,05, MixUp $\alpha=0{,}3$) ning hinnati 2\,186 treenimises mittekasutatud pildiga. Üksikmudelid saavutasid valideerimisvalimil F1-skoorid vahemikus 0,946--0,960; TTA-ga (testimisaegne andmete rikastamine, ingl \textit{test-time augmentation}) \parencite{wang2018tta} ansambel saavutas testvalimil F1-skoori 0,9701 ja ROC AUC väärtuse 0,9987 (vt tulemused, Tabel~\ref{tab:initial-ensemble}). TTA tähendab sisendpildi mitmekordset teisendamist (nt peegeldamine, pööramine) testimise hetkel ja nende variatsioonide ennustuste koondamist, et vähendada juhuslikest müra- ja asendifaktoritest tingitud vigu. Mudelite kombineerimisel eelistati pehmet hääletust (\textit{soft voting}), mis arvutab üksikmudelite väljastatud klassitõenäosuste kaalutud keskmise, erinevalt virnastamisest (\textit{stacking}), kus mudelite väljundid suunatakse eraldi metamudelisse, mis õpitakse üksikmudelite prognoose optimaalselt liitma.
 
-    \paragraph{Andmestiku hindamine ja märgistuste prioritiseerimine.}
+    \paragraph{Andmestiku hindamine ja märgistuste prioritiseerimine}
     Algmudeli väljundite põhjal toetuv märgistamine kätkeb endas ohtu automatiseerimiskaldeks (ingl \textit{automation bias}), kus ekspert kiidab pimesi heaks algoritmi ennustused. Selle riski neutraliseerimiseks rakendati kahetasandilist kvaliteedikontrolli. Kasutusel olnud lamapuidu märgistamise töövoos tugineti esmalt mitmele andmekihile: madala taimkatte kõrgusmudeli raster, ortofoto kaldaerofotod ja \textit{Google Street View} täiendasid üksteist. Ebaselged olukorrad vaadati käsitsi üle. Andmekataloogi aktsepteeritud märgistustest eraldati madala mudeliusaldusväärsusega vahemikus [0,39; 0,61] paiknevad objektid detailsemaks järelhindamiseks, lisaks sekkuti 5\% juhuslikule valimile automaatselt tugeva usaldusväärsusega määratud märgistustele. Kirjeldatud meetmed kindlustas märgistatud andmestiku usaldusväärsuse.
 
-    \paragraph{Andmestiku laiendamine uute märgistega.}
+    \paragraph{Andmestiku laiendamine uute märgistega}
     Lõpliku treenimisansambli jaoks kasvatati andmestikku oluliselt, tuginedes algmudelite tagasisidele. Prioritiseeritud ebaselged paanid vaadati manuaalselt üle ning viidi läbi täiendav interaktiivne märgistamine. Kogu protsess hõlmas 119 erinevat kaardilehte, mis esindasid ulatuslikku geograafilist ja metsanduslikku varieeruvust. Uuendatud andmestik kasvatas märgistatud paanide baasi 580\,136 kirjeni, millest edasiseks range otsustuslävega mudelitreeninguks puhastati välja 67\,290 kõrge usaldusväärsusega sildistust. Ümberehitatud ja laiendatud märgiste kogumi pealt treeniti teise põlvkonna sügavansambel, kindlustades täpsema ja stabiilsema tuvastusvõimekuse.
 
     \subsubsection{Klassifitseerimisandmestiku ruumiline ja ajaline jaotamine}
     \label{spatial-split}
 
-    \paragraph{Andmelekke (data leakage) probleem.} Süvaõppemudelite treenimine lamapuidu tuvastamiseks madala tihedusega LiDAR-andmetest nõuab hoolikat ruumilist ja ajalist jaotamist \parencite{roberts2017cross}. Kuna treeningaknad on 50\% ulatuses kattuvad (samm ehk \textit{stride} = 64~px, paani suurus ehk \textit{chunk} = 128~px) ja samu asukohti on vaadeldud mitmel aastal, tekitaks juhuslik jaotamine tõsiseid andmelekkeid:
+    \paragraph{Andmelekke (data leakage) probleem} Süvaõppemudelite treenimine lamapuidu tuvastamiseks madala tihedusega LiDAR-andmetest nõuab hoolikat ruumilist ja ajalist jaotamist \parencite{roberts2017cross}. Kuna treeningaknad on 50\% ulatuses kattuvad (samm ehk \textit{stride} = 64~px, paani suurus ehk \textit{chunk} = 128~px) ja samu asukohti on vaadeldud mitmel aastal, tekitaks juhuslik jaotamine tõsiseid andmelekkeid:
     \begin{itemize}
         \item \textbf{Ruumiline leke:} Sama asukoha kattuvad paanid satuvad nii treening- kui testiandmetesse, põhjustades tugevalt korreleerunud tunnuste tõttu ülepakutud tulemusi \parencite{kattenborn2022review}.
         \item \textbf{Ajaline leke:} Sama asukoha eri aastate vaatlused jaotatakse eri hulkadesse, võimaldades mudelil asukoha spetsiifilisi omadusi memoreerida.
     \end{itemize}
 
-    \paragraph{Ruumiline isoleerimisstrateegia.} Pikslikoordinaadid teisendati sammupõhisteks koordinaatideks:
+    \paragraph{Ruumilise eraldatuse strateegia} Pikslikoordinaadid teisendati sammupõhisteks koordinaatideks:
     \[
     r_s = \lfloor r_{\text{off}} / 64 \rfloor, \quad c_s = \lfloor c_{\text{off}} / 64 \rfloor
     \]
@@ -110,11 +104,11 @@ Placeholder}}
 
     Iga valitud testkeskuse ümber laiendati testtsooni Tšebõšovi kaugusega ($\leq 1$). Kuna antud kaugusmõõt lubab samaväärset liikumist nii horisontaal-, vertikaal- kui ka diagonaalsuunal, moodustab $3\times3$ ruudustiku ehk ligikaudu 51,2~m $\times$ 51,2~m. See arvestab külgnevate akende 50\% kattuvust. Testtsooni ja treeningala vahele jäeti puhvertsoon (Tšebõšovi kaugus = 2, v.a nurgas paiknevad diagonaalpositsioonid). Testi- ja treeningpikslit lahutav vahe on 1 samm (64~px = 12,8~m), mis välistab pikslite jagamise kahe andmekogumi vahel. Kuigi see on väiksem kui Gu jt (2024) poolt pakutud 50~m autokorrelatsiooni vahemik, lähtub valik kasutatavas andmestikus esinevate märgistuste tihedusest ning andmemahu säilitamise vajadusest. Alternatiivne 50~m puhvertsooni rakendamine vähendaks treeningandmestiku 67\,290 märgistuselt ligikaudu 30\% võrra, mis käesoleva töö andmemahu juures ei ole otstarbekas. Puhvertsooni valikuga seonduvaid piiranguid on käesolevas töös põhjalikumalt käsitletud jaotises~\ref{subsec:metoodika-piirangud}.
 
-    \paragraph{Ajalise järjepidevuse tagamine.} Kuna sama füüsiline asukoht on sageli vaadeldud mitmel aastal, määratakse ruumiline roll (test/treening/puhver) asukoha, mitte aastaperioodi kaupa. Juhusliku valiku lähteväärtus (ingl \textit{seed}) seotakse asukohatähisega (kaardileht, rida, veerg), tagades identse rolli kõikidele sama asukoha aastatele.
+    \paragraph{Ajalise järjepidevuse tagamine} Kuna sama füüsiline asukoht on sageli vaadeldud mitmel aastal, määratakse ruumiline roll (test/treening/puhver) asukoha, mitte aastaperioodi kaupa. Juhusliku valiku lähteväärtus (ingl \textit{seed}) seotakse asukohatähisega (kaardileht, rida, veerg), tagades identse rolli kõikidele sama asukoha aastatele.
 
-    \paragraph{Sobilike märgistuste kriteeriumid.} Sobilikeks märgistusteks loeti need, mis on käsitsi märgistatud (\textit{manual}), märgistaja poolt kinnitatud (\textit{auto\_skip}) või kus mudeli tõenäosus on väga kõrge ($>0{,}95$) või väga madal ($<0{,}05$). Kokku osutus sobilikuks 142\,465 märgistust ehk 24,56\% andmetest. Välistati keskmise usaldusväärsusega (vahemik 0,3--0,7) objektid (50\,896 märgistust), kuna mudeli kindlus nende osas oli ebapiisav.
+    \paragraph{Sobilike märgistuste kriteeriumid} Sobilikeks märgistusteks loeti need, mis on käsitsi märgistatud (\textit{manual}), märgistaja poolt kinnitatud (\textit{auto\_skip}) või kus mudeli tõenäosus on väga kõrge ($>0{,}95$) või väga madal ($<0{,}05$). Kokku osutus sobilikuks 142\,465 märgistust ehk 24,56\% andmetest. Välistati keskmise usaldusväärsusega (vahemik 0,3--0,7) objektid (50\,896 märgistust), kuna mudeli kindlus nende osas oli ebapiisav.
 
-    \paragraph{Lõplik treening-, valideerimis- ja testvalimi jaotus.} Valitud konfiguratsioon (testtsooni Tšebõšovi kaugus 1, puhvertsooni kaugus 2, valik 2\% sobilikest märgistustest testseemneteks kaardilehe kohta) andis järgmise jaotuse:
+    \paragraph{Lõplik treening-, valideerimis- ja testvalimi jaotus} Valitud konfiguratsioon (testtsooni Tšebõšovi kaugus 1, puhvertsooni kaugus 2, valik 2\% sobilikest märgistustest testseemneteks kaardilehe kohta) andis järgmise jaotuse:
 
     \begin{table}[h!]
     \centering
@@ -147,9 +141,9 @@ Placeholder}}
 
     \subsubsection{CHM variantide loomine klassifitseerimismudeli optimeerimiseks}
 
-    \paragraph{Sisendvariantide varieerimise vajadus.} Selleks, et maksimeerida lamapuidu tuvastamise täpsust ning leida parim sisendandmete esitusviis konvolutsioonilistele närvivõrkudele, loodi aerolaserskaneerimise (LAZ) punktipilvedest viis erinevat madala taimkatte mudeli (CHM) varianti. Kõigi variantide ruumiliseks lahutusvõimeks (piksli suuruseks) säilitati 20 cm ($0,2$ m). Mitu erinevat andmekihti loodi spetsiaalselt eesmärgiga tasakaalustada algsete hõredate LiDAR-andmete ebakorrapärasust ning mudeli vajadust sujuvate ruumiliste gradientide järele.
+    \paragraph{Sisendvariantide varieerimise vajadus} Selleks, et maksimeerida lamapuidu tuvastamise täpsust ning leida parim sisendandmete esitusviis konvolutsioonilistele närvivõrkudele, loodi aerolaserskaneerimise (LAZ) punktipilvedest viis erinevat madala taimkatte mudeli (CHM) varianti. Kõigi variantide ruumiliseks lahutusvõimeks (piksli suuruseks) säilitati 20 cm ($0,2$ m). Mitu erinevat andmekihti loodi spetsiaalselt eesmärgiga tasakaalustada algsete hõredate LiDAR-andmete ebakorrapärasust ning mudeli vajadust sujuvate ruumiliste gradientide järele.
 
-\paragraph{Katsetatud taimkattemudeli variandid.} Mudelite treenimisel tugineti järgmistele andmestiku variantidele:
+\paragraph{Katsetatud taimkattemudeli variandid} Mudelite treenimisel tugineti järgmistele andmestiku variantidele:
     \begin{enumerate}
         \item \textbf{Baasmudel:} Minimaalse töötlusega esmane mudel, mis genereeriti algsest hõredast punktipilvest. Kasutati ainult lokaalseid maksimume 20 cm ruudustikus ilma interpoleerimise ja silumiseta. See esindab puhtaid, kuid sageli lünklikke (katvus $\sim$23\%) laserskaneerimise mõõtmisi.
 
@@ -162,7 +156,7 @@ Placeholder}}
         \item \textbf{Mitmekanaliline liitmudel (neljakanaliline):} Kombineeritud raster, mis koondab endas eelnevate sammude parimad omadused: Gaussi silutud kiht annab pideva ruumilise struktuuri, harmoniseeritud töötlemata CHM ja baasmudel säilitavad täpsed füüsilised mõõtmised ning neljas, maskikanal, märgistab algandmetega kaetud pikslid. Maski kasutamine võimaldab mudeli õppeprotsessis kaofunktsioonil (\textit{loss function}) eristada reaalseid peegeldusi Gaussi algoritmiga interpoleeritud andmeteta pikslist.        
     \end{enumerate}
 
-    \paragraph{DTM-i arvutamise erinevused.}
+    \paragraph{DTM-i arvutamise erinevused}
     Baasmudeli ja harmoniseeritud töötlemata CHM-i peamine erinevus seisneb maapinna kõrgusmudeli (ingl \textit{Digital Terrain Model} ehk DTM) loomise ning punktide kõrguste arvutamise algoritmis. Mõlemad lähenemised toovad esile erinevaid ruumilisi andmekihte ning kummalgi on kindlad eelised, mistõttu on oluline analüüsida nende mõlema panust.
     
     Baasmudeli puhul arvutatakse kõrgused rangelt lokaalsete minimaalsete kõrgusväärtuste alusel, ilma ulatusliku regionaalse ja paanideülese silumiseta. Sellise matemaatiliselt varieeruvama maapinnamudeli peamine eelis on lamapuidu kõrgeimate punktide ja spetsiifiliste detailide täpne säilitamine. Kuna lünklikku aluspinda ja tihedat metsaalust ei muudeta kunstlikult siledaks, ei kao tipmised laserpeegeldused andmete interpoleerimise käigus. See võimaldab algoritmil tuvastada lamapuidu maksimumkõrguse tugevat signaali ning toob esile just kõrgema profiiliga ja värskemad lamatüved.
@@ -172,14 +166,14 @@ Placeholder}}
     Töötluse käigus eemaldatakse seeläbi järsud ebaloomulikud lokaalsed anomaaliad (sarnaselt \textit{pit-free} mudelite kontseptsioonile, vt \textcite{zhang2020}) ning tuuakse esile pidevam geograafiline reljeef. Harmoniseeritud CSF-algoritmil põhineva meetodi suurim tugevus on maapinna loomuliku mikrostruktuuri (nt nõod, künkad, mättad ja langenud puude ümbruses olevad lohud) märgatavalt selgem väljajoonistumine, mis hajusate lokaalsete kõikumiste sekka muidu kaoks. Stabiilse ja ühtlustatud maapinna taustal tulevad esile ka need madalama reljeefiga lamapuidu osad, mis puutuvad pinnasega tihedalt kokku või on kõrge lagunemisastmega ning seetõttu maastikku sulandunud.
     
     Integreerides mudelisse tunnuseid mõlemast lähenemisest (näiteks mitmekanalilises liitmudelis), võimendab baasmudeli lokaalne algoritm kõrgeid objektipunkte, samas kui harmoniseeritud CSF-põhine mudel pakub selge fooni metsaaluse mikrostruktuuri eraldamiseks tihedatest peegeldustest.
-    \paragraph{Variantide hindamise kriteeriumid.}
+    \paragraph{Variantide hindamise kriteeriumid}
     Selline samm-sammuline andmegeneerimise töövoog oli antud töös olevate uuringute, sealhulgas andmekihtide mõju hindavate välistamisanalüüside(ingl \textit{ablation studies}), tehniliseks aluseks. Loodud variandid võimaldasid testida, kas süvaõppe algoritm eelistab realistlikke, kuid lünklikke algmõõtmisi, sünteetiliselt silutud ja tihendatud andmestikku või nende kahe teadlikku kombinatsiooni koos maskiga.
 
     \subsubsection{Klassifitseerimismudelite otsing, optimeerimine ja lõplik ansambel}
     \label{sec:klassifitseerimismudelite-otsing}
 
 
-    \paragraph{Mudeliarhitektuuride võrdlus.} 
+    \paragraph{Mudeliarhitektuuride võrdlus} 
     Lõpliku ansambelmudeli arhitektuuri valik tugineb kolmeetapilisele otsinguprotsessile: esialgne märgistamisansambel (kirjeldatud märgistamise peatükis), laiapõhjaline arhitektuuride võrdlev analüüs ning lõplik mudeliõpe treeningandmestikul.
     
     Paralleelselt märgistusprotsessiga viidi läbi laiapõhjaline parima mudeli otsing, kus 19\,812 märgistusega andmestikul (koosneb 11 kaardilehest; klasside suhe lamapuidu puudumise ja olemasolu vahel on $\approx 5{,}49$) hinnati 35 treeningkatse vältel 16 erinevat arhitektuuri. Testitud arhitektuurid jagunesid kahte rühma: (1) neli kohandatavat konvolutsioonilise süva tähelepanuvõrgu (ingl \textit{convolutional deep attention, CNN-Deep-Attn}) varianti ning (2) 12 ImageNeti andmestikul eeltreenitud arhitektuuri. Lisaks varieeriti kaofunktsioone, testides ristentroopia kaofunktsiooni (ingl \textit{cross-entropy loss}) ja fokaalset kaofunktsiooni (ingl \textit{focal loss}), andmete suurendamise meetodeid, nagu MixUp-andmesuurendus (ingl \textit{MixUp augmentation}) \parencite{zhang2018mixup} ja juhuslik kaalude keskmistamine (ingl \textit{stochastic weight averaging, SWA}) \parencite{izmailov2018swa}, ning testiaegse andmerikastamise (ingl \textit{test-time augmentation, TTA}) kasutamist \parencite{wang2018tta}.
@@ -194,9 +188,9 @@ Placeholder}}
     
     Klassifikaatorkiht (ingl \textit{classifier layer}) koosneb adaptiivsest keskmistavast koondamisest (ingl \textit{adaptive average pooling}) $\to$ tasandamisest (ingl \textit{flattening}) $\to$ lineaarkihist (ingl \textit{linear layer}) parameetritega $(4096, h) \to$ ReLU-aktivatsioonist $\to$ juhuslikust väljalülitusest (ingl \textit{dropout}) tõenäosusega $0{,}5 \to$ lineaarkihist $(h, 2)$. Kolme põhivarianti eristab peidetud kihi laius $h$: \textbf{tavapärane} (\textit{regular}, $h{=}512$, baastase), \textbf{kitsas} (\textit{headlight}, $h{=}256$, vähem parameetreid, väiksem ülesobitamise risk) ja \textbf{lai} (\textit{headwide}, $h{=}768$, suurem esitusvõime) 
     
-    Eeltreenitud mudelite hulka kuulusid ConvNeXt-tiny/-small, EfficientNet-B0/-B2/-B4, DenseNet-121, Swin-T, ResNet-18/-34/-50, MobileNet-V3-Large ja RegNetY-004. Neis asendati kolmekanaliline RGB-sisend ühekanalise taimkattekõrgusmudeli tuletise sisendiga (teostati RGB-kaalude keskmistamine) ning eeltreenitud tüvimudelile (ingl \textit{backbone}) rakendati 10 korda väiksemat õppimiskiirust (ingl \textit{learning rate}) kui klassifikaatorile. Tüvimudelit treenitakse väga madala õppimiskiirusega, et säilitada eeltreenitud kaalud ja vältida olemasolevate tunnuste moonutamist, samas kui klassifikaatorit treenitakse suurema õppimiskiirusega, et see omandaks uue ülesande seaduspärad operatiivselt. Parima mudeli otsing tulemused leiab Tabelist~\ref{tab:model-search-v1}.
+    Eeltreenitud mudelite hulka kuulusid ConvNeXt-tiny/-small, EfficientNet-B0/-B2/-B4, DenseNet-121, Swin-T, ResNet-18/-34/-50, MobileNet-V3-Large ja RegNetY-004. Neis asendati kolmekanaliline RGB-sisend ühekanalise taimkattekõrgusmudeli tuletise sisendiga (teostati RGB-kaalude keskmistamine) ning eeltreenitud tüvimudelile (ingl \textit{backbone}) rakendati 10 korda väiksemat õppimismäära (ingl \textit{learning rate}) kui klassifikaatorile. Tüvimudelit treenitakse väga madala õppimismääraga, et säilitada eeltreenitud kaalud ja vältida olemasolevate tunnuste moonutamist, samas kui klassifikaatorit treenitakse suurema õppimismääraga, et see omandaks uue ülesande seaduspärad operatiivselt. Parima mudeli otsing tulemused leiab Tabelist~\ref{tab:model-search-v1}.
 
-    \paragraph{Ansambli liikmete valik ja agregeerimismeetodid.}
+    \paragraph{Ansambli liikmete valik ja agregeerimismeetodid}
 
     Tabelis~\ref{tab:model-search-v1} esitatud parima mudeli otsingu tulemused näitasid, et ansamblistrateegia ületab parimat üksikmudelit, kuid jäi vastuseta kaks põhimõttelist küsimust: milline arhitektuur sobib kõige paremini neljanda ansambli liikmena CNN-Deep-Attn~$\times$~3 kõrvale ning milline agregeerimismeetod (lihtne pehme hääletus, kaalutud hääletus või virnaansambel) annab parima tulemuse. Nendele küsimustele teadusliku vastuse leidmiseks viidi läbi parima mudeli otsingut jätkav põhjalik võrdlusuuring, mille metoodika on kavandatud tagama tulemuste statistilist usaldusväärsust.
 
@@ -211,7 +205,7 @@ Placeholder}}
         \item \textbf{Virnaansambel kihtidevahelise närvivõrguga} (ingl \textit{MLP stacking}) -- metaõppurina toimib ühe peidetud kihiga (32 neuronit) närvivõrk, mis võimaldab mittelineaarseid kombinatsioone.
     \end{enumerate}
 
-    Lõplikus tuvastuslahenduses rakendati neljamudelist ansamblit, mis koosnes kolmest identsest CNN-Deep-Attn mudelist ning ühest EfficientNet-B2 mudelist. Kolme identse arhitektuuri treenimisel kasutati erinevaid juhuseemneid (ingl \textit{random seed}). Ehkki traditsiooniline ansambli disain prioritiseerib arhitektuurilist mitmekesisust, põhineb valitud lähenemise efektiivsus kahel täiendaval mehhanismil:
+    Lõplikus tuvastuslahenduses rakendati neljamudelist ansamblit, mis koosnes kolmest identsest CNN-Deep-Attn mudelist ning ühest EfficientNet-B2 mudelist. Kolme identse arhitektuuri treenimisel kasutati erinevaid juhuslikkuse lähteväärtusi (ingl \textit{random seed}). Ehkki traditsiooniline ansambli disain prioritiseerib arhitektuurilist mitmekesisust, põhineb valitud lähenemise efektiivsus kahel täiendaval mehhanismil:
 
     \begin{enumerate}
         \item \textbf{Juhusliku hajuvuse vähendamine.} Kolme identse CNN-Deep-Attn mudeli kasutamine erinevate juhuseemnetega on suunatud juhusliku varieeruvuse minimeerimisele. See varieeruvus tuleneb mudeli kaalude esialgsest \textbf{algväärtustamisest} ja treeningandmete töötlemise järjekorrast. Selline lähenemine, mida tuntakse süvaansamblite (ingl \textit{deep ensembles}) nime all, on tõendatult efektiivne meetod mudeli stabiilsuse tõstmiseks, aidates vältida juhuslikust algseisust tingitud ebasobivatesse lokaalsetesse miinimumidesse takerdumist \parencite{lakshminarayanan2017deepensembles}.
@@ -248,13 +242,13 @@ Placeholder}}
     \label{fig:ensemble-scheme}
     \end{figure}
 
-    \paragraph{Lõplik hindamismetoodika.}
+    \paragraph{Lõplik hindamismetoodika}
 
     Hindamiseks rakendati viiekordset ristvalideerimist (5 kordust $\times$ 5 andmegruppi = 25 hinnangut iga meetodi ja kandidaadi kohta). Iga grupi puhul kasutati treeningosa metaõppurite häälestamiseks ning otsustusläve optimeerimiseks, samas kui testosa, mis metaõppe protsessis ei osalenud, oli aluseks F1-skoori, AUC, täpsuse ja saagise arvutamisele. See metoodika tagab, et meetodeid võrreldakse identsetes tingimustes ning andmelekke risk on välistatud. F1-skoori 95\% usaldusvahemikud arvutati järelproovide meetodil (ingl \textit{bootstrap}) \parencite{efron1993bootstrap}, tehes 1\,000 kordust grupipõhiste skooride põhjal.
 
     Tulemuste statistilise olulisuse hindamiseks rakendati \textbf{paaritud Wilcoxoni järgu testi} (ingl \textit{paired Wilcoxon signed-rank test}) \parencite{wilcoxon1945ranking}. See mitteparameetriline test sobib paremini kui paaritud $t$-test, kuna F1-skoorid ei pruugi olla normaaljaotusega ning testi tugevus ei sõltu jaotuse kujust. Iga täiustatud meetodi paaritud võrdlused lihtsa pehme hääletuse vastu sooritati 25 grupipõhise skoori paaridel ($H_1$: täiustatud meetod annab kõrgema F1-skoori). $p$-väärtused tähistati järgmiselt: $***$ ($p<0{,}001$), $**$ ($p<0{,}01$), $*$ ($p<0{,}05$). Tulemused on esitatud Tabelis~\ref{tab:ensemble-methods-comparison} (vt tulemused).
 
-    \paragraph{Lõpliku mudeli rakendamine.}
+    \paragraph{Lõpliku mudeli rakendamine}
 
     Pärast parimate mudeliarhitektuuride väljaselgitamist ja optimaalse ansambli agregeerimismeetodi tuvastamist rakendati treenitud ja valideeritud ansambelmudel kogu uuringualal sh. testandmestikule. Igale sisendpildile rakendati eelnevalt läbiproovitud testiaegset andmerikastamist (TTA) ning arvutati nelja mudeli (kolm \textit{CNN-Deep-Attn} ja üks \textit{EfficientNet-B2}) esialgsed tõenäosused. Need tõenäosused koondati valitud parima hääletusmeetodi alusel ühiseks lokaalseks lamapuidu esinemise tõenäosuseks. Testandmestiku alusel arvutati mudeli lõplikud näitajad.
 
@@ -267,35 +261,36 @@ Placeholder}}
 
     \subsubsection{Segmenteerimisandmestiku eraldamine ja sildistamine}
 
-    \paragraph{Segmenteerimisülesande spetsiifika.}
+    \paragraph{Segmenteerimisülesande spetsiifika}
     Lamapuidu paanipõhiselt klassifitseerimiselt piksli tasandil tuvastamisele ehk semantilisele segmenteerimisele üleminek oli eeldus objektide kuju, ulatuse ja täpse asukoha tuvastamisel. Kuna pildipaanide laiaulatuslik märgistamine annab info üksnes objekti esinemisest paanis (128$\times$128 pikslit), osutus pikslimaskide loome manuaalselt vältimatuks, võimaldades mudelil vahetult õppida lamapuidule eriomaseid ruumilisi struktuure. Uurimisalal kasutati ühte terviklikku manuaalselt märgistatud kaardilehte (1236 lamapuidu polügooni keskmise pindalaga 5,25\,m²), mis kattis andmemahu ja ruumilise varieeruvuse tagamiseks mitmekesise metsamaastiku.
 
-    \paragraph{Pikslimaskide ja CWD objektide loomine.}
+    \paragraph{Pikslimaskide ja CWD objektide loomine}
     Segmenteerimismudeli treenimise aluseks oleva rastermaski loomiseks teisendati lamapuidu vektorkujud (polügoonid) analüüsialale vastavasse rastervõrgustikku L-est 97 koordinaatsüsteemis. Et peenikesed ja lineaarsed lamapuidu struktuurid 0,2\,m piksli suuruse juures säiliksid, rakendati pikslite omistamisel põhimõtet, kus märgistati iga piksli ala, mida vektorjoonises kujutatud objekt puudutas (ingl \textit{all touched}).
     
     Loodi spetsiaalne kahekanaliline juhendmask. Esimene kanal (ingl \textit{target}) eristas lamapuitu (1) muudest aladest (0), ning teine kanal (ingl \textit{valid mask}) andis teabe, millised pikslid kuuluvad usaldusväärselt märgistatud alasse (1) ja milliseid tuleb treenimisel optimeerimisvõrrandist välja jätta (0). Kontrollitud alast väljaspool olevaid piksleid ei olnud märgendatud ning nende väljajätmine aitas hoida treeningu sihipärasena ja vältida valenegatiivsete vigade sisseõppimist. Lamapuidu pikslid moodustasid vaadeldavast andmehulgast vaid 1,98\%, viidates vajadusele tugeva klasside tasakaalustamatuse metoodilise adresseerimise järele.
 
     \subsubsection{Treeningandmete ettevalmistus ja ristvalideerimine}
 
-    \paragraph{Ruumiline eraldamine püsivaks testalaks ja foldideks.}
-    Et vältida mudelivalikul andmeleket ning testiala seaduspärasustega liigset kohanemist, jagati analüüsiala vertikaalselt viieks 200 meetri laiuseks triibuks (igaüks 1000 pikslit). Läänepoolne triip (Triip 0) eemaldati treening- ja optimeerimisprotsessist täielikult, moodustades range ja sõltumatu püsiva testala. Ülejäänud neli triipu (1–4) jagati kaheks ristvalideerimise lahtriks (ingl \textit{fold}). Esimeses lahtris (\textit{Fold 0}) kasutati treenimiseks triipe 2, 3 ja 4 ning valideerimiseks triipu 1. Teises lahtris (\textit{Fold 1}) kasutati treenimiseks triipu 1 ja valideerimiseks triipe 2, 3 ja 4.
+    \paragraph{Ruumiline eraldamine testandmestikuks ja ristvalideerimise osadeks}
+    Kõrge eraldusvõimega rasterandmestike jagamisel on oluline vältida ruumilist andmeleket, mistõttu asendati juhuslik valim plokipõhise eraldusstrateegiaga. Kogu analüüsiala jaotati esmalt iseseisvateks ja mittekattuvateks 256$\times$256 piksli ($51,2 \times 51,2$\,m) suurusteks ruutudeks. Seejärel rühmitati need ruudud laiemasse 3$\times$3 süsteemi, tekitades terviklikud makroplokid. 
+    
+    Loodud plokkidest eraldati ligikaudu 20\% rangesse testihulka (testandmestikku), mida ei rakendatud kordagi mudelivaliku ega treenimise käigus. Allesjäänud plokid jaotati süstemaatiliselt võrdselt kolme ristvalideerimise ossa (ingl \textit{fold}). Selline jaotus kindlustab, et treenimis- ja valideerimisandmed ei pärine otse üksteise kõrvalt, välistades ruumilisest autokorrelatsioonist tingitud ülehindamise ohud.
 
-    \paragraph{Treeningpaanide moodustamine ja andmestiku eeltöötlus.}
-    Terviklik raster jaotati 256$\times$256 piksli ($51,2 \times 51,2$\,m) suurusteks paanideks, sammuga 192 pikslit (64 pikslit lokaalset ülekatet). Paanidest jäeti treenimisel ja optimeerimisel välja need aknad, kus kehtivate pikslite arv (\textit{valid\_mask}) oli alla 328, tagades seeläbi andmestiku rikkalikkuse ning välistades sisutühjade piirkondade ülekaalu mudeli kaofunktsioonis. 
+    \paragraph{Treeningpaanide moodustamine ja andmestiku eeltöötlus}
+    Lõplikuks analüüsiks kasutati eraldatud mittekattuvaid 256$\times$256 piksli suurusega rasterpaane. Paanidest jäeti treenimisel ja optimeerimisel välja need aknad, kus märgistatud pikslite arv (\textit{valid\_mask}) oli alla 328, tagades seeläbi andmestiku infosageduse rikkalikkuse ning välistades sisutühjade piirkondade ebaotstarbeka esindatuse mudeli kaofunktsioonis. 
 
     \subsubsection{Automaatne välistamisanalüüs ja lõpliku konfiguratsiooni valik}
 
-    \paragraph{välistamisanalüüsiprotsessi ülevaade.} Lõpliku segmenteerimismetoodika ja mudeli seadistuste väljaselgitamiseks kasutati süsteemset ja automatiseeritud välistamisanalüüsi . Vältimaks otsinguruumi liiga varajast lukustumist lokaalsetesse struktuuridesse, rakendati metoodikat, kus igast otsingufaasist pääses edasi kaks parimat lahendust (\textit{top-2 carryover}). Kogu uuring sooritati püsiva testalata, kasutades paremusjärjestuse hindamiseks eranditult treeningus osaleva kahe valideerimislahtri sooritust.
+    \paragraph{Välistamisanalüüsi protsessi ülevaade} Lõpliku segmenteerimismetoodika ja mudeli seadistuste väljaselgitamiseks kasutati süsteemset ja automatiseeritud välistamisanalüüsi. Vältimaks otsinguruumi liiga varajast lukustumist lokaalsetesse või suboptimaalsetesse struktuuridesse, rakendati metoodikat, kus igast otsingufaasist pääses edasi kaks parimat lahendust (ingl \textit{top-2 carryover}). Kogu mudelivaliku uuring sooritati puutumatut testandmestikku kaasamata, kasutades paremusjärjestuse hindamiseks eranditult kolme ristvalideerimise osa ristkontrolli sooritusi.
 
     Automaatse välistamisanalüüsi töövoog jagunes kuue faasi põhjal:
     \begin{enumerate}
         \item \textbf{Eeltöötlus:} Valmistati ette andmestik, sidudes CHM sisendfailid ja ehitades iga CHM variandi jaoks vajalikud indeksid  ning kanalistatistika.
         \item \textbf{Faas 2 (Andmestiku variant):} Võrreldi viite varasemalt klassifitseerimisel kirjeldatud CHM sisendvarianti (Baasmudel, harmoniseeritud töötlemata, gaussi silumisega, maskitud kahekanaliline mudel, mitmekanaliline liitmudel), et selgitada välja varaseim parim kõrgusmudeli esitus uuele võrgustikule.
         \item \textbf{Faas 3 (Mudeli arhitektuur):} Kahe parimaks osutunud andmestikuvariandi peal hinnati süvaõppe arhitektuure. Valituteks osutusid arhitektuursed raamistikud U-Net++ ja DeepLabV3+, mida kombineeriti erinevate tüvimudelitega (backbone) nagu ResNet, EfficientNet-B0 ja -B2.
-        \item \textbf{Faas 4 (Kaofunktsioon):} Välja valitud andmestike ja mudeliarhitektuuride kombinatsioonidel testiti kaofunktsioone, sealhulgas \textit{DiceFocal}, tasakaalustatud ja kõrge täpsusega \textit{Tversky} ning spetsiaalselt ruumilise topoloogia säilitamisele suunatud \textit{Tversky+clDice} lahendused.
         \item \textbf{Faas 4 (Kaofunktsioon):} Välja valitud andmestike ja mudeliarhitektuuride kombinatsioonidel testiti kaofunktsioone, sealhulgas \textit{DiceFocal} ehk Dice'i-põhise segmenteerimiskao ja Focal loss'i kombinatsiooni \parencite{milletari2016vnet,lin2017focal}, tasakaalustatud ja kõrge täpsusega \textit{Tversky} kaofunktsiooni \parencite{salehi2017tversky} ning ruumilise topoloogia säilitamisele suunatud \textit{Tversky+clDice} lahendusi.
-        \item \textbf{Faas 5 (Augmenteerimine ja regulariseerimine):} Optimeeriti treeningu rikastamist mudeli üldistuvuse suurendamiseks, testides andmeid ilma andmesuurendusteta kõrvuti laialdaste augmentatsioonide kombinatsiooniga, mis kasutas \textit{soft target} märgiseid ja juhuslike kaalude keskmistamist (ingl \textit{Stochastic Weight Averaging, SWA}).
-        \item \textbf{Faas 6 (Lõplik hindamine testalal):} Pärast esialgset metoodilist konfiguratsiooni sooritati mudelite lõplikus järjestuses viimane faas. Kõige tugevamat sooritust näidanud hüperparameetritega treeniti lõplik mudel kõikide  treeningandmetega, ja testhinnang toodi püsivalt puutumatul testalal.
+        \item \textbf{Faas 5 (Augmenteerimine ja regulariseerimine):} Optimeeriti treeningu rikastamist mudeli üldistuvuse suurendamiseks, testides andmeid ilma andmesuurendusteta kõrvuti laialdaste augmentatsioonide kombinatsiooniga, mis kasutas pehmeid sihtväärtusi (ingl pehmed sihtväärtused) ja juhuslike kaalude keskmistamist (ingl \textit{Stochastic Weight Averaging, SWA}).
+        \item \textbf{Faas 6 (Lõplik hindamine testandmestikul):} Pärast esialgset metoodilist konfiguratsiooni sooritati mudelite lõplikus järjestuses viimane faas. Kõige tugevamat sooritust näidanud hüperparameetrite ja eeltöötluse sammudega treeniti lõplik mudel kõigi ristvalideerimise treening- ning valideerimismaterjalide peal (treenimine kogus andmestikul, v.a püsiv testandmestik). Objektiivne hindamine teostati algusest peale eraldatud ning puutumatul testandmestikul.
     \end{enumerate}
 
     \begin{figure}[h!]
@@ -305,15 +300,15 @@ Placeholder}}
     \label{fig:top2-ablation-workflow}
     \end{figure}
 
-    \paragraph{Valikukriteerium ja kesktelje Dice-skoor (\textit{clDice}).}
+    \paragraph{Valikukriteerium ja kesktelje Dice-skoor (\textit{clDice})}
     Mudelite, andmestike ja parameetrite pingereastamisel kasutati valikumõõdikuks \textit{clDice}. Standardsed kattuvusmõõdikud nagu \textit{Dice}-koefitsient või kattuva ja ühendatud ala suhe jäävad isomorfselt sarnaste struktuuride, eriti piklike ja katkendlike lamapuidu elementide pidevuse väärtustamisel puudulikeks. Keskteljel põhinev \textit{clDice} (ingl \textit{centerline Dice}) hindab täpsemalt just lineaarsete objektide võrgustiku topoloogia tegelikku visuaalset ja füüsilist õigsust. 
     
     Arvestades automaatse töövoo tulemuslikkuse mudeleid, kehtestati \textit{top-2} pingereastamisel selge hierarhiline sidemurdja (\textit{tie-break}) reeglistik:
     \begin{enumerate}
-        \item Kõrgeim valideerimise \textit{clDice} keskmine skoor üle andmestike (ingl \textit{fold});
+        \item Kõrgeim valideerimise \textit{clDice} keskmine skoor üle kõigi kolme hindamisosa;
         \item Võrdsuse korral vaadati F1-skoori keskmist;
     \end{enumerate}
-    Püsivat testala ei kasutatud andmekomplekti, arhitektuuri, kaotusfunktsiooni ega mistahes parameetrite optimeerimiseks; kasutamine toimub alles kuuendas faasis.
+    Püsivat testandmestikku (eraldiholduvaid makroplokke) ei kasutatud andmekomplekti, arhitektuuri, kaotusfunktsiooni ega mistahes parameetrite optimeerimiseks; neid rakendati mudeli tegeliku võimekuse hindamiseks alles lõplikus kuuendas faasis.
 
 
 \subsection{Tehisaru kasutamine töö koostamisel}
