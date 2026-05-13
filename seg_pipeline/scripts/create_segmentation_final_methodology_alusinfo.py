@@ -145,8 +145,8 @@ def plot_mask_workflow(path: Path) -> None:
     ax.set_axis_off()
 
     boxes = [
-        (0.03, 0.68, 0.23, 0.18, "cdw_labels_MP.gpkg\n1236 lamapuidu polügooni\nEPSG:3301"),
-        (0.03, 0.40, 0.23, 0.18, "valid_area.gpkg\n1 kontrollitud ala polügoon\nmäärab, kus taust on usaldatav"),
+        (0.03, 0.68, 0.23, 0.18, "cdw_labels_MP.gpkg\n1236 lamapuidu polügoni\nEPSG:3301"),
+        (0.03, 0.40, 0.23, 0.18, "valid_area.gpkg\n1 kontrollitud ala polügon\nmäärab, kus taust on usaldatav"),
         (0.03, 0.12, 0.23, 0.18, "baseline_chm.tif\n5000×5000 pikslit\n0,2 m rastervõrk"),
         (0.38, 0.52, 0.25, 0.22, "Rasteriseerimine\nsama transform, ulatus ja CRS\nall_touched=True"),
         (0.72, 0.52, 0.24, 0.22, "3-kanaliline mask TIF\nB1 target: 1/0\nB2 valid_mask: 1/0\nB3 ensemble_stub: 0"),
@@ -166,7 +166,7 @@ def plot_mask_workflow(path: Path) -> None:
     for start, end in arrows:
         ax.add_patch(FancyArrowPatch(start, end, arrowstyle="-|>", mutation_scale=14, linewidth=1.3, color="#2F3A45"))
 
-    ax.text(0.50, 0.91, "GPKG polügoonidest pikslipõhiseks juhendmaskiks", ha="center", fontsize=15, weight="bold")
+    ax.text(0.50, 0.91, "GPKG polügonidest pikslipõhiseks juhendmaskiks", ha="center", fontsize=15, weight="bold")
     ax.text(0.50, 0.04, "Oluline metoodiline valik: väljaspool kontrollitud ala piksleid ei käsitleta taustana, vaid ignoreeritakse loss'i arvutamisel.", ha="center", fontsize=10)
     fig.tight_layout()
     fig.savefig(path)
@@ -254,7 +254,7 @@ def plot_ablation_workflow(path: Path) -> None:
     ax.set_axis_off()
 
     phases = [
-        ("Eeltöötlus", "GeoPackage'i polügoonid\nrastermaskiks\nviie CHM-variandi\npaanideks jagamine\nja statistika"),
+        ("Eeltöötlus", "GeoPackage'i polügonid\nrastermaskiks\nviie CHM-variandi\npaanideks jagamine\nja statistika"),
         ("Faas 2", "Sisendandmete valik\n2A baasmudel\n2B toor-CHM\n2C Gaussi silumine\n2D maskiga toor-CHM\n2E komposiit-CHM"),
         ("Faas 3", "Mudeliarhitektuuri valik\nkahe parima CHM-i põhjal\n3B U-Net++ EfficientNet-B0\n3C U-Net++ EfficientNet-B2\n3E DeepLabV3+\nEfficientNet-B2"),
         ("Faas 4", "Kaofunktsiooni valik\nkahe parima\nkonfiguratsiooni põhjal\n4A DiceFocal\n4D Tversky 0,5/0,5\n4F Tversky 0,7/0,3\n4H Tversky + clDice"),
@@ -362,7 +362,7 @@ def main() -> None:
 
     md = f"""# Segmenteerimise metoodika alusinfo
 
-See dokument koondab lõpliku segmenteerimise metoodika kirjutamiseks vajaliku tehnilise alusinfo. Fookus on viimasel kasutatud töövool: GeoPackage'i polügoonide rasteriseerimine, kehtiva analüüsiala mask, mudelile antavate paanide koostamine ning püsiva testala ja kahe foldi jaotus.
+See dokument koondab lõpliku segmenteerimise metoodika kirjutamiseks vajaliku tehnilise alusinfo. Fookus on viimasel kasutatud töövool: GeoPackage'i polügonide rasteriseerimine, kehtiva analüüsiala mask, mudelile antavate paanide koostamine ning püsiva testala ja kahe foldi jaotus.
 
 ## 1. Lõpliku metoodika eesmärk
 
@@ -374,18 +374,18 @@ Lõplikus metoodikas käsitleti lamapuitu semantilise segmenteerimisena: iga keh
 
 Peamised sisendfailid olid:
 
-- `data/labels/cdw_labels_MP.gpkg` — käsitsi märgendatud lamapuidu polügoonid;
+- `data/labels/cdw_labels_MP.gpkg` — käsitsi märgendatud lamapuidu polügonid;
 - `data/labels/valid_area.gpkg` — kontrollitud ala piir, mille sees märgendamata piksleid tohib käsitleda taustana;
 - `seg_pipeline/input/baseline_chm.tif` — referentsraster, mille ruudustikku, ulatust ja koordinaatsüsteemi kasutati maski rasteriseerimisel;
 - `seg_pipeline/input/composite_4band.tif` — lõplik CHM sisendvariant mudeli treenimiseks.
 
-Lamapuidu GeoPackage sisaldas {len(label_gdf)} objekti. Polügoonide kogupindala oli {label_total_area:.1f} m², keskmine pindala {label_mean_area:.2f} m² ja mediaan {label_median_area:.2f} m². Kehtiva ala polügooni pindala oli {area_polygon_area:.1f} m².
+Lamapuidu GeoPackage sisaldas {len(label_gdf)} objekti. Polügonide kogupindala oli {label_total_area:.1f} m², keskmine pindala {label_mean_area:.2f} m² ja mediaan {label_median_area:.2f} m². Kehtiva ala polügoni pindala oli {area_polygon_area:.1f} m².
 
 Joonis: `joonised/segmenteerimine_alusinfo/seg_gpkg_mask_workflow.png`
 
-## 3. GPKG polügoonide rasteriseerimine
+## 3. GPKG polügonide rasteriseerimine
 
-Mõlemad GeoPackage'i kihid teisendati EPSG:3301 koordinaatsüsteemi ja rasteriseeriti samale 5000×5000 pikslisele ruudustikule kui CHM. Rasteriseerimisel kasutati `rasterio.features.rasterize` loogikat ning `all_touched=True` seadet, et kitsad lamapuidu polügoonid ei kaoks rastervõrku teisendamisel ära. See on oluline, sest lamapuit on sageli kitsas objekt ja võib 0,2 m piksli juures paikneda pikslipiiridel.
+Mõlemad GeoPackage'i kihid teisendati EPSG:3301 koordinaatsüsteemi ja rasteriseeriti samale 5000×5000 pikslisele ruudustikule kui CHM. Rasteriseerimisel kasutati `rasterio.features.rasterize` loogikat ning `all_touched=True` seadet, et kitsad lamapuidu polügonid ei kaoks rastervõrku teisendamisel ära. See on oluline, sest lamapuit on sageli kitsas objekt ja võib 0,2 m piksli juures paikneda pikslipiiridel.
 
 Rasteriseerimise järel koostati 3-kanaliline juhendmask:
 
@@ -395,8 +395,8 @@ Rasteriseerimise järel koostati 3-kanaliline juhendmask:
 
 Pikslite loogika oli järgmine:
 
-- lamapuit: piksel on `valid_area.gpkg` sees ja `cdw_labels_MP.gpkg` polügooni sees;
-- taust: piksel on `valid_area.gpkg` sees, kuid lamapuidu polügoonist väljas;
+- lamapuit: piksel on `valid_area.gpkg` sees ja `cdw_labels_MP.gpkg` polügoni sees;
+- taust: piksel on `valid_area.gpkg` sees, kuid lamapuidu polügonist väljas;
 - ignoreeritud: piksel on kontrollitud alast väljas või CHM-is mittekehtiv.
 
 Kogu maskis oli kehtivaid piksleid {mask_meta["n_valid"]:,} ehk {valid_pct:.2f}% rasterpinnast. Lamapuidu piksleid oli {mask_meta["n_positive"]:,}, mis moodustas {positive_valid_pct:.2f}% kehtivast analüüsialast. See näitab tugevat klasside tasakaalustamatust.

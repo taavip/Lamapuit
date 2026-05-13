@@ -1,6 +1,6 @@
 # Segmenteerimise metoodika alusinfo
 
-See dokument koondab lõpliku segmenteerimise metoodika kirjutamiseks vajaliku tehnilise alusinfo. Fookus on viimasel kasutatud töövool: GeoPackage'i polügoonide rasteriseerimine, kehtiva analüüsiala mask, mudelile antavate paanide koostamine ning püsiva testala ja kahe foldi jaotus.
+See dokument koondab lõpliku segmenteerimise metoodika kirjutamiseks vajaliku tehnilise alusinfo. Fookus on viimasel kasutatud töövool: GeoPackage'i polügonide rasteriseerimine, kehtiva analüüsiala mask, mudelile antavate paanide koostamine ning püsiva testala ja kahe foldi jaotus.
 
 ## 1. Lõpliku metoodika eesmärk
 
@@ -12,18 +12,18 @@ Lõplikus metoodikas käsitleti lamapuitu semantilise segmenteerimisena: iga keh
 
 Peamised sisendfailid olid:
 
-- `data/labels/cdw_labels_MP.gpkg` — käsitsi märgendatud lamapuidu polügoonid;
+- `data/labels/cdw_labels_MP.gpkg` — käsitsi märgendatud lamapuidu polügonid;
 - `data/labels/valid_area.gpkg` — kontrollitud ala piir, mille sees märgendamata piksleid tohib käsitleda taustana;
 - `seg_pipeline/input/baseline_chm.tif` — referentsraster, mille ruudustikku, ulatust ja koordinaatsüsteemi kasutati maski rasteriseerimisel;
 - `seg_pipeline/input/composite_4band.tif` — lõplik CHM sisendvariant mudeli treenimiseks.
 
-Lamapuidu GeoPackage sisaldas 1236 objekti. Polügoonide kogupindala oli 6492.0 m², keskmine pindala 5.25 m² ja mediaan 4.21 m². Kehtiva ala polügooni pindala oli 457769.0 m².
+Lamapuidu GeoPackage sisaldas 1236 objekti. Polügonide kogupindala oli 6492.0 m², keskmine pindala 5.25 m² ja mediaan 4.21 m². Kehtiva ala polügoni pindala oli 457769.0 m².
 
 Joonis: `joonised/segmenteerimine_alusinfo/seg_gpkg_mask_workflow.png`
 
-## 3. GPKG polügoonide rasteriseerimine
+## 3. GPKG polügonide rasteriseerimine
 
-Mõlemad GeoPackage'i kihid teisendati EPSG:3301 koordinaatsüsteemi ja rasteriseeriti samale 5000×5000 pikslisele ruudustikule kui CHM. Rasteriseerimisel kasutati `rasterio.features.rasterize` loogikat ning `all_touched=True` seadet, et kitsad lamapuidu polügoonid ei kaoks rastervõrku teisendamisel ära. See on oluline, sest lamapuit on sageli kitsas objekt ja võib 0,2 m piksli juures paikneda pikslipiiridel.
+Mõlemad GeoPackage'i kihid teisendati EPSG:3301 koordinaatsüsteemi ja rasteriseeriti samale 5000×5000 pikslisele ruudustikule kui CHM. Rasteriseerimisel kasutati `rasterio.features.rasterize` loogikat ning `all_touched=True` seadet, et kitsad lamapuidu polügonid ei kaoks rastervõrku teisendamisel ära. See on oluline, sest lamapuit on sageli kitsas objekt ja võib 0,2 m piksli juures paikneda pikslipiiridel.
 
 Rasteriseerimise järel koostati 3-kanaliline juhendmask:
 
@@ -33,8 +33,8 @@ Rasteriseerimise järel koostati 3-kanaliline juhendmask:
 
 Pikslite loogika oli järgmine:
 
-- lamapuit: piksel on `valid_area.gpkg` sees ja `cdw_labels_MP.gpkg` polügooni sees;
-- taust: piksel on `valid_area.gpkg` sees, kuid lamapuidu polügoonist väljas;
+- lamapuit: piksel on `valid_area.gpkg` sees ja `cdw_labels_MP.gpkg` polügoni sees;
+- taust: piksel on `valid_area.gpkg` sees, kuid lamapuidu polügonist väljas;
 - ignoreeritud: piksel on kontrollitud alast väljas või CHM-is mittekehtiv.
 
 Kogu maskis oli kehtivaid piksleid 11,444,080 ehk 45.78% rasterpinnast. Lamapuidu piksleid oli 226,584, mis moodustas 1.98% kehtivast analüüsialast. See näitab tugevat klasside tasakaalustamatust.
