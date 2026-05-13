@@ -76,7 +76,7 @@ Madala kindluse (ingl \textit{low-confidence}) vahemikuks määrati $p \in [0{,}
 
 Kaasnevalt analüüsiti mudeli automaatseid valepositiivseid ennustusi. Juhuvalimi peal saavutati automaatmärgistuse võimekuseks F1 $0{,}8603$ (kooskõla inimesega $\approx 91\%$). Sihipäraselt valitud keeruliste ja madala mudelikindlusega vahemiku puhul oli märgistaja ning pilootansambli kooskõla F1 vaid $0{,}4746$. Selline vastandus tõendab aktiivõppe sihistatud lähenemise edukust -- mudelile tekitati rikastatud materjali täpselt piirkondadest, kus esialgne mudel enim eksis.
 
-\subsubsection{Suurendatud märgistusvalim ja ruumilis-ajaline jaotus}
+\subsubsection{Suurendatud märgistusvalim ja ajalis-ruumiline jaotus}
 \label{mojusa-valimi-jaotus}
 
 Käsitsi ülevaatuse järel ning rangete reeglite kohaldamisel jagati kõik paanid treening-, valideerimis- ja testikomplektideks. Kasutusse võeti rangelt ruumiliselt eraldatud loogika, vähendamaks lekkepotentsiaali kattuvatest paanidest. Kokku eraldati valimisse $142\,465$ märgistust, millest treeningusse jõudis $67\,290$ ja testikomplekti turvaliselt isoleerituna $56\,521$. Selline jagunemine ja filtreerimine hoidis kõrvale andmemürast ja autokorrelatsioonist. Joonisel~\ref{fig:andmestiku_jaotus} on esitatud piltlik KDE tihedusjaotus, mis demonstreerib visuaalselt treeningu, testi, puhveralade ning spetsiifilise, keskmistatud aktiivõppevalimi jagunemist.
@@ -125,37 +125,10 @@ Lõplik (neljamudeline) ansambel treeniti 67\,290 lekkekontrolliga märgistusel.
 
 \begin{figure}[h!]
 \centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 5.1.} ROC-kõver ja saagis-täpsuse kõver (ingl \textit{Recall-Precision}, PR) lõpliku ansambli kohta testandmestikul.\
-Placeholder}}
+\includegraphics[width=0.95\linewidth]{estonian/joonised/roc_pr_kover_loplik_ansambel.png}
 \caption{Mudeli eristusvõimet demonstreerivad ROC ja PR kõverad.}
 \label{fig:roc-pr-curve}
 \end{figure}
-
-\subsubsection{CHM variantide võrdlus}
-\label{chm-variantide-klassifitseerimise-tulemused-alt}
-
-Treeningfaasi esialgsetes eksperimentides vaadeldi mitmeid CHM-i arvutusmudeleid (näiteks erineva kõrgusfiltriga rastersisendid ja mitmekanalilised komposiidid). Lõplikus arenduses ja andmete märgistamise töövoos rakendati 20 cm resolutsiooniga 0--1,31 m kõrguseid filtreerivat ülekünnise väärtuste eemaldamise meetodit (ingl \textit{drop-above-threshold}). Ühekanaliline 20 cm raster pakkus kõige tõhusama tasakaalu andmelihtsuse, arvutusresursside ja tuvastusvõimekuse vahel.
-
-\subsubsection{Klassifitseerimismudelis esinevate vigade analüüs}
-\label{klassifitseerimise-vigade-analuus}
-
-Vaatamata kõrgele F1-skoorile esines mudeli ennustustes mõningaid iseloomulikke veamustreid, mille analüüsimine pakub olulist sisendit nii metsamajanduse praktikale kui ka edasistele uurimissuundadele.
-
-\paragraph{Valepositiivsed (FP)} Mudel kaldus aeg-ajalt lamapuiduks klassifitseerima vanu kuivenduskraavide kaldavalle, piklikke kivimoodustisi (näiteks vanad aiavaremed) ning teatud juhtudel masinate rööpaid. Neid struktuure iseloomustab lokaalses kõrgusmudelis sirgjooneline anomaalia, mis 20 cm CHM-pikslite puhul võib sarnaneda tüvele.
-
-\paragraph{Valenegatiivsed (FN)} Valenegatiivseid ilmnes enamasti vanemates metsasälikutes, kus tüvi oli kattunud paksu samblaga ja vajunud tugevalt huumusesse. Sellised puud ei kerki 1,3 m CHM kihist selgelt esile ning 1--4 pts/m$^2$ LiDAR andmestik ei taga alati piisavat detailsust maapinnalähedase kuju säilitamiseks.
-
-\begin{figure}[h!]
-\centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 5.2.} Iseloomulike vigade näited: (a) Kändude ja kivide valepositiivne tuvastus, (b) tihedasse alustaimestikku uppunud lamapuu valenegatiivne juhtum.\
-Placeholder}}
-\caption{Mudeli vigade visuaalsed näited.}
-\label{fig:error-analysis-alt}
-\end{figure}
-
-Ansambli lähenemine aitas eeskätt vähendada valepositiivseid ennustusi raskesti eristatavatel maastikel, näiteks tugeva noorendikuga kaetud raiesmikel, kus üksikmudelid võiksid takerduda spetsiifilisse lokaalsesse müra taha. Nelja mudeli (3$\times$ CNN, 1$\times$ EfficientNet) keskmistatud ennustus silus tõhusalt potentsiaalsed anomaaliad.
 
 \subsubsection{CHM variantide võrdlus klassifitseerimises}
 \label{chm-variantide-klassifitseerimise-tulemused}
@@ -175,9 +148,7 @@ Vaatamata kõrgele F1-skoorile esines mudeli ennustustes mõningaid iseloomulikk
 
 \begin{figure}[h!]
 \centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 5.2.} Iseloomulike vigade näited: (a) Kändude ja kivide valepositiivne tuvastus, (b) tihedasse alustaimestikku uppunud lamapuu valenegatiivne juhtum.\
-Placeholder}}
+\includegraphics[width=0.95\linewidth]{estonian/joonised/vigade_visuaalsed_naited.png}
 \caption{Mudeli vigade visuaalsed näited.}
 \label{fig:error-analysis}
 \end{figure}
@@ -302,9 +273,7 @@ Faasis 5 hinnati andmerikastamise/regulariseerimise seadistusi kahel parimaks os
 
 \begin{figure}[h!]
 \centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 5.X.} Faaside 2--5 paremusjärjestuste visualiseering (\texttt{mean val\_cldice}): horisontaalsed punktdiagrammid iga faasi kandidaatide kohta, koos SD veeribadega.\
-Placeholder}}
+\includegraphics[width=0.95\linewidth]{estonian/joonised/seg_faaside_paremusjarjestus.png}
 \caption{Mudelivaliku dünaamika faasides 2--5 ja kandidaatidevahelised erinevused.}
 \label{fig:seg-phase-ranking}
 \end{figure}
@@ -335,9 +304,7 @@ Parimaks osutus \texttt{2E\_\_3B\_\_4H\_\_5E\_\_6}, mille test-F1 oli 0,5750 ja 
 
 \begin{figure}[h!]
 \centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 5.X.} Parima segmenteerimismudeli (\texttt{2E\_\_3B\_\_4H\_\_5E\_\_6}) kvalitatiivne võrdlus: sisend-CHM, tõene mask, ennustatud tõenäosuskaart ja binaarmask. Näidata vähemalt 4 juhtumit: 2 edukat, 2 keerulist.\
-Placeholder}}
+\includegraphics[width=0.95\linewidth]{estonian/joonised/seg_parim_kvalitatiivne.png}
 \caption{Parima mudeli kvalitatiivsed tulemused eraldiseisvatel testplokkidel.}
 \label{fig:seg-best-qualitative}
 \end{figure}
@@ -359,9 +326,7 @@ Lisaks näitab komponentide arv testis (674 vs 222 tõelist objekti ka parima mu
 
 \begin{figure}[h!]
 \centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 5.X.} Vigade analüüsi paneel segmenteerimisele: (a) üle-segmenteerimine (FP fragmendid), (b) ühenduvuse katkemine, (c) kontuurinihe servades, (d) keerukas alusmets.\
-Placeholder}}
+\includegraphics[width=0.95\linewidth]{estonian/joonised/seg_generaliseerimise_kitsaskohad.png}
 \caption{Generaliseerimise kitsaskohad eraldiseisvatel testplokkidel.}
 \label{fig:seg-error-panel}
 \end{figure}
