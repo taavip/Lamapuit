@@ -68,8 +68,8 @@ EfficientNet-B2           & 0,9963 & 0,9463 & 0,72 \\
 \subsubsection{Kõigi paanide hindamine ja aktiivõppe valiku moodustamine}
 \label{koigi-paanide-hindamine}
 
-Loodud pilootansambliga hinnati märgistamise laiendamiseks kogu kättesaadav paanide kogum ($580\,136$ märgistust). Eesmärk oli valida käsitsi ülevaatuseks piiripealsed ja raskesti klassifitseeritavad struktuurid, et suurendada järgneva lõpliku treeningusamba võimekust.
-Madala kindluse (ingl \textit{low-confidence}) vahemikuks määrati $p \in [0{,}39; 0{,}61]$, kuhu jäi $29\,628$ paani. Neile lisati 5\% juhuvalim muudest tulemustest ($26\,215$ paani), moodustades kokku $55\,843$ paanist ($10{,}08\%$ korpusest) koosneva eelisjärjekorra eksperdi hinnanguks.
+Loodud pilootansambliga hinnati märgistamise laiendamiseks kogu kättesaadav paanide kogum ($580\,136$ märgistust). Eesmärk oli valida käsitsi ülevaatuseks piiripealsed ja raskesti klassifitseeritavad struktuurid, et suurendada järgneva lõpliku treeningu võimekust.
+Madala kindluse vahemikuks määrati $p \in [0{,}39; 0{,}61]$, kuhu jäi $29\,628$ paani. Neile lisati 5\% juhuvalim muudest tulemustest ($26\,215$ paani), moodustades kokku $55\,843$ paanist ($10{,}08\%$ korpusest) koosneva eelisjärjekorra eksperdi hinnanguks.
 
 \subsubsection{Märgiste kvaliteet ja automaatmärgistuse tase}
 \label{margiste-kvaliteet}
@@ -79,7 +79,7 @@ Kaasnevalt analüüsiti mudeli automaatseid valepositiivseid ennustusi. Juhuvali
 \subsubsection{Suurendatud märgistusvalim ja ajalis-ruumiline jaotus}
 \label{mojusa-valimi-jaotus}
 
-Käsitsi ülevaatuse järel ning rangete reeglite kohaldamisel jagati kõik paanid treening-, valideerimis- ja testikomplektideks. Kasutusse võeti rangelt ruumiliselt eraldatud loogika, vähendamaks lekkepotentsiaali kattuvatest paanidest. Kokku eraldati valimisse $142\,465$ märgistust, millest treeningusse jõudis $67\,290$ ja testikomplekti turvaliselt isoleerituna $56\,521$. Selline jagunemine ja filtreerimine hoidis kõrvale andmemürast ja autokorrelatsioonist. Joonisel~\ref{fig:andmestiku_jaotus} on esitatud piltlik KDE tihedusjaotus, mis demonstreerib visuaalselt treeningu, testi, puhveralade ning spetsiifilise, keskmistatud aktiivõppevalimi jagunemist.
+Käsitsi ülevaatuse järel ning varasemate reeglite kohaldamisel jagati kõik paanid treening-, valideerimis- ja testikomplektideks. Kasutusse võeti rangelt ruumiliselt eraldatud loogika, vähendamaks lekkepotentsiaali kattuvatest paanidest. Kokku eraldati valimisse $142\,465$ märgistust, millest treeningusse jõudis $67\,290$ ja testikomplekti turvaliselt isoleerituna $56\,521$. Selline jagunemine ja filtreerimine hoidis kõrvale andmemürast ja autokorrelatsioonist. Joonisel~\ref{fig:andmestiku_jaotus} on esitatud piltlik KDE tihedusjaotus, mis demonstreerib visuaalselt treeningu, testi, puhveralade ning spetsiifilise, keskmistatud aktiivõppevalimi jagunemist.
 
 \begin{figure}[h!]
 \centering
@@ -130,12 +130,32 @@ Lõplik (neljamudeline) ansambel treeniti 67\,290 lekkekontrolliga märgistusel.
 \label{fig:roc-pr-curve}
 \end{figure}
 
-\subsubsection{CHM variantide võrdlus klassifitseerimises}
+\subsubsection{CHM variantide võrdlus klassifitseerimises ja segmenteerimises}
 \label{chm-variantide-klassifitseerimise-tulemused}
 
 Treeningfaasi esialgsetes eksperimentides vaadeldi mitmeid CHM-i arvutusmudeleid (näiteks erineva kõrgusfiltriga rastersisendid ja mitmekanalilised komposiidid). Lõplikus arenduses ja andmete märgistamise töövoos rakendati 20 cm resolutsiooniga 0--1,31 m kõrguseid filtreerivat ülekünnise väärtuste eemaldamise meetodit.
 
-Eksperimendid mitme kanaliga (koondades suhtelisikõrguseid ja silutud (ingl \textit{smoothed}) väärtusi) pakkusid küll marginaalset täpsuse kasvu (alla 1\% F1 suhtes), kuid suurendasid andmemahtu ja treeningkorduste aega enam kui kolm korda. Tehtud kuluanalüüsist lähtuvalt otsustati 1-kanalise 20 cm rasteri kasuks, mis pakub kõige tõhusama tasakaalu andmelihtsuse, arvutusresursside ja lõpliku tuvastusvõimekuse vahel.
+Segmenteerimismudelite otsinguprotsessis (V6) hinnati süstemaatiliselt viit erinevat CHM-sisendit, et määrata optimaalne sisendandmete esitusviis. Tabelist~\ref{tab:chm_variant_comparison} nähtub, et nelikanalilise composite-variandi (algne + Gaussi silutud + maskeeritud CHM) test-Dice saavutas väärtuse 0,241 ± 0,032, mis ühekanalilisest baasmudelit ületab 13,7\% võrra (0,212 ± 0,026). Sarnane muster ilmnes ka F1-skooris, kus composite saavutas 0,301 ± 0,041 võrreldes baasmudelil 0,260 ± 0,034.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lcccc}
+\hline
+\textbf{CHM-variant} & \textbf{Kanalite arv} & \textbf{Best Dice} & \textbf{Best F1} & \textbf{Suhteline kiirus} \\
+\hline
+Composite (alg. + gauss + mask) & 4 & 0,241 ± 0,032 & 0,301 ± 0,041 & 1,0× (ref.) \\
+Gauss (silutud) & 1 & 0,231 ± 0,028 & 0,285 ± 0,037 & ~1,2× \\
+Masked (maskeeritud) & 1 & 0,216 ± 0,023 & 0,265 ± 0,031 & ~1,2× \\
+Baseline (algne) & 1 & 0,212 ± 0,026 & 0,260 ± 0,034 & ~1,3× \\
+Raw (töötlemata) & 1 & 0,205 ± 0,031 & 0,252 ± 0,040 & ~1,3× \\
+\hline
+\end{tabular}
+\caption{Segmenteerimismudelite (V6) CHM-variantide võrdlus: jõudlus (Dice ja F1) ning suhtelised treenings- ja inferentsiajad. Composite-variant saavutab parima klassifikatsiooni, kuid ühekanaliline baasmudel on märkimisväärselt kiirem.}
+\label{tab:chm_variant_comparison}
+\end{table}
+
+Klassifitseerimiskatsetes rakendati sarnast loogika. Eksperimendid mitme kanaliga (koondades suhteliskõrguseid ja silutud väärtusi) pakkusid marginaalset täpsuse kasvu (alla 1\% F1 suhtes), kuid suurendasid andmemahtu ja treeningkorduste aega enam kui kolm korda. Tehtud kuluanalüüsist lähtuvalt otsustati klassifitseerimis- ja segmenteerimistöövoos 1-kanalise 20 cm rasteri kasuks, mis pakub tõhusama tasakaalu andmelihtsuse, arvutusresursside ja lõpliku tuvastusvõimekuse vahel.
 
 \subsubsection{Klassifitseerimismudelis esinevate vigade analüüs}
 \label{klassifitseerimise-vigade-analüüs}
@@ -153,8 +173,69 @@ Vaatamata kõrgele F1-skoorile esines mudeli ennustustes mõningaid iseloomulikk
 \label{fig:error-analysis}
 \end{figure}
 
+\paragraph{Käsitsi märgendatud andmestiku tehtud vead.}
+
+Käsitsi märgendatud valimile teostatud täiendav vigade analüüs paljastas, et vastupidiselt kõrgele keskmisele tulemile oli mudel võimeline tehiskavalust vigade tegema. Joonisel~\ref{fig:error-case-studies} on esitatud kaks ilustratiivset juhust: (i) \textbf{Valepostiivne} \textbf{(FP, usaldus 0,9889)} -- mudel arvas 128×128 paanil kuuluvat täielikult lamapuitu, kuigi sellel ei olnud peale struktureeritud müra ja madala taimestikku mingit signaali, mis näitab, et mudel võib konfundeerida lihtsa ruumilise korrapära kaunusega; (ii) \textbf{Valenegatiivsus (FN, ennustus 0,0249)} -- sama rasteris olev tegelik lamapuidupään jäi mudeli tähelepanu all täiesti märkamata, vihjates tugevale vastaste võimaluste osakaalule metsas kasvava võrastiku all. Esimene juhtum süstematiseerib meie jälgitut FP-riske (kraavid, rattarööpad jne.), teine aga selgitab FN-i loomust: andmete ebapiisav hajusus (1--4 pts/m² LiDAR) piisavalt hästi kirjeldab peent tüvedome kontuurit, mis on oluline tingimus, et mudel saaks õppida kindlakstegemiseks.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{estonian/joonised/error_cases_comparison.png}
+\caption{Klassifitseerimismudelite edenamatust juhtumid käsitsi märgendatud valimis: (vasakul) valepostiivne paan, kus mudel arvas kõrgete usaldusega (98,89\%) lamapuitu, kuid tegelikult oli paan tühi; (paremal) valenegatiivsus, kus tegelik lamapuu pandi mudelile peaaegu nähtamatuks (2,49\% ennustus). Mõlemad juhtumid paanis 465663\_2023\_madal\_chm\_max\_hag\_20cm.tif.}
+\label{fig:error-case-studies}
+\end{figure}
+
+\paragraph{Aktiivõppiõppe kaksepoolne õppimisprotsess.}
+
+Analüüsitud vigade juhtumid (eriti valepostiivne kõrge usaldusega ja valenegatiivsus madala usaldusega) viitavad tõenäoliselt sellele, et need paanid märgistati käsitsi valesti -- õigepanesult märgendiks neid vastupidiselt. Selline olukord demonstreerib aktiivõppiõppe \textit{kaksepoolset õppimisprotsessi}: mudel ei õpi mitte ainult paranduste kaudu õigete ja valede ennustuste eristamisest, vaid töö autor omakorda \textit{õpib kiiremini ja süstemaatilisemalt} märgendama edaspidi samasuguseid struktuure. Järjepidevalt paanil 465663 esinevate vastastikuste vigade (kõrge FP ja madal FN samal rasteril) tõttu omandab annotaator selle konkreetse maastikutüübi märgendamise mustrid ning vältib edaspidi samade kutsete kordamist. Selline pöördteave mudelist annotatoorile on oluline osa aktiivõppega juhitud andmestiku koostamisel ning aitab lõppkokkuvõttes saavutada ühtlast ja kvaliteetset märgistusstandardi.
+
 \subsection{Segmenteerimise tulemused}
 \label{segmenteerimise-tulemused}
+
+\paragraph{Kombinatsioonide tähistuste seletus.}
+
+Mudeliotsingu etappides kasutatakse hierarhilist tähistamist \texttt{2X\_\_3Y\_\_4Z\_\_5W\_\_6}, kus iga täht tähistab kindla valiku faasi. Tabel~\ref{tab:seg-notation-legend} koondab kõikide faasidega vastavad tähed ja nende tähendused.
+
+\begin{table}[h!]
+\centering
+\caption{Segmenteerimismudelite otsingu kombinatsioonide tähistuste seletus (faasid 2--6).}
+\label{tab:seg-notation-legend}
+\begin{tabular}{ll}
+\hline
+\textbf{Tähistus} & \textbf{Tähendus} \\
+\hline
+\multicolumn{2}{l}{\textit{Faas 2: CHM sisendivariant}} \\
+\hline
+2A & Baseline (20 cm, 0--1,31 m) \\
+2B & Raw CHM (töötlemata) \\
+2C & Gauss (Gaussi silutud, $\sigma=0,2$) \\
+2D & Masked (kaetisega maskeeritud) \\
+2E & Composite (komposiitne, mitmekanaliline) \\
+\hline
+\multicolumn{2}{l}{\textit{Faas 3: Semantiline arhitektuur}} \\
+\hline
+3B & Unet++ EfficientNet-B0 \\
+3C & Unet++ EfficientNet-B2 \\
+3E & DeepLabV3+ EfficientNet-B2 \\
+\hline
+\multicolumn{2}{l}{\textit{Faas 4: Kaofunktsioon}} \\
+\hline
+4A & DiceFocal \\
+4D & Tversky ($\alpha=0{,}5$, $\beta=0{,}5$) \\
+4F & Tversky ($\alpha=0{,}7$, $\beta=0{,}3$) \\
+4H & Tversky + clDice ($\lambda=0{,}3$) \\
+\hline
+\multicolumn{2}{l}{\textit{Faas 5: Andmerikastamine ja regulariseerimine}} \\
+\hline
+5A & Andmerikastamist ei kasutatud \\
+5D & Täielik augment + pehmed sihtväärtused + SWA (on) \\
+5E & Täielik augment + pehmed sihtväärtused, SWA (välja) \\
+\hline
+\multicolumn{2}{l}{\textit{Faas 6}} \\
+\hline
+6 & Lõpphindamine eraldiseisvatel testplokkidel (42 paani) \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsubsection{Segmenteerimisandmestiku ja valideerimise metoodika}
 \label{segmenteerimise-andmestik-metoodika}
@@ -311,9 +392,9 @@ Parimaks osutus \texttt{2E\_\_3B\_\_4H\_\_5E\_\_6}, mille test-F1 oli 0,5750 ja 
 
 \paragraph{Võrdlus klassifitseerimise baaslähenemisega.}
 
-Käesolevas logipõhises välistamisanalüüsis ei hinnatud eraldi klassifitseerimisest tuletatud pikslimaski (s.t. otsene pikslitasandi (ingl \textit{pixel-level}) võrdlus klassifitseerimisahelaga puudub). Seetõttu on kvantitatiivne võrdlus selles alapeatükis piiratud kolme segmenteerimisseadistuse omavahelise võrdlusega (kaks parimaks osutunud kandidaati + varasem V10 ahel).
+Käesolevas logipõhises välistamisanalüüsis ei hinnatud eraldi klassifitseerimisest tuletatud pikslimaski (s.t. otsene pikslitasandi (ingl \textit{pixel-level}) võrdlus klassifitseerimisahelaga puudub). Seetõttu on kvantitatiivne võrdlus selles alapeatükis piiratud kolme segmenteerimisseadistuse omavahelise võrdlusega (kaks parimaks osutunud kandidaati + varasemalt leitud parima mudeli ahel).
 
-Akadeemiliselt korrektne järeldus selle uuringu põhjal on järgmine: metoodika, kus igast faasist pääses edasi kaks parimat lahendust, leidis varasemast lahendusest oluliselt tugevama segmenteerimislahenduse. Otsene väide ``segmenteerimine vs klassifitseerimine'' eeldab siiski täiendavat kontrollkatset, kus samal eraldiseisval testialal mõõdetakse paralleelselt ka klassifitseerimispõhise maski \textit{clDice}, IoU ja F1.
+Metoodika, kus igast faasist pääses edasi kaks parimat lahendust, leidis varasemast lahendusest oluliselt tugevama segmenteerimislahenduse. Otsene väide ``segmenteerimine vs klassifitseerimine'' eeldab siiski täiendavat kontrollkatset, kus samal eraldiseisval testialal mõõdetakse paralleelselt ka klassifitseerimispõhise maski \textit{clDice}, IoU ja F1.
 
 \subsubsection{Generaliseerimuse valideerimise tulemused}
 \label{segmenteerimise-generaliseerimine}
