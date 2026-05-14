@@ -13,7 +13,7 @@ Klassifitseerimiskatsete põhjal oli mudeli sisendandmete esitusviisil oluline m
 \subsubsection{Andmestiku ruumilise jaotamise piirangud}
 Andmete treening-, valideerimis- ja testhulkadeks jaotamisel rakendati ruumilise valideerimise (spatial validation) põhimõtteid, et vähendada ruumilisest autokorrelatsioonist tingitud optimistlikku nihket tulemustes. Siiski ilmnesid meetodi rakendamisel teatud piirangud. Esiteks jääb kasutatud puhvertsoon (12,8~m) alla Gu jt (2024) poolt metsakeskkonnas soovitatud 50~m autokorrelatsiooni vahemikule. See tähendab, et treening- ja testhulga vahel võib esineda jääk-autokorrelatsiooni, mis võib põhjustada vähest andmeleket ja muuta valideerimismõõdikud tegelikust veidi paremaks.
 
-Teiseks on osaliselt võimalik ajaline leke: kuna samas asukohas on tehtud skaneerimisi eri aastatel, võivad sama ala eri aegade vaatlused (mille märgistusallikas võib erineda, nt \textit{auto_skip} vs \textit{auto}) sattuda erinevatesse andmehulkadesse. Mõlema piirangu mõju täpsemaks kvantifitseerimiseks on tulevikus soovitatav viia läbi ruumiline permutatsioonitest, kus mudeleid treenitakse alternatiivse, näiteks 50~m puhvriga jaotuse alusel, ning võrrelda saadud jõudlust käesoleva lahendusega.
+Teiseks on osaliselt võimalik ajaline leke: kuna samas asukohas on tehtud skaneerimisi eri aastatel, võivad sama ala eri aegade vaatlused (mille märgistusallikas võib erineda) sattuda erinevatesse andmehulkadesse. Mõlema piirangu mõju täpsemaks kvantifitseerimiseks on tulevikus soovitatav viia läbi ruumiline permutatsioonitest, kus mudeleid treenitakse alternatiivse, näiteks 50~m puhvriga jaotuse alusel, ning võrrelda saadud jõudlust käesoleva lahendusega.
 
 
 \subsubsection{Klassifitseerimise hindamise ja märgistusallikate piirangud}
