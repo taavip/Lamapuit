@@ -1,5 +1,7 @@
 name: cwd-detect
 channels:
+  - pytorch
+  - nvidia
   - conda-forge
   - defaults
 dependencies:
@@ -27,6 +29,7 @@ dependencies:
   - scikit-learn
   - scikit-image
   - pytorch>=2.0
+  - pytorch-cuda=12.4
   - torchvision
   
   # Testing

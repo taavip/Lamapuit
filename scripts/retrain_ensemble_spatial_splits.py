@@ -19,14 +19,40 @@ Output: Trained models + comprehensive evaluation report
 """
 
 import json
+import contextlib
+import os
+import platform
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 import rasterio
+
+
+def _is_wsl() -> bool:
+    # Inside Docker we avoid forcing WSL-safe conservative mode, because
+    # it can severely throttle GPU training throughput.
+    if os.path.exists("/.dockerenv"):
+        return False
+    release = platform.release().lower()
+    return bool(
+        os.environ.get("WSL_DISTRO_NAME")
+        or os.environ.get("WSL_INTEROP")
+        or "microsoft" in release
+        or "wsl" in release
+    )
+
+
+IS_WSL = _is_wsl()
+if IS_WSL:
+    # Reduce CPU oversubscription when running inside WSL/Docker.
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
+    os.environ.setdefault("MKL_NUM_THREADS", "1")
+
 import torch
 import torch.nn as nn
 from rasterio.windows import Window
@@ -43,14 +69,18 @@ from label_tiles import _get_build_fn, _instantiate_model_from_build_fn
 CONFIG = {
     "CNN_EPOCHS": 50,
     "EFFNET_EPOCHS": 30,
-    "BATCH_SIZE": 16,  # Reduced from 32 to fit in 18GB GPU with disk streaming
+    "BATCH_SIZE": 8,
     "LR_HEAD": 5e-4,
     "LR_BACKBONE": 5e-5,
     "LABEL_SMOOTHING": 0.05,
     "MIXUP_ALPHA": 0.3,
     "CNN_SEEDS": (42, 43, 44),
+    "NUM_WORKERS": 0,
+    "PERSISTENT_WORKERS": False,
+    "PIN_MEMORY": False,
+    "PREFETCH_FACTOR": 1,
     "DEVICE": torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-    "OUTPUT_DIR": Path("output/tile_labels_spatial_splits"),
+    "OUTPUT_DIR": Path("output/classification_140526_train_buffer_test"),
 }
 
 
@@ -81,47 +111,50 @@ def load_chm_window(chm_dir: Path, raster_name: str, row_off: int, col_off: int)
         return None
 
 
-def prepare_training_data(labels_csv: Path, chm_dir: Path, output_dir: Path):
-    """Load training/val/test data using spatial splits (streaming from disk)."""
+def _stratified_split_df(df: pd.DataFrame, val_fraction: float = 0.2, seed: int = 42) -> tuple[pd.DataFrame, pd.DataFrame]:
+    rng = np.random.default_rng(seed)
+    idx_pos = np.array(df.index[df["label"] == "cdw"], dtype=np.int64, copy=True)
+    idx_neg = np.array(df.index[df["label"] != "cdw"], dtype=np.int64, copy=True)
+    rng.shuffle(idx_pos)
+    rng.shuffle(idx_neg)
+
+    n_val_pos = max(1, int(round(len(idx_pos) * val_fraction))) if len(idx_pos) else 0
+    n_val_neg = max(1, int(round(len(idx_neg) * val_fraction))) if len(idx_neg) else 0
+    val_idx = np.concatenate([idx_pos[:n_val_pos], idx_neg[:n_val_neg]])
+    tr_idx = np.concatenate([idx_pos[n_val_pos:], idx_neg[n_val_neg:]])
+    df_train = df.loc[tr_idx].copy().reset_index(drop=True)
+    df_val = df.loc[val_idx].copy().reset_index(drop=True)
+    return df_train, df_val
+
+
+def prepare_training_data(
+    labels_csv: Path,
+    chm_dir: Path,
+    split_column: str,
+    train_value: str,
+    test_value: str,
+    val_fraction: float = 0.2,
+):
+    """Load training/validation/test data using the provided split column."""
     print("[prepare_training_data] Loading labels...")
     df = pd.read_csv(labels_csv)
 
-    # Use only test/train/val (exclude 'none' buffer zones)
-    df_train = df[df['split'] == 'train'].copy()
-    df_val = df[df['split'] == 'val'].copy()
-    df_test = df[df['split'] == 'test'].copy()
+    if split_column not in df.columns:
+        raise RuntimeError(f"Missing split column '{split_column}' in {labels_csv}")
 
-    print(f"  Train: {len(df_train)} labels")
-    print(f"  Val:   {len(df_val)} labels")
-    print(f"  Test:  {len(df_test)} labels")
-    print("  Note: Data will be streamed from disk (not pre-loaded to avoid OOM)")
+    # Use only train/test; buffer/none stay outside the model-selection loop.
+    df_train_all = df[df[split_column] == train_value].copy().reset_index(drop=True)
+    df_test = df[df[split_column] == test_value].copy().reset_index(drop=True)
 
-    # For val/test, we still load into memory (smaller sizes)
-    def load_data(df_subset):
-        X, y, w = [], [], []
-        for idx, row in df_subset.iterrows():
-            chm = load_chm_window(chm_dir, row['raster'], int(row['row_off']), int(row['col_off']))
-            if chm is None:
-                continue
-            label = 1 if row['label'] == 'cdw' else 0
-            X.append(chm)
-            y.append(label)
-            w.append(1.0)
+    df_train, df_val = _stratified_split_df(df_train_all, val_fraction=val_fraction, seed=42)
 
-        return np.array(X, dtype=np.float32), np.array(y, dtype=np.int64), np.array(w, dtype=np.float32)
+    print(f"  Train pool: {len(df_train_all)} labels")
+    print(f"  Train:      {len(df_train)} labels")
+    print(f"  Val:        {len(df_val)} labels")
+    print(f"  Test:       {len(df_test)} labels")
+    print("  Note: Train/val/test data will be streamed from disk (not pre-loaded)")
 
-    print("[prepare_training_data] Loading val CHM windows...")
-    X_val, y_val, w_val = load_data(df_val)
-
-    print("[prepare_training_data] Loading test CHM windows...")
-    X_test, y_test, w_test = load_data(df_test)
-
-    print(f"  Loaded: X_val={X_val.shape}, X_test={X_test.shape}")
-    print(f"  Train data will stream from disk during training")
-
-    # For training, return the dataframe instead of pre-loaded arrays
-    # DataLoader will read tiles on-demand
-    return df_train, (X_val, y_val, w_val), (X_test, y_test, w_test), df_test
+    return df_train, df_val, df_test
 
 
 # ============================================================================
@@ -140,6 +173,40 @@ class TileDataset(Dataset):
         self.df = df.reset_index(drop=True)
         self.chm_dir = Path(chm_dir)
         self.augment = augment
+        # Keep raster handles open inside the dataset process to avoid
+        # re-opening the same GeoTIFF for every single tile.
+        self._src_cache = {}
+
+    def _read_tile_cached(self, raster_name: str, row_off: int, col_off: int) -> np.ndarray | None:
+        src_entry = self._src_cache.get(raster_name)
+        if src_entry is None:
+            chm_path = self.chm_dir / raster_name
+            if not chm_path.exists():
+                return None
+            try:
+                src = rasterio.open(chm_path)
+            except Exception:
+                return None
+            src_entry = (src, src.nodata)
+            self._src_cache[raster_name] = src_entry
+
+        src, nodata = src_entry
+        try:
+            window = Window(col_off, row_off, 128, 128)
+            data = src.read(1, window=window).astype(np.float32)
+            if nodata is not None:
+                data[data == nodata] = np.nan
+            data = np.nan_to_num(data, nan=0.0)
+            return normalize_chm(data)
+        except Exception:
+            return None
+
+    def __del__(self):
+        for src, _nodata in self._src_cache.values():
+            try:
+                src.close()
+            except Exception:
+                pass
 
     def __len__(self):
         return len(self.df)
@@ -147,21 +214,15 @@ class TileDataset(Dataset):
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
 
-        # Load CHM tile on-demand
-        chm = load_chm_window(
-            self.chm_dir,
-            row['raster'],
-            int(row['row_off']),
-            int(row['col_off'])
-        )
+        # Load CHM tile on-demand (cached raster handles).
+        chm = self._read_tile_cached(row["raster"], int(row["row_off"]), int(row["col_off"]))
 
         if chm is None:
             # Return zero tile if loading fails
             chm = np.zeros((128, 128), dtype=np.float32)
 
-        # Normalize and add channel dimension
-        chm_norm = normalize_chm(chm)
-        x = torch.tensor(chm_norm, dtype=torch.float32).unsqueeze(0)  # shape: (1, 128, 128)
+        # `load_chm_window` already normalizes to [0, 1].
+        x = torch.tensor(chm, dtype=torch.float32).unsqueeze(0)  # shape: (1, 128, 128)
 
         y = torch.tensor(1 if row['label'] == 'cdw' else 0, dtype=torch.long)
         w = torch.tensor(1.0, dtype=torch.float32)
@@ -185,7 +246,81 @@ class TileDataset(Dataset):
         return x, y, w
 
 
-def train_single_model(model, df_train, chm_dir, X_val, y_val, device, epochs, model_tag=""):
+class Tee:
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, data):
+        for stream in self.streams:
+            stream.write(data)
+
+    def flush(self):
+        for stream in self.streams:
+            stream.flush()
+
+
+def _predict_probs_from_df(model, df_subset: pd.DataFrame, chm_dir: Path, device, batch_size: int = 256, tta: bool = False):
+    """Predict probabilities for a dataframe subset without pre-loading the full array."""
+    import torch
+
+    ds = TileDataset(df_subset, chm_dir, augment=False)
+    use_cuda = str(device).startswith("cuda")
+    dl = DataLoader(ds, **_dataloader_kwargs(batch_size, shuffle=False))
+    probs: list[float] = []
+    labels: list[int] = []
+
+    model.eval()
+    with torch.no_grad():
+        for xb, yb, _wb in dl:
+            xb = xb.to(device, non_blocking=use_cuda)
+            yb = yb.to(device)
+
+            if tta:
+                views = []
+                for k in range(4):
+                    v = torch.rot90(xb, k, [-2, -1])
+                    views.append(torch.softmax(model(v), dim=1)[:, 1])
+                    views.append(torch.softmax(model(torch.flip(v, [-1])), dim=1)[:, 1])
+                pb = torch.stack(views, dim=0).mean(dim=0)
+            else:
+                pb = torch.softmax(model(xb), dim=1)[:, 1]
+
+            probs.extend(pb.detach().cpu().numpy().tolist())
+            labels.extend(yb.detach().cpu().numpy().astype(int).tolist())
+
+    return np.asarray(labels, dtype=np.int64), np.asarray(probs, dtype=np.float64)
+
+
+def _metrics_from_probs(y_true: np.ndarray, y_prob: np.ndarray) -> tuple[float, float, float]:
+    from sklearn.metrics import f1_score, roc_auc_score
+
+    if len(np.unique(y_true)) < 2:
+        return 0.5, 0.5, 0.5
+
+    auc = float(roc_auc_score(y_true, y_prob))
+    best_f1, best_thr = 0.0, 0.5
+    for thr in np.linspace(0.10, 0.90, 81):
+        preds = (y_prob >= thr).astype(int)
+        f1 = float(f1_score(y_true, preds, zero_division=0))
+        if f1 >= best_f1:
+            best_f1, best_thr = f1, float(thr)
+    return auc, best_f1, best_thr
+
+
+def _dataloader_kwargs(batch_size: int, shuffle: bool) -> dict[str, Any]:
+    kwargs: dict[str, Any] = {
+        "batch_size": batch_size,
+        "shuffle": shuffle,
+        "num_workers": CONFIG["NUM_WORKERS"],
+        "pin_memory": CONFIG["PIN_MEMORY"],
+    }
+    if CONFIG["NUM_WORKERS"] > 0:
+        kwargs["persistent_workers"] = CONFIG["PERSISTENT_WORKERS"]
+        kwargs["prefetch_factor"] = CONFIG["PREFETCH_FACTOR"]
+    return kwargs
+
+
+def train_single_model(model, df_train, chm_dir, df_val, device, epochs, model_tag=""):
     """Train a single model.
 
     Args:
@@ -217,23 +352,23 @@ def train_single_model(model, df_train, chm_dir, X_val, y_val, device, epochs, m
 
     # Use custom dataset that loads tiles on-demand from disk
     train_ds = TileDataset(df_train, chm_dir, augment=True)
-    train_dl = DataLoader(train_ds, batch_size=CONFIG["BATCH_SIZE"], shuffle=True, num_workers=0)
-
-    # Add channel dimension to validation data: (N, 128, 128) → (N, 1, 128, 128)
-    X_val_t = torch.from_numpy(X_val).float().unsqueeze(1).to(device)
-    y_val_t = torch.from_numpy(y_val).long()
+    use_cuda = str(device).startswith("cuda")
+    train_dl = DataLoader(train_ds, **_dataloader_kwargs(CONFIG["BATCH_SIZE"], shuffle=True))
 
     best_loss = float('inf')
     best_state = None
+    best_metrics = {"val_auc": 0.5, "val_f1": 0.5, "val_thresh": 0.5}
 
-    print(f"[train] {model_tag}  epochs={epochs}  train={len(df_train)}  val={len(X_val)}")
+    print(f"[train_ensemble] {model_tag}  epochs={epochs}  train={len(df_train)}  val={len(df_val)}", flush=True)
 
     for epoch in range(1, epochs + 1):
         model.train()
         epoch_loss = 0.0
 
         for xb, yb, wb in train_dl:
-            xb, yb, wb = xb.to(device), yb.to(device), wb.to(device).float()
+            xb = xb.to(device, non_blocking=use_cuda)
+            yb = yb.to(device)
+            wb = wb.to(device).float()
             optimizer.zero_grad()
 
             loss = criterion(model(xb), yb) * wb
@@ -244,29 +379,39 @@ def train_single_model(model, df_train, chm_dir, X_val, y_val, device, epochs, m
         scheduler.step()
 
         if epoch % max(1, epochs // 10) == 0 or epoch == epochs:
-            with torch.no_grad():
-                # Validate in batches to avoid OOM on large val set
-                val_losses = []
-                val_batch_size = 256
-                for i in range(0, len(X_val_t), val_batch_size):
-                    batch_end = min(i + val_batch_size, len(X_val_t))
-                    val_batch = X_val_t[i:batch_end].to(device)
-                    val_labels = y_val_t[i:batch_end].to(device)
-                    val_logits = model(val_batch)
-                    batch_loss = criterion(val_logits, val_labels).mean().item()
-                    val_losses.append(batch_loss)
+            y_val_np, val_probs = _predict_probs_from_df(model, df_val, chm_dir, device, batch_size=64 if IS_WSL else 256, tta=False)
+            val_auc, val_f1, val_thr = _metrics_from_probs(y_val_np, val_probs)
+            val_loss = float(1.0 - val_f1)
+            avg_loss = epoch_loss / max(len(train_dl), 1)
+            print(
+                f"  epoch {epoch:3d}/{epochs}  loss={avg_loss:.4f}  val_AUC={val_auc:.4f}  F1={val_f1:.4f}@{val_thr:.2f}",
+                flush=True,
+            )
 
-                val_loss = np.mean(val_losses)
-                print(f"  epoch {epoch:3d}/{epochs}  loss={epoch_loss/len(train_dl):.4f}  val_loss={val_loss:.4f}")
-
-                if val_loss < best_loss:
-                    best_loss = val_loss
-                    best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            if val_auc > best_metrics["val_auc"] or (
+                np.isclose(val_auc, best_metrics["val_auc"]) and val_f1 > best_metrics["val_f1"]
+            ):
+                best_loss = val_loss
+                best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+                best_metrics = {
+                    "val_auc": round(val_auc, 4),
+                    "val_f1": round(val_f1, 4),
+                    "val_thresh": round(val_thr, 2),
+                }
 
     if best_state is not None:
         model.load_state_dict(best_state)
 
-    return model
+    if best_state is None:
+        y_val_np, val_probs = _predict_probs_from_df(model, df_val, chm_dir, device, batch_size=64 if IS_WSL else 256, tta=False)
+        val_auc, val_f1, val_thr = _metrics_from_probs(y_val_np, val_probs)
+        best_metrics = {
+            "val_auc": round(val_auc, 4),
+            "val_f1": round(val_f1, 4),
+            "val_thresh": round(val_thr, 2),
+        }
+
+    return model, best_metrics
 
 
 # ============================================================================
@@ -277,158 +422,271 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Retrain ensemble with spatial splits (Option B)")
-    parser.add_argument("--labels", type=Path, default=Path("data/chm_variants/labels_canonical_with_splits.csv"))
+    parser.add_argument(
+        "--labels",
+        type=Path,
+        default=Path("data/chm_variants/labels_canonical_with_splits_train_buffer_test.csv"),
+    )
     parser.add_argument("--chm-dir", type=Path, default=Path("data/lamapuit/chm_max_hag_13_drop"))
+    parser.add_argument("--split-column", type=str, default="split_train_buffer_test")
+    parser.add_argument("--train-value", type=str, default="train")
+    parser.add_argument("--test-value", type=str, default="test")
+    parser.add_argument("--val-fraction", type=float, default=0.2)
     parser.add_argument("--output", type=Path, default=CONFIG["OUTPUT_DIR"])
     args = parser.parse_args()
 
     output_dir = args.output
     output_dir.mkdir(parents=True, exist_ok=True)
+    log_path = output_dir / "train_ensemble.log"
 
-    print("=" * 100)
-    print("RETRAIN ENSEMBLE WITH SPATIAL SPLITS (OPTION B)")
-    print("=" * 100)
-    print(f"\nConfig:")
-    for k, v in CONFIG.items():
-        if k != "DEVICE":
-            print(f"  {k}: {v}")
-    print(f"  DEVICE: {CONFIG['DEVICE']}")
-    print(f"\nOutput directory: {output_dir}\n")
+    with log_path.open("w", encoding="utf-8") as log_fh, contextlib.redirect_stdout(Tee(sys.stdout, log_fh)):
+        print("=" * 100)
+        print("RETRAIN ENSEMBLE WITH SPATIAL SPLITS (OPTION B)")
+        print("=" * 100)
+        if IS_WSL:
+            try:
+                torch.set_num_threads(max(1, min(2, os.cpu_count() or 1)))
+                torch.set_num_interop_threads(1)
+                print("[env] WSL detected: limiting torch CPU threads and keeping data loading conservative")
+            except Exception as exc:
+                print(f"[env] Warning: could not tune torch thread settings: {exc}")
+        print(f"\nConfig:")
+        for k, v in CONFIG.items():
+            if k != "DEVICE":
+                print(f"  {k}: {v}")
+        print(f"  DEVICE: {CONFIG['DEVICE']}")
+        print(f"\nOutput directory: {output_dir}\n")
 
-    t0 = time.time()
+        t0 = time.time()
+        eval_batch_size = 64 if IS_WSL else 128
 
-    # Prepare data
-    print("[step 1/4] Preparing data...")
-    df_train, (X_val, y_val, w_val), (X_test, y_test, w_test), df_test = \
-        prepare_training_data(args.labels, args.chm_dir, output_dir)
-
-    # Save metadata
-    train_cdw = int((df_train['label'] == 'cdw').sum())
-    train_no_cdw = int((df_train['label'] != 'cdw').sum())
-    test_cdw = int(np.sum(y_test == 1))
-    test_no_cdw = int(np.sum(y_test == 0))
-
-    metadata = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "training_config": {k: v for k, v in CONFIG.items() if k != "DEVICE"},
-        "data_stats": {
-            "train_size": len(df_train),
-            "val_size": len(X_val),
-            "test_size": len(X_test),
-            "train_cdw": train_cdw,
-            "train_no_cdw": train_no_cdw,
-            "test_cdw": test_cdw,
-            "test_no_cdw": test_no_cdw,
-        },
-        "approach": "Option B: Retrain on spatial splits (academic rigor)",
-    }
-
-    print(f"\n[step 2/4] Training models...")
-    print(f"  3 CNN-Deep-Attn models (seeds 42, 43, 44)")
-    print(f"  1 EfficientNet-B2 model")
-
-    models = {}
-
-    # Train CNN models
-    for seed in CONFIG["CNN_SEEDS"]:
-        print(f"\n[train_cnn] seed={seed}")
-        model = _instantiate_model_from_build_fn(_get_build_fn("_build_deep_cnn_attn"))
-        torch.manual_seed(seed)
-        np.random.seed(seed)
-        model = train_single_model(
-            model, df_train, args.chm_dir, X_val, y_val,
-            CONFIG["DEVICE"], CONFIG["CNN_EPOCHS"],
-            model_tag=f"CNN-seed{seed}"
+        # Prepare data
+        print("[step 1/4] Preparing data...")
+        df_train, df_val, df_test = prepare_training_data(
+            args.labels,
+            args.chm_dir,
+            args.split_column,
+            args.train_value,
+            args.test_value,
+            val_fraction=args.val_fraction,
         )
-        checkpoint_path = output_dir / f"cnn_seed{seed}_spatial.pt"
-        torch.save({
-            "state_dict": model.state_dict(),
-            "build_fn_name": "_build_deep_cnn_attn",
-            "meta": {"seed": seed, "model_name": f"CNN-seed{seed}"}
-        }, checkpoint_path)
-        models[f"cnn_seed{seed}"] = model
-        print(f"  Saved: {checkpoint_path}")
 
-    # Train EfficientNet model
-    print(f"\n[train_effnet]")
-    effnet = _instantiate_model_from_build_fn(_get_build_fn("_build_effnet_b2"))
-    effnet = train_single_model(
-        effnet, df_train, args.chm_dir, X_val, y_val,
-        CONFIG["DEVICE"], CONFIG["EFFNET_EPOCHS"],
-        model_tag="EfficientNet-B2"
-    )
-    checkpoint_path = output_dir / "effnet_b2_spatial.pt"
-    torch.save({
-        "state_dict": effnet.state_dict(),
-        "build_fn_name": "_build_effnet_b2",
-        "meta": {"model_name": "EfficientNet-B2"}
-    }, checkpoint_path)
-    models["effnet_b2"] = effnet
-    print(f"  Saved: {checkpoint_path}")
+        # Save metadata
+        train_cdw = int((df_train["label"] == "cdw").sum())
+        train_no_cdw = int((df_train["label"] != "cdw").sum())
+        val_cdw = int((df_val["label"] == "cdw").sum())
+        val_no_cdw = int((df_val["label"] != "cdw").sum())
+        test_cdw = int((df_test["label"] == "cdw").sum())
+        test_no_cdw = int((df_test["label"] != "cdw").sum())
 
-    # Evaluate on test set with batched inference to avoid OOM
-    print(f"\n[step 3/4] Evaluating on test set...")
-    from sklearn.metrics import roc_auc_score, f1_score
+        metadata = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "split_source": str(args.labels),
+            "split_column": args.split_column,
+            "split_values": {
+                "train": args.train_value,
+                "test": args.test_value,
+            },
+            "training_config": {k: v for k, v in CONFIG.items() if k != "DEVICE"},
+            "data_stats": {
+                "train_size": int(len(df_train)),
+                "val_size": int(len(df_val)),
+                "test_size": int(len(df_test)),
+                "train_cdw": train_cdw,
+                "train_no_cdw": train_no_cdw,
+                "val_cdw": val_cdw,
+                "val_no_cdw": val_no_cdw,
+                "test_cdw": test_cdw,
+                "test_no_cdw": test_no_cdw,
+            },
+            "approach": "Option B: Retrain on spatial splits (academic rigor)",
+        }
 
-    X_test_t = torch.from_numpy(X_test).float().unsqueeze(1)
-    all_probs = None
-    test_batch_size = 256
+        print(f"\n[step 2/4] Training models...")
+        print(f"  3 CNN-Deep-Attn models (seeds 42, 43, 44)")
+        print(f"  1 EfficientNet-B2 model")
 
-    for name, model in models.items():
-        print(f"  Evaluating {name}...")
-        model.eval()
-        model_probs_list = []
+        models = {}
+        model_metrics = {}
+        checkpoints = {}
 
-        with torch.no_grad():
-            for i in range(0, len(X_test_t), test_batch_size):
-                batch_end = min(i + test_batch_size, len(X_test_t))
-                batch = X_test_t[i:batch_end].to(CONFIG["DEVICE"])
-                logits = model(batch)
-                batch_probs = torch.softmax(logits, dim=1)[:, 1].cpu().numpy()
-                model_probs_list.append(batch_probs)
+        # Train CNN models
+        for seed in CONFIG["CNN_SEEDS"]:
+            tag = f"cnn_seed{seed}"
+            print(f"\n[train_ensemble] ── Training {tag} ──────────────────────────", flush=True)
+            model = _instantiate_model_from_build_fn(_get_build_fn("_build_deep_cnn_attn"))
+            torch.manual_seed(seed)
+            np.random.seed(seed)
+            model, metrics = train_single_model(
+                model,
+                df_train,
+                args.chm_dir,
+                df_val,
+                CONFIG["DEVICE"],
+                CONFIG["CNN_EPOCHS"],
+                model_tag=tag,
+            )
+            checkpoint_path = output_dir / f"{tag}_spatial.pt"
+            torch.save(
+                {
+                    "state_dict": model.state_dict(),
+                    "build_fn_name": "_build_deep_cnn_attn",
+                    "model_name": tag,
+                    "meta": {
+                        "seed": seed,
+                        "model_name": tag,
+                        "best_auc": metrics["val_auc"],
+                        "best_f1": metrics["val_f1"],
+                        "best_thresh": metrics["val_thresh"],
+                    },
+                },
+                checkpoint_path,
+            )
+            models[tag] = model
+            model_metrics[tag] = metrics
+            checkpoints[tag] = {
+                "path": str(checkpoint_path),
+                "build_fn_name": "_build_deep_cnn_attn",
+                "model_name": tag,
+                "weight": metrics["val_f1"],
+                "threshold": metrics["val_thresh"],
+            }
+            print(
+                f"[train_ensemble] {tag} saved → {checkpoint_path}  "
+                f"val_AUC={metrics['val_auc']:.4f}  F1={metrics['val_f1']:.4f}",
+                flush=True,
+            )
 
-        model_probs = np.concatenate(model_probs_list, axis=0)
-        if all_probs is None:
-            all_probs = model_probs
-        else:
-            all_probs += model_probs
-        del model_probs, model_probs_list
+        # Train EfficientNet model
+        tag = "effnet_b2"
+        print(f"\n[train_ensemble] ── Training {tag} ──────────────────────────────", flush=True)
+        effnet = _instantiate_model_from_build_fn(_get_build_fn("_build_effnet_b2"))
+        effnet, metrics = train_single_model(
+            effnet,
+            df_train,
+            args.chm_dir,
+            df_val,
+            CONFIG["DEVICE"],
+            CONFIG["EFFNET_EPOCHS"],
+            model_tag=tag,
+        )
+        checkpoint_path = output_dir / f"{tag}_spatial.pt"
+        torch.save(
+            {
+                "state_dict": effnet.state_dict(),
+                "build_fn_name": "_build_effnet_b2",
+                "model_name": tag,
+                "meta": {
+                    "model_name": tag,
+                    "best_auc": metrics["val_auc"],
+                    "best_f1": metrics["val_f1"],
+                    "best_thresh": metrics["val_thresh"],
+                },
+            },
+            checkpoint_path,
+        )
+        models[tag] = effnet
+        model_metrics[tag] = metrics
+        checkpoints[tag] = {
+            "path": str(checkpoint_path),
+            "build_fn_name": "_build_effnet_b2",
+            "model_name": tag,
+            "weight": metrics["val_f1"],
+            "threshold": metrics["val_thresh"],
+        }
+        print(
+            f"[train_ensemble] {tag} saved → {checkpoint_path}  "
+            f"val_AUC={metrics['val_auc']:.4f}  F1={metrics['val_f1']:.4f}",
+            flush=True,
+        )
 
-    ensemble_probs = all_probs / len(models)
-    auc = float(roc_auc_score(y_test, ensemble_probs))
+        # Evaluate on test set with batched inference to avoid OOM
+        print(f"\n[step 3/4] Evaluating on test set...")
+        from sklearn.metrics import roc_auc_score, f1_score
 
-    best_f1, best_thr = 0.0, 0.5
-    for thr in np.linspace(0.1, 0.9, 81):
-        preds = (ensemble_probs >= thr).astype(int)
-        f1 = float(f1_score(y_test, preds, zero_division=0))
-        if f1 >= best_f1:
-            best_f1, best_thr = f1, float(thr)
+        ensemble_probs = None
+        test_pred_df = df_test.copy().reset_index(drop=True)
+        for name, model in models.items():
+            print(f"  Evaluating {name}...")
+            y_true_np, model_probs = _predict_probs_from_df(
+                model,
+                df_test,
+                args.chm_dir,
+                CONFIG["DEVICE"],
+                batch_size=eval_batch_size,
+                tta=True,
+            )
+            if ensemble_probs is None:
+                ensemble_probs = model_probs.copy()
+            else:
+                ensemble_probs += model_probs
+            test_pred_df[f"prob_{name}"] = model_probs
+            test_pred_df["y_true"] = y_true_np
 
-    print(f"\nTest set evaluation:")
-    print(f"  AUC: {auc:.4f}")
-    print(f"  F1: {best_f1:.4f} @ threshold={best_thr:.2f}")
-    print(f"  n_test: {len(y_test)}")
-    print(f"  CDW: {np.sum(y_test == 1)}, NO_CDW: {np.sum(y_test == 0)}")
+        ensemble_probs = ensemble_probs / len(models)
+        test_pred_df["prob_ensemble"] = ensemble_probs
 
-    metadata["test_metrics"] = {
-        "ensemble_auc": auc,
-        "ensemble_f1": best_f1,
-        "ensemble_thresh": best_thr,
-        "n_test": int(len(y_test)),
-        "n_cdw": int(np.sum(y_test == 1)),
-    }
+        auc = float(roc_auc_score(test_pred_df["y_true"].values, ensemble_probs))
+        best_f1, best_thr = 0.0, 0.5
+        for thr in np.linspace(0.1, 0.9, 81):
+            preds = (ensemble_probs >= thr).astype(int)
+            f1 = float(f1_score(test_pred_df["y_true"].values, preds, zero_division=0))
+            if f1 >= best_f1:
+                best_f1, best_thr = f1, float(thr)
 
-    # Save metadata
-    metadata_path = output_dir / "training_metadata.json"
-    with open(metadata_path, "w") as f:
-        json.dump(metadata, f, indent=2)
-    print(f"\nSaved metadata: {metadata_path}")
+        print(f"\nTest set evaluation:")
+        print(f"  AUC: {auc:.4f}")
+        print(f"  F1: {best_f1:.4f} @ threshold={best_thr:.2f}")
+        print(f"  n_test: {len(test_pred_df)}")
+        print(
+            f"  CDW: {int((test_pred_df['y_true'] == 1).sum())}, "
+            f"NO_CDW: {int((test_pred_df['y_true'] == 0).sum())}"
+        )
 
-    elapsed = time.time() - t0
-    print(f"\n[step 4/4] Training complete in {elapsed/3600:.1f} hours")
-    print(f"\n{'='*100}")
-    print("SPATIAL SPLIT RETRAINING COMPLETE")
-    print(f"{'='*100}")
+        metadata["test_metrics"] = {
+            "ensemble_auc": auc,
+            "ensemble_f1": best_f1,
+            "ensemble_thresh": best_thr,
+            "n_test": int(len(test_pred_df)),
+            "n_cdw": int((test_pred_df["y_true"] == 1).sum()),
+            "tta": True,
+            "n_models": len(models),
+        }
+        metadata["model_metrics"] = model_metrics
+        metadata["checkpoints"] = checkpoints
+
+        # Save metadata
+        metadata_path = output_dir / "training_metadata.json"
+        with open(metadata_path, "w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=2, ensure_ascii=False)
+        print(f"\nSaved metadata: {metadata_path}")
+
+        ensemble_meta_path = output_dir / "ensemble_meta.json"
+        with open(ensemble_meta_path, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "created_at": metadata["timestamp"],
+                    "checkpoints": checkpoints,
+                    "model_metrics": model_metrics,
+                    "test_metrics": metadata["test_metrics"],
+                    "split_column": args.split_column,
+                    "split_source": str(args.labels),
+                },
+                f,
+                indent=2,
+                ensure_ascii=False,
+            )
+        print(f"Saved ensemble metadata: {ensemble_meta_path}")
+
+        test_pred_path = output_dir / "test_predictions.csv"
+        test_pred_df.to_csv(test_pred_path, index=False)
+        print(f"Saved test predictions: {test_pred_path}")
+
+        elapsed = time.time() - t0
+        print(f"\n[step 4/4] Training complete in {elapsed/3600:.1f} hours")
+        print(f"\n{'='*100}")
+        print("SPATIAL SPLIT RETRAINING COMPLETE")
+        print(f"{'='*100}")
 
     return 0
 

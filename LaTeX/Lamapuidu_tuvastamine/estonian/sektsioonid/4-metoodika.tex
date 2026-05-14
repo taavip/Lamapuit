@@ -13,7 +13,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
 
 
 % ---------------------------------------------------------
-\subsection{Metoodika üldskeem ja kõrgusmudeli (CHM) baasandmete loomine}
+\subsection{Metoodika üldskeem ja taimkatte kõrgusmudeli (CHM) baasandmete loomine}
 \label{subsec:workflow-base-chm}
 
     \subsubsection{Töövoo üldine ülesehitus}
@@ -31,32 +31,32 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
     Viirukute (igihaljalte puude) varjude mõju on oluline arvestada: tihedates kuusikutes vähendavad igihaljaste puude võrad laserimpulsside läbilaskevõimet märkimisväärselt, mistõttu maapinnale jõudvate peegelduste tihedus väheneb. Seetõttu on mingil aladel tegelik punktitihedus märgatavalt vähem, kui üldises keskmises näidatakse. Selline lähenemine CHM kõrguse piiride osas (0--1,3~m) hoiab maapinna müra minimaalsena, säilitades samal ajal lamapuidu signaali. 
 
 
-Andmete rasterdamisel rakendati piksli suurust 20 cm, omistades igale piksli ruudule selles sisalduva punktipilve maksimaalse kõrgusväärtuse. Resolutsiooni valik on metoodiliselt kaalutletud otsus, mis peab tasakaalustama punktipilve tihedust, andmestiku detailset katvust ning võimekust eristada kõrvuti asetsevaid üksikobjekte -- veelgi väiksema resolutsiooni kasutamine tekitaks piiratud punktitiheduse korral rohkelt ilma laserpeegelduse väärtuseta lünkasid ehk tühje piksleid. Antud uuringus valitud 20 cm piksli suurus on otseses seoses tuvastatavate objektide füüsiliste mõõtmetega. Statistilise metsainventuuri (SMI) 2024. aasta välitööde juhendi kohaselt loetakse lamapuidu mõõtmisel künniseks tüve läbimõõt alates 15 cm \parencite{SMI2024}. Samas rõhutab erialane kirjandus, et elurikkuse seisukohalt on kriitilise tähtsusega just jämedam lamapuit — paljud nõudlikud ja ohustatud saproksüülsed liigid eelistavad või vajavad elupaigana tüvesid, mille läbimõõt on vähemalt 20 cm \parencite{Vilhelmsson2013}. Lisaks rõhutatakse strateegilistes dokumentides eriti jämedamõõtmelise lamapuidu (läbimõõduga alates u 30 cm) säilitamist, mis on kriitiline paljudele ohustatud liikidele \parencite{kliimaministeerium_looduse_2024}. Seega on 20 cm piksli suurus optimaalne lävi, mis vastab minimaalsele ökoloogiliselt olulisele objekti suurusele, mida käesoleva analüüsi raames soovitakse tuvastada, tagades samas piisava ruumilise täpsuse objektide kuju säilitamiseks ilma liigsete tühjade pikslite tekkimiseta.
+    Andmete rasterdamisel rakendati piksli suurust 20 cm, omistades igale piksli ruudule selles sisalduva punktipilve maksimaalse kõrgusväärtuse. Resolutsiooni valik on metoodiliselt kaalutletud otsus, mis peab tasakaalustama punktipilve tihedust, andmestiku detailset katvust ning võimekust eristada kõrvuti asetsevaid üksikobjekte -- veelgi väiksema resolutsiooni kasutamine tekitaks piiratud punktitiheduse korral rohkelt ilma laserpeegelduse väärtuseta lünkasid ehk tühje piksleid. Antud uuringus valitud 20 cm piksli suurus on otseses seoses tuvastatavate objektide füüsiliste mõõtmetega. Statistilise metsainventuuri (SMI) 2024. aasta välitööde juhendi kohaselt loetakse lamapuidu mõõtmisel künniseks tüve läbimõõt alates 15 cm \parencite{SMI2024}. Samas rõhutab erialane kirjandus, et elurikkuse seisukohalt on kriitilise tähtsusega just jämedam lamapuit — paljud nõudlikud ja ohustatud saproksüülsed liigid eelistavad või vajavad elupaigana tüvesid, mille läbimõõt on vähemalt 20 cm \parencite{Vilhelmsson2013}. Lisaks rõhutatakse strateegilistes dokumentides eriti jämedamõõtmelise lamapuidu (läbimõõduga alates u 30 cm) säilitamist, mis on kriitiline paljudele ohustatud liikidele \parencite{kliimaministeerium_looduse_2024}. Seega on 20 cm piksli suurus optimaalne lävi, mis vastab minimaalsele ökoloogiliselt olulisele objekti suurusele, mida käesoleva analüüsi raames soovitakse tuvastada, tagades samas piisava ruumilise täpsuse objektide kuju säilitamiseks ilma liigsete tühjade pikslite tekkimiseta.
 
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.92\textwidth]{estonian/joonised/chm_eeltootluse_toovoog.png}
-\caption{CHM-i loomise ja eeltöötluse töövoog. Sammud käivad järgmiselt: algne hõre punktipilv (LAZ) → maapinnamudeli eraldamine (DTM) → kõrguste normaliseerimine maapinnast (HAG) → sobimatud punktid väljaarvestamine (0--1,3 m vahemik) → rasteriseerimine 20 cm piksli resolutsiooniga maksimaalkõrguse abiga (CHM).}
-\label{fig:chm-flow}
-\end{figure}
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.92\textwidth]{estonian/joonised/chm_eeltootluse_toovoog.png}
+    \caption{CHM-i loomise ja eeltöötluse töövoog. Sammud käivad järgmiselt: algne hõre punktipilv (LAZ) → maapinnamudeli eraldamine (DTM) → kõrguste normaliseerimine maapinnast (HAG) → sobimatud punktid väljaarvestamine (0--1,3 m vahemik) → rasteriseerimine 20 cm piksli resolutsiooniga maksimaalkõrguse abiga (CHM).}
+    \label{fig:chm-flow}
+    \end{figure}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.92\textwidth]{estonian/joonised/lamapuu_punktipilv_ja_chm.png}
-\caption{Lamapuu objekti esitused erinevates andmemudelites: vasakul kolmemõõtmeline punktipilv üksikute laserpeegeldustega 3D-koordinaatidena; paremal sama lamapuu ala rastervormis 20 cm piksli resolutsiooniga CHM-ina, kus iga pikseli väärtus näitab kõrgeimat punkti selle alas.}
-\label{fig:chm-example}
-\end{figure}
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.92\textwidth]{estonian/joonised/lamapuu_punktipilv_ja_chm.png}
+    \caption{Lamapuu objekti esitused erinevates andmemudelites: vasakul kolmemõõtmeline punktipilv üksikute laserpeegeldustega 3D-koordinaatidena; paremal sama lamapuu ala rastervormis 20 cm piksli resolutsiooniga CHM-ina, kus iga pikseli väärtus näitab kõrgeimat punkti selle alas.}
+    \label{fig:chm-example}
+    \end{figure}
 
-Selle töötluse tulemuseks saadud detailsed ja madalad taimkattemudelid on alus nii sildistamisele kui ka mudeli sisendile. Eesmärk ei ole üksnes objektide nähtavaks tegemine, vaid ka erinevate aastate ja alade vahel võrdleva, ühtse medoodika alusel kujutise loomine.
+    Selle töötluse tulemuseks saadud detailsed ja madalad taimkattemudelid on alus nii sildistamisele kui ka mudeli sisendile. Eesmärk ei ole üksnes objektide nähtavaks tegemine, vaid ka erinevate aastate ja alade vahel võrdleva, ühtse medoodika alusel kujutise loomine.
 
-Sildistamise ja hilisema mudeli sisendi jaoks jagati suuremõõtmelised kaardilehed ($1 \times 1$ km) TIF-formaadis väiksemateks, $128 \times 128$ piksli suurusteks pildikildudeks ehk paanideks (ingl \textit{tiles}). Kuna rasteri resolutsiooniks oli eelnevalt määratud 20 cm piksli kohta, vastab üks paan maastikul ulatusele $25,6 \times 25,6$ meetrit. Selline suuruse valik ei olnud juhuslik, vaid tugines mitmele disainikaalutlusele:
-\begin{itemize}
-    \item \textbf{Töövoo kiirus:} $128 \times 128$ piksline pilt laeb kiiresti ja selle töötlemine on kiire.
-    \item \textbf{Arhitektuuriline paindlikkus:} Küljepikkus 128 kujutab endast kahe astet ($2^7$), mis on ideaalne ja valdavalt standardnõue konvolutsiooniliste närvivõrkude ja sügavõppe arhitektuuride skaleeritavuse standardnõuetele. Kuna andmete ettevalmistamisel polnud lõplik mudel fikseeritud, tagas selline mõõt universaalse sobivuse erinevate arhitektuuridega.
-    \item \textbf{Kontekstuaalne ülevaade:} $25,6$ meetri pikkune ala on piisavalt lai, et tavapärane lamapuidu objekt, mis jääb üldiselt samasse suurusjärku, oleks pildil nähtav tervikuna koos seda ümbritseva alaga.
-    \item \textbf{Ülekate servaalade kompenseerimiseks:} Piltide lõikamisel paanideks rakendati igas suunas 50\% ülekatet (samm 64 pikslit). See tagab, et objekt, mis satuks muidu pildi servale või lõigataks pooleks, jääb vähemalt ühel paanil pildi keskossa. Pidev ja korduv keskse asetusega treeninginfo võimaldab mudelil objekte usaldusväärsemalt tuvastada.
-\end{itemize}
+    Sildistamise ja hilisema mudeli sisendi jaoks jagati suuremõõtmelised kaardilehed ($1 \times 1$ km) TIF-formaadis väiksemateks, $128 \times 128$ piksli suurusteks pildikildudeks ehk paanideks (ingl \textit{tiles}). Kuna rasteri resolutsiooniks oli eelnevalt määratud 20 cm piksli kohta, vastab üks paan maastikul ulatusele $25,6 \times 25,6$ meetrit. Selline suuruse valik ei olnud juhuslik, vaid tugines mitmele disainikaalutlusele:
+    \begin{itemize}
+        \item \textbf{Töövoo kiirus:} $128 \times 128$ piksline pilt laeb kiiresti ja selle töötlemine on kiire.
+        \item \textbf{Arhitektuuriline paindlikkus:} Küljepikkus 128 kujutab endast kahe astet ($2^7$), mis on ideaalne ja valdavalt standardnõue konvolutsiooniliste närvivõrkude ja sügavõppe arhitektuuride skaleeritavuse standardnõuetele. Kuna andmete ettevalmistamisel polnud lõplik mudel fikseeritud, tagas selline mõõt universaalse sobivuse erinevate arhitektuuridega.
+        \item \textbf{Kontekstuaalne ülevaade:} $25,6$ meetri pikkune ala on piisavalt lai, et tavapärane lamapuidu objekt, mis jääb üldiselt samasse suurusjärku, oleks pildil nähtav tervikuna koos seda ümbritseva alaga.
+        \item \textbf{Ülekate servaalade kompenseerimiseks:} Piltide lõikamisel paanideks rakendati igas suunas 50\% ülekatet (samm 64 pikslit). See tagab, et objekt, mis satuks muidu pildi servale või lõigataks pooleks, jääb vähemalt ühel paanil pildi keskossa. Pidev ja korduv keskse asetusega treeninginfo võimaldab mudelil objekte usaldusväärsemalt tuvastada.
+    \end{itemize}
 
 
 % ---------------------------------------------------------

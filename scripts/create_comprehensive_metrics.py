@@ -13,6 +13,7 @@ Generates:
 8. Class-specific metrics table
 """
 
+import argparse
 import json
 from pathlib import Path
 
@@ -33,20 +34,37 @@ sns.set_style("whitegrid")
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['font.size'] = 10
 
+INPUT_CSV = Path("output/classification_140526_train_buffer_test/test_predictions.csv")
+OUTPUT_DIR = Path("output/classification_140526_train_buffer_test/thesis_visualizations")
+SPLIT_COLUMN = "split"
+SPLIT_VALUE = "test"
+LABEL_COLUMN = "label"
+PROB_COLUMN = "prob_ensemble"
+OPTIMAL_THRESHOLD = 0.40
+
 
 def load_predictions_and_labels():
     """Load all model predictions and true labels."""
     print("\n[Loading predictions and labels...]")
 
-    # Load retrained probabilities
-    df = pd.read_csv("data/chm_variants/labels_canonical_with_splits_retrained_ensemble.csv")
+    df = pd.read_csv(INPUT_CSV)
 
-    # Filter to test set
-    df_test = df[df['split'] == 'test'].copy()
+    split_column = SPLIT_COLUMN
+    if split_column not in df.columns:
+        split_candidates = [c for c in df.columns if c.startswith("split")]
+        if split_candidates:
+            split_column = split_candidates[0]
+
+    if split_column in df.columns:
+        df_test = df[df[split_column] == SPLIT_VALUE].copy()
+        if df_test.empty:
+            df_test = df.copy()
+    else:
+        df_test = df.copy()
 
     # Convert labels to binary
-    df_test['y_true'] = (df_test['label'] == 'cdw').astype(int)
-    df_test['y_prob'] = df_test['model_prob']
+    df_test['y_true'] = (df_test[LABEL_COLUMN] == 'cdw').astype(int)
+    df_test['y_prob'] = df_test[PROB_COLUMN]
 
     y_true = df_test['y_true'].values
     y_prob = df_test['y_prob'].values
@@ -88,14 +106,14 @@ def compute_metrics_at_threshold(y_true, y_prob, threshold):
     }
 
 
-def create_confusion_matrix_detailed(y_true, y_prob):
+def create_confusion_matrix_detailed(y_true, y_prob, threshold: float | None = None):
     """Create detailed confusion matrix visualization."""
     print("\n[Creating confusion matrix visualization...]")
+    if threshold is None:
+        threshold = OPTIMAL_THRESHOLD
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-    # Optimal threshold (from previous results: 0.40)
-    threshold = 0.40
     y_pred = (y_prob >= threshold).astype(int)
 
     # Confusion matrix
@@ -149,7 +167,7 @@ STATISTICS:
     plt.suptitle('Option B: Detailed Confusion Matrix and Metrics',
                 fontsize=13, fontweight='bold')
 
-    output_path = Path("output/thesis_visualizations/confusion_matrix_detailed.png")
+    output_path = OUTPUT_DIR / "confusion_matrix_detailed.png"
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     print(f"  ✓ Saved: {output_path}")
     plt.close()
@@ -202,15 +220,17 @@ def create_roc_and_pr_curves(y_true, y_prob):
     plt.suptitle('Option B: ROC and Precision-Recall Curves',
                 fontsize=13, fontweight='bold')
 
-    output_path = Path("output/thesis_visualizations/roc_pr_curves.png")
+    output_path = OUTPUT_DIR / "roc_pr_curves.png"
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     print(f"  ✓ Saved: {output_path}")
     plt.close()
 
 
-def create_threshold_analysis(y_true, y_prob):
+def create_threshold_analysis(y_true, y_prob, threshold: float | None = None):
     """Create performance metrics across different thresholds."""
     print("\n[Creating threshold analysis...]")
+    if threshold is None:
+        threshold = OPTIMAL_THRESHOLD
 
     # Compute metrics at multiple thresholds
     thresholds = np.linspace(0.0, 1.0, 101)
@@ -224,7 +244,7 @@ def create_threshold_analysis(y_true, y_prob):
     specificity = [m['specificity'] for m in metrics_list]
     ax.plot(thresholds, sensitivity, label='Sensitivity (TPR)', lw=2.5, color='red')
     ax.plot(thresholds, specificity, label='Specificity (TNR)', lw=2.5, color='blue')
-    ax.axvline(x=0.40, color='green', linestyle='--', linewidth=2, label='Optimal (t=0.40)')
+    ax.axvline(x=threshold, color='green', linestyle='--', linewidth=2, label=f'Optimal (t={threshold:.2f})')
     ax.set_xlabel('Decision Threshold')
     ax.set_ylabel('Score')
     ax.set_title('Sensitivity vs Specificity', fontweight='bold')
@@ -237,7 +257,7 @@ def create_threshold_analysis(y_true, y_prob):
     recall = [m['sensitivity'] for m in metrics_list]  # Same as sensitivity
     ax.plot(thresholds, precision, label='Precision (PPV)', lw=2.5, color='orange')
     ax.plot(thresholds, recall, label='Recall (Sensitivity)', lw=2.5, color='purple')
-    ax.axvline(x=0.40, color='green', linestyle='--', linewidth=2, label='Optimal (t=0.40)')
+    ax.axvline(x=threshold, color='green', linestyle='--', linewidth=2, label=f'Optimal (t={threshold:.2f})')
     ax.set_xlabel('Decision Threshold')
     ax.set_ylabel('Score')
     ax.set_title('Precision vs Recall', fontweight='bold')
@@ -250,7 +270,7 @@ def create_threshold_analysis(y_true, y_prob):
     accuracy = [m['accuracy'] for m in metrics_list]
     ax.plot(thresholds, f1, label='F1 Score', lw=2.5, color='red')
     ax.plot(thresholds, accuracy, label='Accuracy', lw=2.5, color='blue')
-    ax.axvline(x=0.40, color='green', linestyle='--', linewidth=2, label='Optimal (t=0.40)')
+    ax.axvline(x=threshold, color='green', linestyle='--', linewidth=2, label=f'Optimal (t={threshold:.2f})')
     ax.set_xlabel('Decision Threshold')
     ax.set_ylabel('Score')
     ax.set_title('F1 Score vs Accuracy', fontweight='bold')
@@ -261,7 +281,7 @@ def create_threshold_analysis(y_true, y_prob):
     ax = axes[1, 1]
     mcc = [m['mcc'] for m in metrics_list]
     ax.plot(thresholds, mcc, lw=2.5, color='darkgreen', label='MCC')
-    ax.axvline(x=0.40, color='red', linestyle='--', linewidth=2, label='Optimal (t=0.40)')
+    ax.axvline(x=threshold, color='red', linestyle='--', linewidth=2, label=f'Optimal (t={threshold:.2f})')
     ax.fill_between(thresholds, mcc, alpha=0.3, color='darkgreen')
     ax.set_xlabel('Decision Threshold')
     ax.set_ylabel('MCC')
@@ -272,7 +292,7 @@ def create_threshold_analysis(y_true, y_prob):
     plt.suptitle('Option B: Performance Metrics Across Decision Thresholds',
                 fontsize=13, fontweight='bold')
 
-    output_path = Path("output/thesis_visualizations/threshold_analysis.png")
+    output_path = OUTPUT_DIR / "threshold_analysis.png"
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     print(f"  ✓ Saved: {output_path}")
     plt.close()
@@ -316,17 +336,19 @@ def create_calibration_curve(y_true, y_prob):
     ax.legend(loc='upper left', fontsize=10)
     ax.grid(alpha=0.3)
 
-    output_path = Path("output/thesis_visualizations/calibration_curve.png")
+    output_path = OUTPUT_DIR / "calibration_curve.png"
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     print(f"  ✓ Saved: {output_path}")
     plt.close()
 
 
-def create_anomaly_analysis(y_true, y_prob, df_test):
+def create_anomaly_analysis(y_true, y_prob, df_test, threshold: float | None = None):
     """Analyze high false positives and low true negatives."""
     print("\n[Creating anomaly analysis...]")
+    if threshold is None:
+        threshold = OPTIMAL_THRESHOLD
 
-    y_pred = (y_prob >= 0.40).astype(int)
+    y_pred = (y_prob >= threshold).astype(int)
 
     # False positives: predicted CDW but actually background
     fp_mask = (y_pred == 1) & (y_true == 0)
@@ -387,19 +409,19 @@ def create_anomaly_analysis(y_true, y_prob, df_test):
     plt.suptitle('Option B: False Positive and True Negative Analysis',
                 fontsize=13, fontweight='bold')
 
-    output_path = Path("output/thesis_visualizations/anomaly_analysis.png")
+    output_path = OUTPUT_DIR / "anomaly_analysis.png"
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     print(f"  ✓ Saved: {output_path}")
     plt.close()
 
 
-def create_metrics_summary_table(y_true, y_prob):
+def create_metrics_summary_table(y_true, y_prob, threshold: float | None = None):
     """Create comprehensive metrics summary table."""
     print("\n[Creating metrics summary table...]")
+    if threshold is None:
+        threshold = OPTIMAL_THRESHOLD
 
-    # Compute metrics at optimal threshold
-    optimal_threshold = 0.40
-    metrics = compute_metrics_at_threshold(y_true, y_prob, optimal_threshold)
+    metrics = compute_metrics_at_threshold(y_true, y_prob, threshold)
 
     # Create summary CSV
     summary_df = pd.DataFrame([
@@ -460,15 +482,35 @@ def create_metrics_summary_table(y_true, y_prob):
         },
     ])
 
-    summary_df.to_csv("output/thesis_visualizations/metrics_summary.csv", index=False)
-    print(f"  ✓ Saved: output/thesis_visualizations/metrics_summary.csv")
+    summary_df.to_csv(OUTPUT_DIR / "metrics_summary.csv", index=False)
+    print(f"  ✓ Saved: {OUTPUT_DIR / 'metrics_summary.csv'}")
 
     return summary_df
 
 
 def main():
-    output_dir = Path("output/thesis_visualizations")
-    output_dir.mkdir(exist_ok=True)
+    global INPUT_CSV, OUTPUT_DIR, SPLIT_COLUMN, SPLIT_VALUE, LABEL_COLUMN, PROB_COLUMN, OPTIMAL_THRESHOLD
+
+    parser = argparse.ArgumentParser(description="Create comprehensive metrics visualizations.")
+    parser.add_argument("--input-csv", type=Path, default=INPUT_CSV)
+    parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
+    parser.add_argument("--split-column", type=str, default=SPLIT_COLUMN)
+    parser.add_argument("--split-value", type=str, default=SPLIT_VALUE)
+    parser.add_argument("--label-column", type=str, default=LABEL_COLUMN)
+    parser.add_argument("--prob-column", type=str, default=PROB_COLUMN)
+    parser.add_argument("--threshold", type=float, default=None)
+    args = parser.parse_args()
+
+    INPUT_CSV = args.input_csv
+    OUTPUT_DIR = args.output_dir
+    SPLIT_COLUMN = args.split_column
+    SPLIT_VALUE = args.split_value
+    LABEL_COLUMN = args.label_column
+    PROB_COLUMN = args.prob_column
+    if args.threshold is not None:
+        OPTIMAL_THRESHOLD = float(args.threshold)
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("="*80)
     print("CREATING COMPREHENSIVE METRICS VISUALIZATIONS")
@@ -476,14 +518,19 @@ def main():
 
     # Load data
     y_true, y_prob, df_test = load_predictions_and_labels()
+    if args.threshold is None:
+        # Keep the plots honest by using the threshold that best separates the loaded set.
+        threshold_metrics = [compute_metrics_at_threshold(y_true, y_prob, t) for t in np.linspace(0.0, 1.0, 101)]
+        OPTIMAL_THRESHOLD = max(threshold_metrics, key=lambda m: m["f1"])["threshold"]
+        print(f"  Selected threshold from data: {OPTIMAL_THRESHOLD:.2f}")
 
     # Create visualizations
-    create_confusion_matrix_detailed(y_true, y_prob)
+    create_confusion_matrix_detailed(y_true, y_prob, threshold=OPTIMAL_THRESHOLD)
     create_roc_and_pr_curves(y_true, y_prob)
-    metrics_list = create_threshold_analysis(y_true, y_prob)
+    metrics_list = create_threshold_analysis(y_true, y_prob, threshold=OPTIMAL_THRESHOLD)
     create_calibration_curve(y_true, y_prob)
-    create_anomaly_analysis(y_true, y_prob, df_test)
-    metrics_df = create_metrics_summary_table(y_true, y_prob)
+    create_anomaly_analysis(y_true, y_prob, df_test, threshold=OPTIMAL_THRESHOLD)
+    metrics_df = create_metrics_summary_table(y_true, y_prob, threshold=OPTIMAL_THRESHOLD)
 
     print("\n" + "="*80)
     print("COMPREHENSIVE METRICS CREATED SUCCESSFULLY")

@@ -21,7 +21,7 @@ echo "Starting training in Docker container..."
 echo "(This will take ~8-10 hours)"
 echo
 
-docker run --rm --gpus all \
+docker run --rm --gpus all --ipc=host --shm-size=8g \
   -v "$PROJECT_DIR:/workspace" \
   lamapuit:gpu \
   bash -c "source activate cwd-detect && cd /workspace && python scripts/retrain_ensemble_spatial_splits.py"
