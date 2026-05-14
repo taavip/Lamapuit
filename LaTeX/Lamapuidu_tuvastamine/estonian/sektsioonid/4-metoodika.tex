@@ -124,19 +124,39 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
         \item \textbf{Ajaline leke:} Sama asukoha eri aastate vaatlused jaotatakse erinevatesse andmehulkadesse, võimaldades mudelil asukohapõhiseid eripärasid meelde jätta.
     \end{itemize}
 
-    \paragraph{Ruumilise eraldatuse strateegia} Pikslikoordinaadid teisendati sammupõhisteks koordinaatideks:
+    \paragraph{Sobilike märgistuste kriteeriumid}
+
+    Andmestikust valiti sobivad märgistused järgmiste kriteeriumite alusel:
+    \begin{itemize}
+        \item \textit{käsitsi märgistatud} (manual) --- uurija poolt hoolikalt märgistatud,
+        \item \textit{automaatselt vahelejäetud} (auto\_skip) --- selgesõnaliselt kontrollitud ja kinnitatud,
+        \item \textit{kõrge usaldusväärsusega automaatne} (auto $\land$ (mudeli\_tõenäosus $>0{,}95 \lor <0{,}05$)) --- automaatne märgistus, mille mudel klassifitseeris eriti kindlalt.
+    \end{itemize}
+
+    Välistati järgmised märgistused:
+    \begin{itemize}
+        \item \textit{keskmise usaldusväärsusega} (0,3--0,7 vahemik) --- 50\,896 märgistust, kuna mudeli kindlus oli ebapiisav,
+        \item \textit{madala usaldusväärsusega} (0,05--0,3 vahemik) --- 344\,667 märgistust, kuna need olid ebausaldusväärse kvaliteediga.
+    \end{itemize}
+
+    Kokku osutus sobilikuks \textbf{142\,465 märgistust} ehk 24,56\% kogu andmestikust. Sobilike märgistuste hulgas oli 102\,290 Lamapuidu märgistust (71,80\%) ja 40\,175 tausta märgistust (28,20\%).
+
+    \paragraph{Ruumilise eraldatuse strateegia}
+
+    Ruumilise sõltuvuse vältimiseks teisendati piksel-koordinaadid sammupõhisteks koordinaatideks:
     \[
     r_s = \lfloor r_{\text{off}} / 64 \rfloor, \quad c_s = \lfloor c_{\text{off}} / 64 \rfloor
     \]
-    mis kujutab kattuvad aknad täisarvulisele ruudustikule positsioonideks 0, 1, 2, \ldots
+    mis kaartab kattuvad aknad täisarvulisele ruudustikule positsioonideks 0, 1, 2, \ldots
 
-    Iga valitud testkeskuse ümber laiendati testtsooni Tšebõšovi kaugusega ($\leq 1$). Kuna antud kaugusmõõt lubab samaväärset liikumist nii horisontaal-, vertikaal- kui ka diagonaalsuunal, moodustab $3\times3$ ruudustiku ehk ligikaudu 51,2~m $\times$ 51,2~m. See arvestab külgnevate akende 50\% kattuvust. Testtsooni ja treeningala vahele jäeti puhvertsoon (Tšebõšovi kaugus = 2, v.a nurgas paiknevad diagonaalpositsioonid). Testi- ja treeningpikslit lahutav vahe on 1 samm (64~px = 12,8~m), mis välistab pikslite jagamise kahe andmekogumi vahel. Kuigi see on väiksem kui Gu jt (2024) poolt pakutud 50~m autokorrelatsiooni vahemik, lähtub valik kasutatavas andmestikus esinevate märgistuste tihedusest ning andmemahu säilitamise vajadusest. Alternatiivne 50~m puhvertsooni rakendamine vähendaks treeningandmestiku 67\,290 märgistuselt ligikaudu 30\% võrra, mis käesoleva töö andmemahu juures ei ole otstarbekas. Puhvertsooni valikuga seonduvaid piiranguid on käesolevas töös põhjalikumalt käsitletud jaotises~\ref{subsec:metoodika-piirangud}.
+    Treeningandmete jaotus viidi läbi järgmiste sammude:
+    \begin{enumerate}
+        \item \textbf{Testpaani valitsemine:} Juhuslikult valiti 2\% sobilikest märgistustest (ligikaudu 2\,850 märgistust) testpaanideks.
+        \item \textbf{Testpaani ümbritsev testtsoon:} Iga testpaani ümber laiendati testtsooni Tšebõšovi kaugusega ($\leq 1$). Kuna antud kaugusmõõt lubab samaväärset liikumist nii horisontaal-, vertikaal- kui ka diagonaalsuunal, moodustab $3\times3$ ruudustiku ehk ligikaudu 51,2~m $\times$ 51,2~m. See arvestab külgnevate akende 50\% kattuvust. Testtsooni ja treeningala vahele jäeti puhvertsoon (Tšebõšovi kaugus = 2, v.a nurgas paiknevad diagonaalpositsioonid). Testi- ja treeningpikslit lahutav vahe on 1 samm (64~px = 12,8~m), mis välistab pikslite jagamise kahe andmekogumi vahel. Kuigi see on väiksem kui Gu jt (2024) poolt pakutud 50~m autokorrelatsiooni vahemik, lähtub valik kasutatavas andmestikus esinevate märgistuste tihedusest ning andmemahu säilitamise vajadusest. Alternatiivne 50~m puhvertsooni rakendamine vähendaks treeningandmestiku 67\,290 märgistuselt ligikaudu 30\% võrra, mis käesoleva töö andmemahu juures ei ole otstarbekas. Puhvertsooni valikuga seonduvaid piiranguid on käesolevas töös põhjalikumalt käsitletud jaotises~\ref{subsec:metoodika-piirangud}. Kuna sama füüsiline asukoht on sageli vaadeldud mitmel aastal, määratakse ruumiline roll (test/treening/puhver) asukoha, mitte aastaperioodi kaupa. Juhusliku valiku lähteväärtus (ingl \textit{seed}) seotakse asukohatähisega (kaardileht, rida, veerg), tagades identse rolli kõikidele sama asukoha aastatele.
 
-    \paragraph{Ajalise järjepidevuse tagamine} Kuna sama füüsiline asukoht on sageli vaadeldud mitmel aastal, määratakse ruumiline roll (test/treening/puhver) asukoha, mitte aastaperioodi kaupa. Juhusliku valiku lähteväärtus (ingl \textit{seed}) seotakse asukohatähisega (kaardileht, rida, veerg), tagades identse rolli kõikidele sama asukoha aastatele.
 
-    \paragraph{Sobilike märgistuste kriteeriumid} Sobilikeks märgistusteks loeti need, mis on käsitsi märgistatud (\textit{manual}), märgistaja poolt kinnitatud (\textit{auto\_skip}) või kus mudeli tõenäosus on väga kõrge ($>0{,}95$) või väga madal ($<0{,}05$). Kokku osutus sobilikuks 142\,465 märgistust ehk 24,56\% andmetest. Välistati keskmise usaldusväärsusega (vahemik 0,3--0,7) objektid (50\,896 märgistust), kuna mudeli kindlus nende osas oli ebapiisav.
 
-    \paragraph{Lõplik treening-, valideerimis- ja testvalimi jaotus} Valitud seadistus (testtsooni Tšebõšovi kaugus 1, puhvertsooni kaugus 2, valik 2\% sobilikest märgistustest testseemneteks kaardilehe kohta) andis järgmise jaotuse:
+    \paragraph{Lõplik treening-, valideerimis- ja testvalimi jaotus} Valitud seadistus (testtsooni Tšebõšovi kaugus 1, puhvertsoon 2 paani, valik 2\% sobilikest märgistustest testseemneteks kaardilehe kohta) andis järgmise jaotuse:
 
     \begin{table}[h!]
     \centering

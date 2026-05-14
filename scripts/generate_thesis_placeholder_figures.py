@@ -337,30 +337,30 @@ def plot_chm_example(output: Path) -> None:
 
 def plot_spatial_validation(output: Path) -> None:
     _set_style()
-    fig, ax = plt.subplots(figsize=(16, 9))
+    fig, ax = plt.subplots(figsize=(19, 9))
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 100)
     ax.set_aspect("equal")
 
-    ax.add_patch(Rectangle((0, 0), 100, 100, facecolor="#f2f2f2", edgecolor=C_GRAY, linewidth=1.2))
-    ax.add_patch(Rectangle((25, 25), 50, 50, facecolor="#f8d7da", edgecolor=C_RED, linewidth=2.0, alpha=0.7))
-    ax.add_patch(Rectangle((35, 35), 30, 30, facecolor="#d6eaf8", edgecolor=C_BLUE, linewidth=2.2, alpha=0.95))
+    ax.add_patch(Rectangle((0, 0), 100, 100, facecolor=C_BLUE, edgecolor=C_GRAY, linewidth=1.2, alpha=0.15))
+    ax.add_patch(Rectangle((25, 25), 50, 50, facecolor=C_GRAY, edgecolor=C_GRAY, linewidth=2.0, alpha=0.25))
+    ax.add_patch(Rectangle((35, 35), 30, 30, facecolor=C_RED, edgecolor=C_RED, linewidth=2.2, alpha=0.3))
 
     for p in np.arange(0, 101, 10):
         ax.axhline(p, color="#d9d9d9", linewidth=0.6, zorder=0)
         ax.axvline(p, color="#d9d9d9", linewidth=0.6, zorder=0)
 
-    ax.text(50, 50, "Testtsoon\n(51,2 m x 51,2 m)", ha="center", va="center", fontsize=12, fontweight="bold")
-    ax.text(50, 76, "Puhvertsoon", ha="center", va="center", fontsize=12, fontweight="bold", color=C_RED)
-    ax.text(11, 92, "Treeningala", ha="left", va="center", fontsize=12, fontweight="bold", color=C_GRAY)
+    ax.text(50, 50, "Testpaanid\n(51,2 m x 51,2 m)", ha="center", va="center", fontsize=12, fontweight="bold")
+    ax.text(50, 76, "Puhverala", ha="center", va="center", fontsize=12, fontweight="bold", color=C_GRAY)
+    ax.text(11, 92, "Treeningala", ha="left", va="center", fontsize=12, fontweight="bold", color=C_BLUE)
 
     legend_handles = [
-        Patch(facecolor="#d6eaf8", edgecolor=C_BLUE, label="Testtsoon"),
-        Patch(facecolor="#f8d7da", edgecolor=C_RED, label="Puhvertsoon"),
-        Patch(facecolor="#f2f2f2", edgecolor=C_GRAY, label="Treeningala"),
+        Patch(facecolor=C_RED, edgecolor=C_RED, alpha=0.3, label="Testpaanid"),
+        Patch(facecolor=C_GRAY, edgecolor=C_GRAY, alpha=0.25, label="Puhverala"),
+        Patch(facecolor=C_BLUE, edgecolor=C_GRAY, alpha=0.15, label="Treeningala"),
     ]
-    ax.legend(handles=legend_handles, loc="lower center", bbox_to_anchor=(0.5, -0.08), ncol=3, frameon=True)
-    ax.set_title("Ruumilise valideerimise ja puhveralade loogika", fontsize=16, fontweight="bold")
+    ax.legend(handles=legend_handles, loc="upper center", bbox_to_anchor=(0.5, 0.96), ncol=3, frameon=True, fontsize=11)
+    ax.set_title("Ruumilise valideerimise ja puhveralade loogika", fontsize=16, fontweight="bold", pad=20)
     ax.set_xlabel("X (suhteline skaala)", fontsize=12, fontweight="bold")
     ax.set_ylabel("Y (suhteline skaala)", fontsize=12, fontweight="bold")
     ax.grid(False)
