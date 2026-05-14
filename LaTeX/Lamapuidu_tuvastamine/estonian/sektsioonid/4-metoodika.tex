@@ -164,7 +164,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.85\textwidth]{estonian/joonised/klassifitseerimine_treening_test_paanid_kaart_582543_split_train_buffer_test.png}
+    \includegraphics[width=1.0\textwidth]{estonian/joonised/klassifitseerimine_treening_test_paanid_kaart_582543_split_train_buffer_test.png}
     \caption{Ruumilise jaotuse näide kaardilehel 582543. Sinised alad tähistavad treeningpaane, punased test- ja valideerimispaane, valged alad puhvervööndit ning hallid väljajäetud ala. Sama kaardilehe paaside rollimine (treening/test/puhver) kehtib kõigile aastatele, millal sama füüsiline asukoht on vaadeldud.}
     \label{fig:spatial-split-example}
     \end{figure}
@@ -193,7 +193,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.95\linewidth]{estonian/joonised/ruumilise_valideerimise_loogika.png}
+    \includegraphics[width=0.55\linewidth]{estonian/joonised/ruumilise_valideerimise_loogika.png}
     \caption{Ruumilise valideerimise ja puhveralade loogika.}
     \label{fig:spatial-validation}
     \end{figure}
@@ -224,7 +224,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.45\textwidth]{estonian/joonised/Ruhnu_CHM_variandid_vertikaalne.png}
+    \includegraphics[width=0.75\textwidth]{estonian/joonised/Ruhnu_CHM_variandid_vertikaalne.png}
     \caption{CHM variantide võrdlus Ruhnu metskonna aladel. Ülalt alla: baasmudel, harmoniseeritud töötlemata CHM ja Gaussi silumisega CHM. Sama kaardileht ja asukoht näitavad, kuidas erinev DTM-i arvutus ja silumine mõjutavad lamapuidu nähtavust ning mudeli sisendandmete ruumilist pidevust.}
     \label{fig:chm-variants-comparison}
     \end{figure}
@@ -297,7 +297,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
     \end{tabular}
     \end{table}
 
-    Kõikide mudelite optimeerimisel rakendati treeningpartii suurust (ingl \textit{batch size}) 16, AdamW algoritmil põhinevat kaaluuuendust \parencite{loshchilov2019adamw} ja tasakaalustamata klassijaotuse parandamiseks klassipõhiseid kaalusid. Täiendavalt kasutati regulariseerimistehnikaid nagu märgiste silumist (ingl \textit{label smoothing}) (0,05) \parencite{muller2019labelsmoothing} ja \textit{MixUp} (0,3) \parencite{zhang2018mixup}. Treeningu stabiilsuse tagamiseks seadistati EfficientNeti puhul tüvimudelile (ingl \textit{backbone}) ja klassifikaatorile erinevad õppimiskiirused.
+    Kõikide mudelite optimeerimisel rakendati treeningpartii suurust (ingl \textit{batch size}) 16, AdamW algoritmil põhinevat kaaluuuendust \parencite{loshchilov2019adamw} ja tasakaalustamata klassijaotuse parandamiseks klassipõhiseid kaalusid. Täiendavalt kasutati regulariseerimistehnikaid nagu märgiste silumist (ingl \textit{label smoothing}) (0,05) \parencite{muller2019labelsmoothing} ja \textit{MixUp} (0,3) \parencite{zhang_mixup_2017zhang2018mixup}. Treeningu stabiilsuse tagamiseks seadistati EfficientNeti puhul tüvimudelile (ingl \textit{backbone}) ja klassifikaatorile erinevad õppimiskiirused.
 
     \begin{figure}[h!]
     \centering
@@ -342,7 +342,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
 
     \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.85\textwidth]{estonian/joonised/seg_treening_test_paanide_paiknemine.png}
+    \includegraphics[width=0.95\textwidth]{estonian/joonised/seg_treening_test_paanide_paiknemine.png}
     \caption{Segmenteerimisandmete ruumiline eraldamine: test- ja treeningplokkide paigutus kogu analüüsialal. Testandmestik (ligikaudu 20\%) jäeti mudelivaliku ja treenimise ajal puutumata, ristvalideerimise osapool (kolm foldi) kasutati paremusjärjestuse hindamisel.}
     \label{fig:spatial-split-segmentation}
     \end{figure}
@@ -359,7 +359,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
         \item \textbf{Eeltöötlus:} Valmistati ette andmestik, sidudes CHM sisendfailid ja ehitades iga CHM variandi jaoks vajalikud indeksid  ning kanalistatistika.
         \item \textbf{Faas 2 (Andmestiku variant):} Võrreldi viite varasemalt klassifitseerimisel kirjeldatud CHM sisendvarianti (Baasmudel, harmoniseeritud töötlemata, gaussi silumisega, maskitud kahekanaliline mudel, mitmekanaliline liitmudel), et selgitada välja varaseim parim kõrgusmudeli esitus uuele võrgustikule.
         \item \textbf{Faas 3 (Mudeli arhitektuur):} Kahe parimaks osutunud andmestikuvariandi peal hinnati süvaõppe arhitektuure. Valituteks osutusid arhitektuursed raamistikud U-Net++ ja DeepLabV3+, mida kombineeriti erinevate tüvimudelitega (backbone) nagu ResNet, EfficientNet-B0 ja -B2.
-        \item \textbf{Faas 4 (Kaofunktsioon):} Välja valitud andmestike ja mudeliarhitektuuride kombinatsioonidel testiti kaofunktsioone, sealhulgas \textit{DiceFocal} ehk Dice'i-põhise segmenteerimiskao ja Focal loss'i kombinatsiooni \parencite{milletari2016vnet,lin2017focal}, tasakaalustatud ja kõrge täpsusega \textit{Tversky} kaofunktsiooni \parencite{salehi2017tversky} ning ruumilise topoloogia säilitamisele suunatud \textit{Tversky+clDice} lahendusi.
+        \item \textbf{Faas 4 (Kaofunktsioon):} Välja valitud andmestike ja mudeliarhitektuuride kombinatsioonidel testiti kaofunktsioone, sealhulgas \textit{DiceFocal} ehk Dice'i-põhise segmenteerimiskao ja Focal loss'i kombinatsiooni \parencite{milmilletari2016vnet,linlin2017focal}, tasakaalustatud ja kõrge täpsusega \textit{Tversky} kaofunktsiooni \parencite{salehi2017tversky} ning ruumilise topoloogia säilitamisele suunatud \textit{Tversky+clDice} lahendusi.
         \item \textbf{Faas 5 (Andmerikastamine ja regulariseerimine):} Optimeeriti treeningu rikastamist mudeli üldistuvuse suurendamiseks, testides andmeid ilma andmesuurendusteta kõrvuti laialdaste andmerikastamiste kombinatsiooniga, mis kasutas pehmeid sihtväärtusi (ingl \textit{soft targets}) ja juhuslike kaalude keskmistamist (ingl \textit{Stochastic Weight Averaging, SWA}).
         \item \textbf{Faas 6 (Lõplik hindamine testandmestikul):} Pärast esialgset metoodilist seadistust sooritati mudelite lõplikus järjestuses viimane faas. Kõige tugevamat sooritust näidanud hüperparameetrite ja eeltöötluse sammudega treeniti lõplik mudel kõigi ristvalideerimise treening- ning valideerimisandmete peal (treenimine kogus andmestikul, v.a püsiv testandmestik). Objektiivne hindamine teostati algusest peale eraldatud ning puutumatul testandmestikul.
     \end{enumerate}
