@@ -923,6 +923,44 @@
       \endverb
       \keyw{remote sensing,{LiDAR},boreal forest,{GEOBIA},machine learning,random forest,woody debris,woody material}
     \endentry
+    \entry{maa-_ja_ruumiamet_maa-_2025}{online}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=c954c1bf85471441ac19b5e57d926a8f}{%
+           family={{Maa- ja Ruumiamet}},
+           familyi={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{fullhash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{bibnamehash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{authorbibnamehash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{authornamehash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{authorfullhash}{c954c1bf85471441ac19b5e57d926a8f}
+      \field{extraname}{1}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradate}{1}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Sel nädalal alustab Maa- ja Ruumiamet aeromõõdistamise hooaega. Tänavu pildistatakse uute seadmetega kevadel Edela-Eestis ja suvel Kagu-Eestis. Tulemuseks on kõrge täpsusega ortofotod, kus piksli suurus on 10-15 cm.}
+      \field{day}{26}
+      \field{langid}{estonian}
+      \field{month}{3}
+      \field{title}{Maa- ja Ruumiamet alustab aeromõõdistamist}
+      \field{urlday}{14}
+      \field{urlmonth}{5}
+      \field{urlyear}{2026}
+      \field{year}{2025}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://maaruum.ee/uudised/maa-ja-ruumiamet-alustab-aeromoodistamist
+      \endverb
+      \verb{url}
+      \verb https://maaruum.ee/uudised/maa-ja-ruumiamet-alustab-aeromoodistamist
+      \endverb
+    \endentry
     \entry{maa-_ja_ruumiamet_als_nodate}{online}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=c954c1bf85471441ac19b5e57d926a8f}{%
@@ -935,8 +973,10 @@
       \strng{authorbibnamehash}{c954c1bf85471441ac19b5e57d926a8f}
       \strng{authornamehash}{c954c1bf85471441ac19b5e57d926a8f}
       \strng{authorfullhash}{c954c1bf85471441ac19b5e57d926a8f}
+      \field{extraname}{2}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradate}{2}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{url}
       \field{labelnamesource}{author}
@@ -956,6 +996,39 @@
       \endverb
       \verb{url}
       \verb https://geoportaal.maaamet.ee/est/ruumiandmed/korgusandmed/aerolaserskaneerimise-korguspunktid/als-iv-ring-2021-2024-p855.html
+      \endverb
+    \endentry
+    \entry{maa-_ja_ruumiamet_maa-_nodate}{online}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=c954c1bf85471441ac19b5e57d926a8f}{%
+           family={{Maa- ja Ruumiamet}},
+           familyi={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{fullhash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{bibnamehash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{authorbibnamehash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{authornamehash}{c954c1bf85471441ac19b5e57d926a8f}
+      \strng{authorfullhash}{c954c1bf85471441ac19b5e57d926a8f}
+      \field{extraname}{3}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{url}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Sel nädalal alustab Maa- ja Ruumiamet aeromõõdistamise hooaega. Tänavu pildistatakse uute seadmetega kevadel Edela-Eestis ja suvel Kagu-Eestis. Tulemuseks on kõrge täpsusega ortofotod, kus piksli suurus on 10-15 cm.}
+      \field{langid}{estonian}
+      \field{title}{Maa- ja Ruumiamet alustab aeromõõdistamist}
+      \field{urlday}{14}
+      \field{urlmonth}{5}
+      \field{urlyear}{2026}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://maaruum.ee/uudised/maa-ja-ruumiamet-alustab-aeromoodistamist
+      \endverb
+      \verb{url}
+      \verb https://maaruum.ee/uudised/maa-ja-ruumiamet-alustab-aeromoodistamist
       \endverb
     \endentry
     \entry{marchi_airborne_2018}{article}{}
@@ -1918,29 +1991,26 @@
       \endverb
     \endentry
   \enddatalist
-  \missing{SMI}
+  \missing{Draelos2020HiResCAM}
+  \missing{NIPS2012_c399862d}
   \missing{SMI2024}
   \missing{Vilhelmsson2013}
   \missing{chattopadhyay2018grad}
   \missing{efron1993bootstrap}
-  \missing{fernandez2021hirescam}
   \missing{fradette2019}
   \missing{izmailov2018swa}
-  \missing{kattenborn2022review}
+  \missing{kattenborn_spatially_2022}
   \missing{kliimaministeerium_looduse_2024}
   \missing{lakshminarayanan2017deepensembles}
-  \missing{lin2017focal}
+  \missing{leys2013}
+  \missing{lin_focal_2017}
   \missing{loshchilov2019adamw}
-  \missing{maa_ja_ruumiamet_aeromoodistamine_2025}
-  \missing{maa_ja_ruumiamet_aeropildistamine_laserskaneerimine_nodate}
-  \missing{maa_ja_ruumiamet_riegl_vq1460_2025}
-  \missing{milletari2016vnet}
-  \missing{muller2019labelsmoothing}
+  \missing{milletari_v-net_2016}
+  \missing{muller_when_2019}
   \missing{petsiuk2018rise}
   \missing{riofrio2022}
   \missing{roberts2017cross}
   \missing{salehi2017tversky}
-  \missing{shi2025}
   \missing{sotoodeh2006}
   \missing{sundararajan2017axiomatic}
   \missing{tan2019efficientnet}
@@ -1948,7 +2018,7 @@
   \missing{wilcoxon1945ranking}
   \missing{zhang2016}
   \missing{zhang2018mixup}
-  \missing{zhang2020}
+  \missing{zhang_mixup_2017}
 \endrefsection
 \endinput
 

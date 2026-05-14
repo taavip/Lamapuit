@@ -69,13 +69,15 @@
 \addcontentsline{toc}{subsection}{Lisa 3: Mõistete sõnastik}
 
 \begin{center}
-\small
-\setlength{\tabcolsep}{3pt}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{0.95}
 
-\subsubsection*{Üldmõisted}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
+\begin{tabular}{|p{2.4cm}|p{2.4cm}|p{1.8cm}|p{5.5cm}|}
 \hline
 \textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\hline
+\multicolumn{4}{|l|}{\textit{\textbf{Üldmõisted}}} \\
 \hline
 andmestik & dataset & -- & ühenatud andmete kogum \\
 töövoog / andmetöötlusahel & pipeline & -- & järjestikused töötlusetapid \\
@@ -84,12 +86,7 @@ kihistatud & stratified & -- & klassidega tasakaalustatud jaotamine \\
 ristvalideerimise osa & fold & -- & andmestiku jagamine ristvalideerimiseks \\
 andmeleke & data leakage & -- & treening- ja testandmete vaheline andmete segunemine \\
 \hline
-\end{tabular}
-
-\subsubsection*{Andmete ettevalmistus ja valideerimise meetodid}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Andmete ettevalmistus ja valideerimise meetodid}}} \\
 \hline
 ruumiline valideerimise & spatial validation & -- & ruumiliselt eraldatud andmetega testimine \\
 kaks parimat lahendust & two best solutions & -- & parimad kandidaadid, mis liiguvad järgmisse etappi \\
@@ -98,12 +95,7 @@ bootstrap & bootstrap & -- & järelproovide meetodil usaldusvahemike arvutamine 
 paaritud t-test & paired t-test & -- & sõltuvate gruppide võrdlemise test \\
 Wilcoxoni test & Wilcoxon signed-rank test & -- & mitteparameetriline statistiline test \\
 \hline
-\end{tabular}
-
-\subsubsection*{LiDAR andmed ja rasterid}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{LiDAR andmed ja rasterid}}} \\
 \hline
 aerolaserskaneerimine & airborne laser scanning & ALS & õhust tehtava 3D kaardistamise meetod \\
 valguse detektor ja kauguse mõõtmine & Light Detection and Ranging & LiDAR & laserimpulsside abil töötav kaardistamissüsteem \\
@@ -115,12 +107,7 @@ mediaani absoluutne hälve & Median Absolute Deviation & MAD & anomaaliaid eemal
 bilineaarne interpoleerimise & bilinear resampling & -- & rasterite resolutsiooni muutmise meetod \\
 pildikildud / paanid & tiles & -- & suuremale rasterfailile jagatud osad \\
 \hline
-\end{tabular}
-
-\subsubsection*{Sügavõpe --- üldmõisted}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Sügavõpe --- üldmõisted}}} \\
 \hline
 sügavõpe & deep learning & -- & mitmekihiliste närvivõrkudega masinõppimine \\
 konvolutsiooniline närvivõrk & convolutional neural network & CNN & pildiobjektide tuvastamiseks spetsialiseerunud võrgutüüp \\
@@ -128,12 +115,7 @@ tüvimudel / selgroog & backbone & -- & närvivõrgu põhiarhitektuur \\
 siirdeõpe & transfer learning & -- & eelmist mudelit kasutava uue ülesande lahendamine \\
 baasmudel / algtase & baseline & -- & võrdlusalus alternatiividele \\
 \hline
-\end{tabular}
-
-\subsubsection*{Sügavõpe --- treeningparameetrid}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Sügavõpe --- treeningparameetrid}}} \\
 \hline
 partii & batch & -- & ühes treeningsammus töödeldavate näidiste kogum \\
 õppimismäär & learning rate & -- & treeningsammu suuruse määraja \\
@@ -143,12 +125,7 @@ MixUp andmesuurendus & MixUp augmentation & -- & treeningpiltide segu andmesuure
 juhuslik kaalude keskmistamine & stochastic weight averaging & SWA & närvivõrgu parameetrite keskmistamine \\
 testiaegne andmerikastamine & test-time augmentation & TTA & piltide variatsioonide keskmistamine testimisel \\
 \hline
-\end{tabular}
-
-\subsubsection*{Sügavõpe --- närvivõrgu komponendid}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Sügavõpe --- närvivõrgu komponendid}}} \\
 \hline
 partii-normaliseerimine & batch normalization & BatchNorm & võrgustiku kihi sisendite normaliseerimine \\
 alaldatud lineaarüksus & rectified linear unit & ReLU & aktivatsioonifunktsioon \\
@@ -160,24 +137,14 @@ adaptiivsest keskmistavast koond. & adaptive average pooling & -- & muutuva suur
 tasandamine & flattening & -- & multidimensionaalsete andmete muutmine vektoriks \\
 klassifikaatorkiht & classifier layer & -- & otsuse langetamise lõplik kiht \\
 \hline
-\end{tabular}
-
-\subsubsection*{Sügavõpe --- kaofunktsioonid}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Sügavõpe --- kaofunktsioonid}}} \\
 \hline
 ristentroopia kao & cross-entropy loss & -- & klassifitseerimise veafunktsioon \\
 fookuskao & focal loss & -- & andmekaldekat käsitlev veafunktsioon \\
 DiceFocal & DiceFocal loss & -- & Dice'i ja Focal loss'i kombinatsioon \\
 Tversky kao & Tversky loss & -- & tasakaalustatud segmenteerimise veafunktsioon \\
 \hline
-\end{tabular}
-
-\subsubsection*{Sügavõpe --- mudeliarhitektuurid}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Sügavõpe --- mudeliarhitektuurid}}} \\
 \hline
 U-Net++ & U-Net++ & -- & semantilise segmenteerimise närvivõrgu arhitektuur \\
 DeepLabV3+ & DeepLabV3+ & -- & atrous convolution'i kasutav segmenteerimise mudel \\
@@ -190,12 +157,7 @@ MobileNet & MobileNet & -- & ressursse säästev närvivõrgu arhitektuur \\
 RegNet & RegNet & -- & regulariseeritud närvivõrgu mudelite perekond \\
 ImageNet & ImageNet & -- & suure pildide andmestik mudelite eeltreenimiseks \\
 \hline
-\end{tabular}
-
-\subsubsection*{Andmete aggregeerimine ja ennustamine}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Andmete aggregeerimine ja ennustamine}}} \\
 \hline
 pehme hääletus & soft voting & -- & mudeli väljundite keskmistamine \\
 kaalutud hääletus & weighted voting & -- & mudeli väljundite kaalutud keskmistamine \\
@@ -203,38 +165,23 @@ virnaansambel & stacking & -- & metamudeli kasutamine ennustuste kombineerimisek
 metamudel & meta-learner & -- & muude mudelite väljundeid kombineeriv mudel \\
 pehmed sihtväärtused & soft targets & -- & tõenäosusvahemikus [0,1] olevad sihtvärtused \\
 \hline
-\end{tabular}
-
-\subsubsection*{Klassifitseerimine ja segmenteerimine}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Klassifitseerimine ja segmenteerimine}}} \\
 \hline
 pikslitasandi klassifitseerimine & pixel-level classification & -- & üksikute pikslite määramine klasside vahel \\
 semantiline segmenteerimine & semantic segmentation & -- & objektide ruumiliste piiride tuvastamine \\
 eraldatud testvalim & held-out test set & -- & treenimisest täielikult eraldatud testandmed \\
 automatimine kalded & automation bias & -- & ülimatu sõltuvus algoritmi ennustustest \\
 \hline
-\end{tabular}
-
-\subsubsection*{Mudeli seletavus ja interpreteeritavus}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Mudeli seletavus ja interpreteeritavus}}} \\
 \hline
 mudeli selgitatavus & explainable AI & XAI & mudeli otsustusprotsessi seletavus \\
 Integrated Gradients & Integrated Gradients & IntGrad & gradiendipõhine seletavuse meetod \\
 HiResCAM & HiResCAM & -- & kõrge resolutsiooniga tähelepanu visualiseerimine \\
 GradCAM+ & GradCAM+ & -- & parandatud gradient-põhine klassiaktiveerimiskaart \\
-RISE & Randomized Input Sampling for Explanation & -- & juhuslikul sisendite maskeeringul põhinev seletavus \\
+RISE & Randomized Input Sampling for Explanation & RISE & juhuslikul sisendite maskeeringul põhinev seletavus \\
 soojuskaart & heatmap & -- & värvuskoodiga visualiseeritud intensiivsus \\
 \hline
-\end{tabular}
-
-\subsubsection*{Hindamismõõdikud}
-\begin{tabular}{|p{3cm}|p{3cm}|p{1cm}|p{5cm}|}
-\hline
-\textbf{Eestikeelne termin} & \textbf{Ingliskeelne termin} & \textbf{Lühend} & \textbf{Selgitus} \\
+\multicolumn{4}{|l|}{\textit{\textbf{Hindamismõõdikud}}} \\
 \hline
 F1-skoor & F1-score & -- & täpsuse ja saagise harmoonilise keskmise \\
 täpsus & precision & -- & õigesti leitud positiiviste osakaal \\
