@@ -24,8 +24,11 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
 
     \paragraph{Baas-CHM-i genereerimine}
 
--- a/LaTeX/Lamapuidu_tuvastamine/estonian/sektsioonid/3-andmed.tex
-Lamapuidu märgistamise jaoks tekitati madal taimkattemudel (ingl \textit{Canopy Height Model} -- CHM) järgmise töövoo järgi: punktipilvest maapinnamudel, arvutati kõrgus maapinnast (ingl \textit{Height Above Ground} -- HAG), filtreeriti välja punktid kõrgusvahemikust 0--1,3 m maapinnast ning rasterdati maksimaalse kõrguse alusel 20 cm piksli resulutsiooniga rastriks. 1,3 m piiri on kasutatud ka varasemates töödes \parencite{jarron_detection_2021, joyce_detection_2019}: see jätab välja kõrgema ja tõenäolisemalt elusa taimestiku ning vähendab müra, kuid hoiab alles lamapuiduga seotud maapinnalähedastest struktuuridest ja võimaldab kasutada agrigeerimiseks maksimaalset kõrgust taimkatte mudeli jaoks ilma olulist infot varjamata. Selline lähenemine hoiab CHM-i lihtsana ja vähendab kõrgema taimestiku mõju. Mõju ei kao kuna igihaljad puud vähendavad laserimpulsside läbilastvust ja vähendab maapinna lähedastese kididesse jõudmist seega tekitavad varje ja muudavad punktitiheduse väikesel alal väga ebaühtlaseks. 
+    Lamapuidu märgistamiseks ja mudeli sisendiks loodi madal taimkattemudel (ingl \textit{Canopy Height Model} -- CHM) järgmise standardiseeritud töövoo järgi: (1) punktipilvest eraldati maapinnamudel (DTM), (2) arvutati iga punkti kõrgus maapinnast (ingl \textit{Height Above Ground} -- HAG), (3) filtreeriti välja punktid kõrgusvahemikust 0--1,3 m ja (4) rasterdati maksimaalse kõrguse alusel 20~cm piksli resolutsiooniga rastriks.
+
+    Kõrguse alampiir (0~m) arvestab maapinnale langenud laserpeegeldusi ja välistab negatiivseid anomaaliaid. Ülempiiril 1,3~m baseerub mitmel teaduslikul põhjendus: see piir on kasutatud paljudes varasemtes töödes \parencite{jarron_detection_2021, joyce_detection_2019} ja on kooskõlas statistilise metsainventuuri juhistega. Kõrgemal asuvad punktid peegeldavad eelkõige elusa taimestiku võra ülemisi kihte, millega kaasnevad suuremad mürakomponendid, eriti tihemates kuusikutes. Valitud piir jätab välja mürarikkad ülemised kihid, kuid säilitab jämedalt lamapuidu ja mataliga seotud maapinnalähedaseid struktuure, võimaldades maksimaalse kõrguse agregeerimist taimkatte mudelisse ilma olulise teabe kaotuseta.
+
+    Viirukute (igihaljalte puude) varjude mõju on oluline arvestada: tihedates kuusikutes vähendavad igihaljaste puude võrad laserimpulsside läbilaskevõimet märkimisväärselt, mistõttu maapinnale jõudvate peegelduste tihedus väheneb. Seetõttu on mingil aladel tegelik punktitihedus märgatavalt vähem, kui üldises keskmises näidatakse. Selline lähenemine CHM kõrguse piiride osas (0--1,3~m) hoiab maapinna müra minimaalsena, säilitades samal ajal lamapuidu signaali. 
 
 
 Andmete rasterdamisel rakendati piksli suurust 20 cm, omistades igale piksli ruudule selles sisalduva punktipilve maksimaalse kõrgusväärtuse. Resolutsiooni valik on metoodiliselt kaalutletud otsus, mis peab tasakaalustama punktipilve tihedust, andmestiku detailset katvust ning võimekust eristada kõrvuti asetsevaid üksikobjekte -- veelgi väiksema resolutsiooni kasutamine tekitaks piiratud punktitiheduse korral rohkelt ilma laserpeegelduse väärtuseta lünkasid ehk tühje piksleid. Antud uuringus valitud 20 cm piksli suurus on otseses seoses tuvastatavate objektide füüsiliste mõõtmetega. Statistilise metsainventuuri (SMI) 2024. aasta välitööde juhendi kohaselt loetakse lamapuidu mõõtmisel künniseks tüve läbimõõt alates 15 cm \parencite{SMI2024}. Samas rõhutab erialane kirjandus, et elurikkuse seisukohalt on kriitilise tähtsusega just jämedam lamapuit — paljud nõudlikud ja ohustatud saproksüülsed liigid eelistavad või vajavad elupaigana tüvesid, mille läbimõõt on vähemalt 20 cm \parencite{Vilhelmsson2013}. Lisaks rõhutatakse strateegilistes dokumentides eriti jämedamõõtmelise lamapuidu (läbimõõduga alates u 30 cm) säilitamist, mis on kriitiline paljudele ohustatud liikidele \parencite{kliimaministeerium_looduse_2024}. Seega on 20 cm piksli suurus optimaalne lävi, mis vastab minimaalsele ökoloogiliselt olulisele objekti suurusele, mida käesoleva analüüsi raames soovitakse tuvastada, tagades samas piisava ruumilise täpsuse objektide kuju säilitamiseks ilma liigsete tühjade pikslite tekkimiseta.
@@ -33,28 +36,15 @@ Andmete rasterdamisel rakendati piksli suurust 20 cm, omistades igale piksli ruu
 
 \begin{figure}[h!]
 \centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.3.} Okaspuude varjud maapinnale jõudvate punktide peal, mille tulemusena väheneb punktitihedus tihedates metsades.\
-Placeholder}}
-\caption{Okaspuude varjude mõju punktipilve tihedusele metsaalades.}
-\label{fig:shadow-density-effect}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.4.} Toor-punktipilv -> DTM-i eemaldamine -> normaliseeritud kõrgused -> filtreeritud punktid (0--1,3 m) -> rasterpilt (20 cm).\
-Placeholder}}
-\caption{CHM-i loomise ja eeltöötluse voogdiagramm.}
+\includegraphics[width=0.92\textwidth]{estonian/joonised/chm_eeltootluse_toovoog.png}
+\caption{CHM-i loomise ja eeltöötluse töövoog. Sammud käivad järgmiselt: algne hõre punktipilv (LAZ) → maapinnamudeli eraldamine (DTM) → kõrguste normaliseerimine maapinnast (HAG) → sobimatud punktid väljaarvestamine (0--1,3 m vahemik) → rasteriseerimine 20 cm piksli resolutsiooniga maksimaalkõrguse abiga (CHM).}
 \label{fig:chm-flow}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\fbox{\parbox{0.92\linewidth}{\centering
-\textbf{Joonis 3.5.} Näide ühest objektist: punktipilv (3D) versus genereeritud 20 cm CHM raster.\
-Placeholder}}
-\caption{Lamapuu objekti esitus punktipilves ja CHM-is.}
+\includegraphics[width=0.92\textwidth]{estonian/joonised/lamapuu_punktipilv_ja_chm.png}
+\caption{Lamapuu objekti esitused erinevates andmemudelites: vasakul kolmemõõtmeline punktipilv üksikute laserpeegeldustega 3D-koordinaatidena; paremal sama lamapuu ala rastervormis 20 cm piksli resolutsiooniga CHM-ina, kus iga pikseli väärtus näitab kõrgeimat punkti selle alas.}
 \label{fig:chm-example}
 \end{figure}
 
