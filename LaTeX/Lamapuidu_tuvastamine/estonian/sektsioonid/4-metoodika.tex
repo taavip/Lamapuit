@@ -234,7 +234,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
         \label{sec:klassifitseerimismudelite-otsing}
 
     \paragraph{Variantide hindamise kriteeriumid}
-    Selline samm-sammuline andmegeneerimise töövoog oli antud töös olevate uuringute, sealhulgas andmekihtide mõju hindavate välistamisanalüüside (ingl \textit{ablation studies}), tehniliseks aluseks. Loodud variandid võimaldasid testida, kas süvaõppe algoritm eelistab realistlikke, kuid lünklikke algmõõtmisi, sünteetiliselt silutud ja tihendatud andmestikku või nende kahe teadlikku kombinatsiooni koos maskiga.
+    Selline samm-sammuline taimkattemudelite loomise töövoog oli antud töös olevate uuringute, sealhulgas andmekihtide mõju hindavate välistamisanalüüside (ingl \textit{ablation studies}), tehniliseks aluseks. Loodud variandid võimaldasid testida, kas süvaõppe algoritm eelistab realistlikke, kuid lünklikke algmõõtmisi, sünteetiliselt silutud ja tihendatud andmestikku või nende kahe teadlikku kombinatsiooni koos maskiga. Kolmekordse risttestimise tulemused näitasid, et liitvariant (ingl \textit{composite}, milleks oli algsete mõõtmiste ja Gaussi filtreeritud CHM-i kombinatsioon koos konfliktmassi maskeriga) saavutas parima Dice-koefitsendi ($0.2159 \pm 0.0337$), mis tõestab sünteetilise silumise ja maskeermise kombineeritud mõju klassifitseerimise täpsusele.
 
 
 
@@ -260,7 +260,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
 
     Tabelis~\ref{tab:model-search-v1} esitatud parima mudeli otsingu tulemused näitasid, et ansamblistrateegia ületab parimat üksikmudelit, kuid jäi vastuseta kaks põhimõttelist küsimust: milline arhitektuur sobib kõige paremini neljanda ansambli liikmena CNN-Deep-Attn~$\times$~3 kõrvale ning milline agregeerimismeetod (lihtne pehme hääletus, kaalutud hääletus või virnaansambel) annab parima tulemuse. Nendele küsimustele teadusliku vastuse leidmiseks viidi läbi parima mudeli otsingut jätkav põhjalik võrdlusuuring, mille metoodika on kavandatud tagama tulemuste statistilist usaldusväärsust.
 
-    Võrdlusse kaasati kolm arhitektuurselt erinevat neljanda liikme kandidaati: EfficientNet-B2 (algselt valitud kandidaat), ConvNeXt-tiny ning ConvNeXt-small (parima mudeli otsingu üksikmudelitasandi tipparhitektuurid). Kõiki kandidaate treeniti võrdsetes tingimustes, et ainsaks varieeruvaks teguriks jääks arhitektuur ise: identne 15\,000-paaniga treeningvalim koos 4\,000-paaniga valideerimisvalimiga, säilitades tegeliku klassijaotuse (lamapuidu osakaal $\approx$ 75\%); ImageNeti eelõpitud kaalud; kaheastmeline õppimiskiirus (tüvimudel $5\times10^{-5}$, klassifikaatorkiht $5\times10^{-4}$, mis on hädavajalik ConvNeXt-perekonna eelõpitud kaalude säilitamiseks); MixUp-regulaarisatsioon ($\alpha=0{,}3$); märgistamise pehmendamine (0,05); ning 4-vaateline TTA (\textit{test-time augmentation}) \parencite{wang2018tta}. Kolme CNN-Deep-Attn baasmudeli kaalud saadi varasemast ruumilise ja ajalise jaotamise (jaotis~\ref{spatial-split}) treeningandmetel treenimisest (jaotis~\ref{spatial-split})
+    Võrdlusse kaasati kolm arhitektuurselt erinevat neljanda liikme kandidaati: EfficientNet-B2 (algselt valitud kandidaat), ConvNeXt-tiny ning ConvNeXt-small (parima mudeli otsingu üksikmudelitasandi tipparhitektuurid). Kõiki kandidaate treeniti võrdsetes tingimustes, et ainsaks varieeruvaks teguriks jääks arhitektuur ise: identne 15\,000-paaniga treeningvalim koos 4\,000-paaniga valideerimisvalimiga, säilitades tegeliku klassijaotuse (lamapuidu osakaal $\approx$ 75\%); ImageNeti eelõpitud kaalud; kaheastmeline õppimiskiirus (tüvimudel $5\times10^{-5}$, klassifikaatorkiht $5\times10^{-4}$, mis on hädavajalik ConvNeXt-perekonna eelõpitud kaalude säilitamiseks); MixUp-regulaarisatsioon ($\alpha=0{,}3$); märgistamise pehmendamine (0,05); ning 4-vaateline TTA (\textit{test-time augmentation}) \parencite{wang2018tta}. Kolme CNN-Deep-Attn baasmudeli kaalud saadi varasemast ruumilise ja ajalise jaotamise (jaotis~\ref{spatial-split}) treeningandmetel treenimisest.
 
     Igale kandidaadile rakendati viit agregeerimismeetodit:
     \begin{enumerate}
@@ -340,8 +340,15 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
     
     Loodud plokkidest eraldati ligikaudu 20\% rangesse testihulka (testandmestikku), mida ei rakendatud kordagi mudelivaliku ega treenimise käigus. Allesjäänud plokid jaotati süstemaatiliselt võrdselt kolme ristvalideerimise ossa (ingl \textit{fold}). Selline jaotus kindlustab, et treenimis- ja valideerimisandmed ei pärine otse üksteise kõrvalt, välistades ruumilisest autokorrelatsioonist tingitud ülehindamise ohud.
 
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.85\textwidth]{estonian/joonised/seg_treening_test_paanide_paiknemine.png}
+    \caption{Segmenteerimisandmete ruumiline eraldamine: test- ja treeningplokkide paigutus kogu analüüsialal. Testandmestik (ligikaudu 20\%) jäeti mudelivaliku ja treenimise ajal puutumata, ristvalideerimise osapool (kolm foldi) kasutati paremusjärjestuse hindamisel.}
+    \label{fig:spatial-split-segmentation}
+    \end{figure}
+
     \paragraph{Treeningpaanide moodustamine ja andmestiku eeltöötlus}
-    Lõplikuks analüüsiks kasutati eraldatud mittekattuvaid 256$\times$256 piksli suurusega rasterpaane. Paanidest jäeti treenimisel ja optimeerimisel välja need aknad, kus märgistatud pikslite arv (\textit{valid\_mask}) oli alla 328, tagades seeläbi andmestiku infosageduse rikkalikkuse ning välistades sisutühjade piirkondade ebaotstarbeka esindatuse mudeli kaofunktsioonis. 
+    Lõplikuks analüüsiks kasutati eraldatud mittekattuvaid 256$\times$256 piksli suurusega rasterpaane. Paanidest jäeti treenimisel ja optimeerimisel välja need aknad, kus märgistatud pikslite arv oli alla 328, tagades seeläbi andmestiku infosageduse rikkalikkuse ning välistades sisutühjade piirkondade ebaotstarbeka esindatuse mudeli kaofunktsioonis. 
 
     \subsubsection{Automaatne välistamisanalüüs ja lõpliku seadistuse valik}
 
@@ -354,7 +361,7 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
         \item \textbf{Faas 3 (Mudeli arhitektuur):} Kahe parimaks osutunud andmestikuvariandi peal hinnati süvaõppe arhitektuure. Valituteks osutusid arhitektuursed raamistikud U-Net++ ja DeepLabV3+, mida kombineeriti erinevate tüvimudelitega (backbone) nagu ResNet, EfficientNet-B0 ja -B2.
         \item \textbf{Faas 4 (Kaofunktsioon):} Välja valitud andmestike ja mudeliarhitektuuride kombinatsioonidel testiti kaofunktsioone, sealhulgas \textit{DiceFocal} ehk Dice'i-põhise segmenteerimiskao ja Focal loss'i kombinatsiooni \parencite{milletari2016vnet,lin2017focal}, tasakaalustatud ja kõrge täpsusega \textit{Tversky} kaofunktsiooni \parencite{salehi2017tversky} ning ruumilise topoloogia säilitamisele suunatud \textit{Tversky+clDice} lahendusi.
         \item \textbf{Faas 5 (Andmerikastamine ja regulariseerimine):} Optimeeriti treeningu rikastamist mudeli üldistuvuse suurendamiseks, testides andmeid ilma andmesuurendusteta kõrvuti laialdaste andmerikastamiste kombinatsiooniga, mis kasutas pehmeid sihtväärtusi (ingl \textit{soft targets}) ja juhuslike kaalude keskmistamist (ingl \textit{Stochastic Weight Averaging, SWA}).
-        \item \textbf{Faas 6 (Lõplik hindamine testandmestikul):} Pärast esialgset metoodilist seadistust sooritati mudelite lõplikus järjestuses viimane faas. Kõige tugevamat sooritust näidanud hüperparameetrite ja eeltöötluse sammudega treeniti lõplik mudel kõigi ristvalideerimise treening- ning valideerimismaterjalide peal (treenimine kogus andmestikul, v.a püsiv testandmestik). Objektiivne hindamine teostati algusest peale eraldatud ning puutumatul testandmestikul.
+        \item \textbf{Faas 6 (Lõplik hindamine testandmestikul):} Pärast esialgset metoodilist seadistust sooritati mudelite lõplikus järjestuses viimane faas. Kõige tugevamat sooritust näidanud hüperparameetrite ja eeltöötluse sammudega treeniti lõplik mudel kõigi ristvalideerimise treening- ning valideerimisandmete peal (treenimine kogus andmestikul, v.a püsiv testandmestik). Objektiivne hindamine teostati algusest peale eraldatud ning puutumatul testandmestikul.
     \end{enumerate}
 
     \begin{figure}[h!]
@@ -365,14 +372,14 @@ Selles peatükis kirjeldatakse lamapuidu tuvastamise klassifitseerimise ja seman
     \end{figure}
 
     \paragraph{Valikukriteerium ja kesktelje Dice-skoor (\textit{clDice})}
-    Mudelite, andmestike ja parameetrite pingereastamisel kasutati valikumõõdikuks \textit{clDice}. Standardsed kattuvusmõõdikud nagu \textit{Dice}-koefitsient või kattuva ja ühendatud ala suhe jäävad isomorfselt sarnaste struktuuride, eriti piklike ja katkendlike lamapuidu elementide pidevuse väärtustamisel puudulikeks. Keskteljel põhinev \textit{clDice} (ingl \textit{centerline Dice}) hindab täpsemalt just lineaarsete objektide võrgustiku topoloogia tegelikku visuaalset ja füüsilist õigsust. 
+    Mudelite, andmestike ja parameetrite pingereastamisel kasutati valikumõõdikuks \textit{clDice}. Standardsed kattuvusmõõdikud nagu \textit{Dice}-koefitsient või kattuva ja ühendatud ala suhe jäävad isomorfselt sarnaste struktuuride, eriti piklike ja katkendlike lamapuidu elementide pidevuse väärtustamisel puudulikeks. Keskteljel põhinev \textit{clDice} (ingl \textit{centerline Dice}) hindab täpsemalt just lineaarsete objektide võrgustiku topoloogia tegelikku visuaalset ja füüsilist õigsust. see mõõdik on eriti sobiv lamapuidu segmenteerimise hindamiseks, kuna see rõhutab mitte ainult objekti asukohta, vaid ka selle struktuuri ja pidevust, mis on kriitilise tähtsusega lamapuidu tuvastamisel. 
     
-    Arvestades automaatse töövoo tulemuslikkuse mudeleid, kehtestati kahe parima lahenduse valikusel selge hierarhiline sidemurdja (\textit{tie-break}) reeglistik:
+    Arvestades automaatse töövoo tulemuslikkuse mudeleid, kehtestati kahe parima lahenduse valikusel selge hierarhiline viigimurdja (\textit{tie-break}) reeglistik:
     \begin{enumerate}
         \item Kõrgeim valideerimise \textit{clDice} keskmine skoor üle kõigi kolme hindamisosa;
         \item Võrdsuse korral vaadati F1-skoori keskmist;
     \end{enumerate}
-    Püsivat testandmestikku (eraldiseisvaid makroplokke) ei kasutatud andmekomplekti, arhitektuuri, kaotusfunktsiooni ega mistahes parameetrite optimeerimiseks; neid rakendati mudeli tegeliku võimekuse hindamiseks alles lõplikus kuuendas faasis.
+    Püsivat testandmestikku (eraldiseisvaid plokke) ei kasutatud andmekomplekti, arhitektuuri, kaotusfunktsiooni ega mistahes parameetrite optimeerimiseks; neid rakendati mudeli tegeliku võimekuse hindamiseks alles lõplikus kuuendas faasis.
 
 
 \subsection{Tehisaru kasutamine töö koostamisel}
@@ -384,5 +391,6 @@ Käesoleva magistritöö ettevalmistamisel ja teostamisel on kasutatud generatii
     \item \textbf{Struktureerimine ja infootsing:} tehisaru abi on kasutatud uurimustöö ideede süstematiseerimiseks, metoodika loogiliseks ülesehitamiseks ning asjakohaste teadusartiklite otsingu ja märksõnade leidmiseks ning tõlkeks.
     \item \textbf{Tarkvaraarendus ja sildistamistööriist:} oluline osa magistritöö raames loodud sildistamistööriista (vt ptk \ref{subsec:metoodika-klassifitseerimine}) koodist on genereeritud või optimeeritud tehisaru abil. Samuti on tööriistu kasutatud masinõppe treenimisskriptide loomisel ja koodi optimeerimisel.
     \item \textbf{Kvaliteedikontroll:} tehisaru on rakendatud teksti ja koodi analüüsimiseks, et tuvastada vigu ning parandada väljenduse selgust.
+    \item \textbf{illustratsioonide loomine:} tehisaru on kasutatud visuaalse abstracty visuaalsete piltide loomisel.
 \end{itemize}
 Töö uurimisküsimused, metoodilised valikud, andmete valik, lõplikud skriptid, mudelite treenimine, tulemuste kontroll ja järeldused on autori koostatud ja autori poolt valideeritud. Tehisaru väljundeid ei kasutatud kontrollimata faktiallikana ega esitatud iseseisva teadusliku allikana. Kõik Tehisintellekti abil loodud või optimeeritud koodiosad vaadati autori poolt üle, kohandati töö andmetele ning testiti tulemuste koratavuse kontrollimiseks.
