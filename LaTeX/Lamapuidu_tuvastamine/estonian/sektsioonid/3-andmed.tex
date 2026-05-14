@@ -46,12 +46,12 @@ Uuringuala valik tehti mitmes etapis. Esmalt kasutati testimiseks Tartu linna l�
 
 Uuringu lõplik ekspertvalim koosneb 29 asukohast (mõõtkavas 1:2000 kaardilehte), mille valimisel lähtuti eesmärgist tagada tulemuste üldistatavus kogu Eestile. Selle saavutamiseks kaasati valimisse erineva reljeefiga alasid ning esinduslik valik metsa- ja maastikutüüpe. Valimi moodustamisel kasutati Maa- ja Ruumiameti madallennu ülelende perioodist 2017–2024, mis on kogutud tihedama aerolaserskaneerimise (ALS) meetodiga.
 
-Nimetatud kriteeriumide alusel koostati andmestik, mille detailne statistiline ülevaade on esitatud tabelis \ref{tbl:laz_dataset_overview}. Kuigi valitud kaardilehed katavad unikaalselt 27 km$^2$ suuruse uuringuala, moodustab korduvülelendude summaarne pindala 117 km$^2$. Kokku hõlmab andmestik 4,45 miljardit laserpunkti, saavutades keskmise punktitiheduse 37,86 p/m$^2$ (vahemikus 11,81--81,32 p/m$^2$). Seejuures on valitud andmestiku punktitihedus märkimisväärselt kõrgem võrreldes Eesti tiheasustusalade lendude puhul tavapäraselt dokumenteeritud näitajatega (tabel \ref{tab:andmed-lennud}).
+Nimetatud kriteeriumide alusel koostati andmestik, mille detailne statistiline ülevaade on esitatud tabelis \ref{tab:laz_dataset_overview}. Kuigi valitud kaardilehed katavad unikaalselt 27 km$^2$ suuruse uuringuala, moodustab korduvülelendude summaarne pindala 117 km$^2$. Kokku hõlmab andmestik 4,45 miljardit laserpunkti, saavutades keskmise punktitiheduse 37,86 p/m$^2$ (vahemikus 11,81--81,32 p/m$^2$). Seejuures on valitud andmestiku punktitihedus märkimisväärselt kõrgem võrreldes Eesti tiheasustusalade lendude puhul tavapäraselt dokumenteeritud näitajatega (tabel \ref{tab:andmed-lennud}).
 
 
 Kuna käsitsi segmenteerimine on äärmiselt ajamahukas protsess, ei ole seda võimalik ega ka otstarbekas läbi viia üle-eestilises mastaabis. Seetõttu valiti lamapuidu tuvastamise metoodika ja mudelite treenimise toimivuse katsetamiseks eraldiseisvalt välja üks konkreetne kaardileht (tähisega \texttt{406455\_2021\_tava}), et luua usaldusväärne segmentatsiooni treeningandmestik. Valik langes osale Ruhnu saarest, kuna sealsed metsad on vanuse, kasvukohatüübi ja puuliikide osas mitmekesised ja sellel leidub suurel hulgal lamapuitu. Treeningandmete koostamisel on kriitilise tähtsusega objektide varjatus ja tihedus -- mida rohkem edukaid ja erinevates lagunemisastmetes lamatüvesid andmestikku kaasatakse, seda paremini suudab mudel õppida lamapuidule iseloomulikke jooni erinevates metsatingimustes.
 
-Ruhnu saare valitud metsades on rikkalikult vanu ja mitmekesise puistustruktuuriga eraldisi. Näiteks paiknevad antud kaardilehel üle 140 aasta vanused männi- ja kuusemetsad, samuti mitmekesiseid lehtpuumetsi. Selline kasvukohatüüpide, liigiline ja vanuseline mitmekesisus peegeldab keerulist ja reljeefset metsaalust, millest mudel peab lamapuitu tuvastama. Samuti teostati antud alal aerolaserskaneerimine tiheasustusala kaardistuse parameetritega, mille käigus lennati tavapärasest madalamalt. See tõi kaasa märgatavalt suurema punktitiheduse maapinnalähedastes kihtides (keskmiselt 43,7 p/m$^2$), mis esindab ideaalset andmestikku kõrgresolutsioonilise referentsi märgistamiseks (vt Tabel \ref{tbl:laz_dataset_overview}). Antud andmeid kasutati magistritöös madala taimkatte mudelite loomiseks.
+Ruhnu saare valitud metsades on rikkalikult vanu ja mitmekesise puistustruktuuriga eraldisi. Näiteks paiknevad antud kaardilehel üle 140 aasta vanused männi- ja kuusemetsad, samuti mitmekesiseid lehtpuumetsi. Selline kasvukohatüüpide, liigiline ja vanuseline mitmekesisus peegeldab keerulist ja reljeefset metsaalust, millest mudel peab lamapuitu tuvastama. Samuti teostati antud alal aerolaserskaneerimine tiheasustusala kaardistuse parameetritega, mille käigus lennati tavapärasest madalamalt. See tõi kaasa märgatavalt suurema punktitiheduse maapinnalähedastes kihtides (keskmiselt 43,7 p/m$^2$), mis esindab ideaalset andmestikku kõrgresolutsioonilise referentsi märgistamiseks (vt Tabel \ref{tab:laz_dataset_overview}). Antud andmeid kasutati magistritöös madala taimkatte mudelite loomiseks.
 
 
 \begin{figure}[h!]
@@ -64,7 +64,7 @@ Ruhnu saare valitud metsades on rikkalikult vanu ja mitmekesise puistustruktuuri
 \begin{table}[ht]
 \centering
 \caption{Andmestiku ulatus ja omadused klassifitseerimise ja segmenteerimise lõikes.}
-\label{tbl:laz_dataset_overview}
+\label{tab:laz_dataset_overview}
 \begin{tabular}{lll}
 \hline
 \textbf{Näitaja} & \textbf{Klassifitseerimine (üle-eestiline)} & \textbf{Segmenteerimine (Ruhnu)} \\
