@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import numpy as np
 import rasterio
 import seaborn as sns
@@ -72,6 +73,61 @@ def _base_axes_title(ax: plt.Axes, title: str) -> None:
     ax.set_title(title, fontsize=14, fontweight="bold")
     ax.grid(True, linestyle=":", alpha=0.6, zorder=0)
     ax.set_axisbelow(True)
+
+
+def _create_cwd_colormap():
+    """Rich pseudo-color gradient: light gray→dark gray→red→orange→yellow→green→cyan→blue→purple."""
+    # Position values for 0-1.3m range mapped to 0-1 colormap range
+    # 0.1m → 0.1/1.3 ≈ 0.077
+    cdict = {
+        'red': [
+            (0.000, 0.80, 0.80),   # 0.0m:    medium gray
+            (0.077, 0.40, 0.40),   # 0.1m:    dark gray
+            (0.115, 0.80, 0.80),   # 0.15m:   light red
+            (0.230, 0.95, 0.95),   # 0.3m:    bright red peak
+            (0.308, 1.0, 1.0),     # 0.4m:    orange-red
+            (0.385, 1.0, 1.0),     # 0.5m:    orange
+            (0.462, 1.0, 1.0),     # 0.6m:    yellow
+            (0.538, 0.40, 0.40),   # 0.7m:    yellow-green (less red)
+            (0.615, 0.20, 0.20),   # 0.8m:    green (low red)
+            (0.692, 0.10, 0.10),   # 0.9m:    cyan (very low red)
+            (0.769, 0.05, 0.05),   # 1.0m:    blue (minimal red)
+            (0.846, 0.10, 0.10),   # 1.1m:    purple (start red rise)
+            (1.000, 0.40, 0.40),   # 1.3m:    dark purple
+        ],
+        'green': [
+            (0.000, 0.80, 0.80),   # 0.0m:    medium gray
+            (0.077, 0.40, 0.40),   # 0.1m:    dark gray
+            (0.115, 0.20, 0.20),   # 0.15m:   red (no green)
+            (0.230, 0.0, 0.0),     # 0.3m:    pure red
+            (0.308, 0.40, 0.40),   # 0.4m:    orange
+            (0.385, 0.60, 0.60),   # 0.5m:    orange
+            (0.462, 0.90, 0.90),   # 0.6m:    yellow
+            (0.538, 0.80, 0.80),   # 0.7m:    yellow-green
+            (0.615, 0.65, 0.65),   # 0.8m:    green
+            (0.692, 0.85, 0.85),   # 0.9m:    cyan
+            (0.769, 0.80, 0.80),   # 1.0m:    blue
+            (0.846, 0.40, 0.40),   # 1.1m:    purple
+            (1.000, 0.20, 0.20),   # 1.3m:    dark purple
+        ],
+        'blue': [
+            (0.000, 0.80, 0.80),   # 0.0m:    medium gray
+            (0.077, 0.40, 0.40),   # 0.1m:    dark gray
+            (0.115, 0.15, 0.15),   # 0.15m:   red
+            (0.230, 0.0, 0.0),     # 0.3m:    pure red
+            (0.308, 0.10, 0.10),   # 0.4m:    orange-red
+            (0.385, 0.15, 0.15),   # 0.5m:    orange
+            (0.462, 0.0, 0.0),     # 0.6m:    yellow
+            (0.538, 0.30, 0.30),   # 0.7m:    yellow-green
+            (0.615, 0.60, 0.60),   # 0.8m:    green
+            (0.692, 1.0, 1.0),     # 0.9m:    cyan (peak blue)
+            (0.769, 1.0, 1.0),     # 1.0m:    blue (peak blue)
+            (0.846, 0.80, 0.80),   # 1.1m:    purple
+            (1.000, 0.60, 0.60),   # 1.3m:    dark purple
+        ],
+    }
+    cmap = mcolors.LinearSegmentedColormap("cwd_hag", cdict, N=256)
+    return cmap
 
 
 def plot_shadow_density(output: Path) -> None:
@@ -170,51 +226,110 @@ def plot_chm_flow(output: Path) -> None:
 
 
 def plot_chm_example(output: Path) -> None:
+    import pickle
+
     _set_style()
-    rng = np.random.default_rng(42)
     fig, axes = plt.subplots(1, 2, figsize=(16, 9))
 
-    # Synthetic 3D-like point cloud view (top-down with height color).
-    n_ground = 2500
-    xg = rng.uniform(0, 64, size=n_ground)
-    yg = rng.uniform(0, 64, size=n_ground)
-    zg = rng.normal(0.12, 0.05, size=n_ground).clip(0.0, 0.35)
+    cwd_cmap = _create_cwd_colormap()
 
-    t = np.linspace(6, 58, 750)
-    xl = t + rng.normal(0, 0.8, size=t.size)
-    yl = 0.55 * t + 8 + rng.normal(0, 0.8, size=t.size)
-    zl = 0.45 + 0.22 * np.sin(t / 7) + rng.normal(0, 0.05, size=t.size)
-    zl = np.clip(zl, 0.18, 1.05)
+    # Load real example data (if available)
+    data_file = Path("_real_example_data.pkl")
+    if data_file.exists():
+        with open(data_file, "rb") as f:
+            data = pickle.load(f)
+        laz_points = data["laz_subset"]
+        chm_tile = data["chm_tile"]
+        bbox = data["bbox"]
 
-    x = np.concatenate([xg, xl])
-    y = np.concatenate([yg, yl])
-    z = np.concatenate([zg, zl])
-    sc = axes[0].scatter(x, y, c=z, cmap="viridis", s=6, linewidths=0, alpha=0.85)
-    axes[0].set_xlim(0, 64)
-    axes[0].set_ylim(0, 64)
-    axes[0].set_xlabel("X", fontsize=12, fontweight="bold")
-    axes[0].set_ylabel("Y", fontsize=12, fontweight="bold")
-    axes[0].set_title("Punktipilv (korgus varviga)", fontsize=13, fontweight="bold")
-    axes[0].grid(True, linestyle=":", alpha=0.6)
-    cb = fig.colorbar(sc, ax=axes[0], shrink=0.85)
-    cb.set_label("Korgus (m)", fontweight="bold")
+        # Use IDW-HAG normalized heights (0-1.3m range)
+        laz_filtered = laz_points
 
-    # CHM-like raster from max-height aggregation idea.
-    grid = np.zeros((64, 64), dtype=np.float32)
-    for xi, yi, zi in zip(x, y, z):
-        ix = int(np.clip(np.floor(xi), 0, 63))
-        iy = int(np.clip(np.floor(yi), 0, 63))
-        if zi > grid[iy, ix]:
-            grid[iy, ix] = zi
+        # Filter LAZ to 0-1.3m range (HAG)
+        mask_hag = (laz_filtered[:, 2] >= 0.0) & (laz_filtered[:, 2] <= 1.3)
+        laz_filtered = laz_filtered[mask_hag]
 
-    im = axes[1].imshow(grid, cmap="magma", vmin=0.0, vmax=max(1.0, float(grid.max())))
-    axes[1].set_title("20 cm CHM raster (maksimumkorgus)", fontsize=13, fontweight="bold")
-    axes[1].set_xlabel("Veerg", fontsize=12, fontweight="bold")
-    axes[1].set_ylabel("Rida", fontsize=12, fontweight="bold")
-    cb2 = fig.colorbar(im, ax=axes[1], shrink=0.85)
-    cb2.set_label("Korgus (m)", fontweight="bold")
+        # Normalize coordinates to pixel space
+        x_min, x_max = bbox["x_min"], bbox["x_max"]
+        y_min, y_max = bbox["y_min"], bbox["y_max"]
 
-    fig.suptitle("Lamapuu objekti esitus: punktipilv vs CHM", fontsize=16, fontweight="bold")
+        x_pixel = ((laz_filtered[:, 0] - x_min) / (x_max - x_min)) * 127
+        y_pixel = ((laz_filtered[:, 1] - y_max) / (y_min - y_max)) * 127  # flip y
+        z_values = laz_filtered[:, 2]
+
+        # Scatter plot with custom colormap (0-1.3m scale)
+        sc = axes[0].scatter(
+            x_pixel, y_pixel, c=z_values, cmap=cwd_cmap, s=10, linewidths=0, alpha=0.8,
+            vmin=0.0, vmax=1.3
+        )
+        axes[0].set_xlim(-2, 130)
+        axes[0].set_ylim(-2, 130)
+        axes[0].set_aspect("equal")
+        axes[0].set_xlabel("Veerg (20 cm)", fontsize=12, fontweight="bold")
+        axes[0].set_ylabel("Rida (20 cm)", fontsize=12, fontweight="bold")
+        axes[0].set_title("Punktipilv normaliseeritud", fontsize=13, fontweight="bold")
+        axes[0].grid(True, linestyle=":", alpha=0.3)
+        cb = fig.colorbar(sc, ax=axes[0], shrink=0.85)
+        cb.set_label("Kõrgus (m)", fontweight="bold")
+
+        # CHM raster with same 0-1.3m scale
+        im = axes[1].imshow(
+            chm_tile, cmap=cwd_cmap, vmin=0.0, vmax=1.3, origin="upper"
+        )
+        axes[1].set_aspect("equal")
+        axes[1].set_title("Taimkatte kõrgusmudel (Baasmudel)", fontsize=13, fontweight="bold")
+        axes[1].set_xlabel("Veerg", fontsize=12, fontweight="bold")
+        axes[1].set_ylabel("Rida", fontsize=12, fontweight="bold")
+        cb2 = fig.colorbar(im, ax=axes[1], shrink=0.85)
+        cb2.set_label("Kõrgus (m)", fontweight="bold")
+
+    else:
+        # Fallback to synthetic if data not available
+        rng = np.random.default_rng(42)
+        n_ground = 2500
+        xg = rng.uniform(0, 128, size=n_ground)
+        yg = rng.uniform(0, 128, size=n_ground)
+        zg = rng.normal(0.12, 0.05, size=n_ground).clip(0.0, 0.35)
+
+        t = np.linspace(10, 120, 1500)
+        xl = t + rng.normal(0, 1.5, size=t.size)
+        yl = 0.4 * t + 15 + rng.normal(0, 1.5, size=t.size)
+        zl = 0.5 + 0.25 * np.sin(t / 15) + rng.normal(0, 0.08, size=t.size)
+        zl = np.clip(zl, 0.2, 1.1)
+
+        x = np.concatenate([xg, xl])
+        y = np.concatenate([yg, yl])
+        z = np.concatenate([zg, zl])
+
+        sc = axes[0].scatter(x, y, c=z, cmap=cwd_cmap, s=10, linewidths=0, alpha=0.8,
+                            vmin=0.0, vmax=1.3)
+        axes[0].set_xlim(0, 128)
+        axes[0].set_ylim(0, 128)
+        axes[0].set_aspect("equal")
+        axes[0].set_xlabel("Veerg (20 cm)", fontsize=12, fontweight="bold")
+        axes[0].set_ylabel("Rida (20 cm)", fontsize=12, fontweight="bold")
+        axes[0].set_title("Punktipilv (normaliseeritud kõrgus)", fontsize=13, fontweight="bold")
+        axes[0].grid(True, linestyle=":", alpha=0.3)
+        cb = fig.colorbar(sc, ax=axes[0], shrink=0.85)
+        cb.set_label("Kõrgus (m)", fontweight="bold")
+
+        # Synthetic CHM
+        grid = np.zeros((128, 128), dtype=np.float32)
+        for xi, yi, zi in zip(x, y, z):
+            ix = int(np.clip(np.floor(xi), 0, 127))
+            iy = int(np.clip(np.floor(yi), 0, 127))
+            if zi > grid[iy, ix]:
+                grid[iy, ix] = zi
+
+        im = axes[1].imshow(grid, cmap=cwd_cmap, vmin=0.0, vmax=1.3, origin="upper")
+        axes[1].set_aspect("equal")
+        axes[1].set_title("Taimkatte kõrgusmudel (Baasmudel)", fontsize=13, fontweight="bold")
+        axes[1].set_xlabel("Veerg", fontsize=12, fontweight="bold")
+        axes[1].set_ylabel("Rida", fontsize=12, fontweight="bold")
+        cb2 = fig.colorbar(im, ax=axes[1], shrink=0.85)
+        cb2.set_label("Kõrgus (m)", fontweight="bold")
+
+    fig.suptitle("Lamapuit LiDAR-i ja taimkattemudelil", fontsize=16, fontweight="bold")
     sns.despine(trim=False)
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     _save(fig, output)

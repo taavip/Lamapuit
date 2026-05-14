@@ -1406,6 +1406,64 @@
       \verb https://www.mdpi.com/2072-4292/14/1/75
       \endverb
     \endentry
+    \entry{sani-mohammed_instance_2022}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=563e4fab375143aa48ae8054b316ad6e}{%
+           family={Sani-Mohammed},
+           familyi={S\bibinithyphendelim M\bibinitperiod},
+           given={Abubakar},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4dc34365d4fe867fa6de45e5e58d33bf}{%
+           family={Yao},
+           familyi={Y\bibinitperiod},
+           given={Wei},
+           giveni={W\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=7a3b2c1ad75a363dbd62c7140aaee6c0}{%
+           family={Heurich},
+           familyi={H\bibinitperiod},
+           given={Marco},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{2f798c3a237780d16d46d232b96ca848}
+      \strng{fullhash}{cb18a5edf3966e4116ba445d86c5267c}
+      \strng{bibnamehash}{cb18a5edf3966e4116ba445d86c5267c}
+      \strng{authorbibnamehash}{cb18a5edf3966e4116ba445d86c5267c}
+      \strng{authornamehash}{2f798c3a237780d16d46d232b96ca848}
+      \strng{authorfullhash}{cb18a5edf3966e4116ba445d86c5267c}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{26673932}
+      \field{journaltitle}{{ISPRS} Open Journal of Photogrammetry and Remote Sensing}
+      \field{langid}{english}
+      \field{month}{12}
+      \field{shortjournal}{{ISPRS} Open Journal of Photogrammetry and Remote Sensing}
+      \field{title}{Instance segmentation of standing dead trees in dense forest from aerial imagery using deep learning}
+      \field{urlday}{14}
+      \field{urlmonth}{5}
+      \field{urlyear}{2026}
+      \field{volume}{6}
+      \field{year}{2022}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{100024}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1016/j.ophoto.2022.100024
+      \endverb
+      \verb{urlraw}
+      \verb https://linkinghub.elsevier.com/retrieve/pii/S2667393222000138
+      \endverb
+      \verb{url}
+      \verb https://linkinghub.elsevier.com/retrieve/pii/S2667393222000138
+      \endverb
+    \endentry
     \entry{shin_morphological_2024}{thesis}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=4c1c8b4f6a81ac35980c2a96bc2e1b87}{%
@@ -1724,6 +1782,73 @@
       \verb http://www.theseus.fi/handle/10024/878233
       \endverb
     \endentry
+    \entry{wielgosz_point2treep2tframework_2023}{article}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=ad48318ae92b821611556dac65311bae}{%
+           family={Wielgosz},
+           familyi={W\bibinitperiod},
+           given={Maciej},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=606f0402bdfc16f0c68869067958b15b}{%
+           family={Puliti},
+           familyi={P\bibinitperiod},
+           given={Stefano},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=6562e0c806f64750d7f1bcaaf8cca008}{%
+           family={Wilkes},
+           familyi={W\bibinitperiod},
+           given={Phil},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=eb45044d0a33f840979e8024e5eb49b5}{%
+           family={Astrup},
+           familyi={A\bibinitperiod},
+           given={Rasmus},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{e04146d48dc4168ba9654a6001ae584f}
+      \strng{fullhash}{2055c91bbf23f328ebeadfc413397bd2}
+      \strng{bibnamehash}{2055c91bbf23f328ebeadfc413397bd2}
+      \strng{authorbibnamehash}{2055c91bbf23f328ebeadfc413397bd2}
+      \strng{authornamehash}{e04146d48dc4168ba9654a6001ae584f}
+      \strng{authorfullhash}{2055c91bbf23f328ebeadfc413397bd2}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Inthis study, we introduce Point2Tree, a modular and versatile framework that employs a three-tiered methodology, inclusive of semantic segmentation, instance segmentation, and hyperparameter optimization analysis, designed to process laser point clouds in forestry. The semantic segmentation stage is built upon the Pointnet++ architecture and is primarily tasked with categorizing each point in the point cloud into meaningful groups or ’segments’, specifically in this context, differentiating between diverse tree parts, i.e., vegetation, stems, and coarse woody debris. The category for the ground is also provided. Semantic segmentation achieved an F1-score of 0.92, showing a high level of accuracy in classifying forest elements. In the instance segmentation stage, we further refine this process by identifying each tree as a unique entity. This process, which uses a graph-based approach, yielded an F1-score of approximately 0.6, signifying reasonable performance in delineating individual trees. The third stage involves a hyperparameter optimization analysis, conducted through a Bayesian strategy, which led to performance improvement of the overall framework by around four percentage points. Point2Tree was tested on two datasets, one from a managed boreal coniferous forest in Våler, Norway, with 16 plots chosen to cover a range of forest conditions. The modular design of the framework allows it to handle diverse pointcloud densities and types of terrestrial laser scanning data.}
+      \field{day}{27}
+      \field{issn}{2072-4292}
+      \field{journaltitle}{Remote Sensing}
+      \field{langid}{english}
+      \field{month}{7}
+      \field{number}{15}
+      \field{shortjournal}{Remote Sensing}
+      \field{title}{Point2Tree(P2T)—Framework for Parameter Tuning of Semantic and Instance Segmentation Used with Mobile Laser Scanning Data in Coniferous Forest}
+      \field{urlday}{14}
+      \field{urlmonth}{5}
+      \field{urlyear}{2026}
+      \field{volume}{15}
+      \field{year}{2023}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{3737}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3390/rs15153737
+      \endverb
+      \verb{urlraw}
+      \verb https://www.mdpi.com/2072-4292/15/15/3737
+      \endverb
+      \verb{url}
+      \verb https://www.mdpi.com/2072-4292/15/15/3737
+      \endverb
+    \endentry
     \entry{xiang_automated_2024}{article}{}
       \name{author}{7}{}{%
         {{un=0,uniquepart=base,hash=93595d03cc4189ba04df1e3f67506a0f}{%
@@ -1793,6 +1918,7 @@
       \endverb
     \endentry
   \enddatalist
+  \missing{SMI}
   \missing{SMI2024}
   \missing{Vilhelmsson2013}
   \missing{chattopadhyay2018grad}
@@ -1814,13 +1940,11 @@
   \missing{riofrio2022}
   \missing{roberts2017cross}
   \missing{salehi2017tversky}
-  \missing{sani_mohammed_2022}
   \missing{shi2025}
   \missing{sotoodeh2006}
   \missing{sundararajan2017axiomatic}
   \missing{tan2019efficientnet}
   \missing{wang2018tta}
-  \missing{wielgosz_2023}
   \missing{wilcoxon1945ranking}
   \missing{zhang2016}
   \missing{zhang2018mixup}
