@@ -5,7 +5,7 @@ Uurimistöös lähtuti Eesti avaandmetest, kasutades lamapuidu kaardistamiseks M
 
 \subsection{Aerolaserskaneerimine (LiDAR)}
 
-LiDAR (Light Detection and Ranging) põhineb aktiivsel kaugseirel: sensor saadab välja lühikesi laserimpulsse, mõõdab impulsi teekonna aega ja arvutab tagasipeegeldunud signaali põhjal objekti kauguse. Kui sama põhimõtet rakendatakse suurel hulgal impulssidel, tekib punktipilv, mille tihedus sõltub aerolaserskaneerimisel lennukõrgusest, lennukiirusest, impulsside sagedusest ning maapinna ja taimkatte struktuurist. Madalam lennukõrgus ja aeglasem lennu trajektoor annavad üldjuhul tihedama punktipilve, kõrgem lend aga suurema katvuse väiksema detailsusega.
+LiDAR (ingl \textit {Light Detection and Ranging}) põhineb aktiivsel kaugseirel: sensor saadab välja lühikesi laserimpulsse, mõõdab impulsi teekonna aega ja arvutab tagasipeegeldunud signaali põhjal objekti kauguse. Kui sama põhimõtet rakendatakse suurel hulgal impulssidel, tekib punktipilv, mille tihedus sõltub aerolaserskaneerimisel lennukõrgusest, lennukiirusest, impulsside sagedusest ning maapinna ja taimkatte struktuurist. Madalam lennukõrgus ja aeglasem lennu trajektoor annavad üldjuhul tihedama punktipilve, kõrgem lend aga suurema katvuse väiksema detailsusega.
 
 Lamapuidu tuvastamise seisukohalt on oluline, et punktipilv sisaldaks piisavalt maapinnalähedasi tagasipeegeldusi, kuid samal ajal ei muutuks maapinna reljeef ja madal taimestik liiga mürarikkaks. Seetõttu ei piisa lamapuidu puhul ainult punktide olemasolust, vaid oluline on ka nende ruumiline kontsentratsioon ja fenoloogiline aastaaeg andmete kogumisel.
 
@@ -13,7 +13,7 @@ Lamapuidu tuvastamise seisukohalt on oluline, et punktipilv sisaldaks piisavalt 
 
 \subsection{Maa- ja Ruumiameti aerolaserskaneerimise punktid}
 
-Magistritöö aluseks on Maa- ja Ruumiameti aerolaserskaneerimise (ALS) andmestik aastatest 2017--2024. Andmeid on kogutud mitmel erineva metoodikaga, mille punktitihedus ja katvuse eesmärk erinevad. Töö kontekstis on oluline eristada riiklikke baaskaardi tootmise lende ja täpsemaid tiheasustusalade kaardistuslende, sest just nende erinevus määrab, kas andmestik sobib antud töös kasutamiseks. Tiheasustusalasid lennatake iga aastaselt kuid põhikaardi tootmiseks lennatakse umbes üks neljandik eestist korraga, nii kaetakse kogu eesti iga 4 aasta tagant. Antud töös ei sobinud kasutada suvel toimuvad metsanduslennud, sest maapinnani jõudvaid punkte on vähe tänu kõrgele lennukõrgusele, lehtedele ja alustaimestikule.
+Magistritöö aluseks on Maa- ja Ruumiameti aerolaserskaneerimise (ALS) andmestik aastatest 2017--2024. Andmeid on kogutud mitme erineva metoodikaga, mille punktitihedus ja katvuse eesmärk erinevad. Töö kontekstis on oluline eristada riiklikke baaskaardi tootmise lende ja täpsemaid tiheasustusalade kaardistuslende, sest just nende erinevus määrab, kas andmestik sobib antud töös kasutamiseks. Tiheasustusalasid lennatake iga aastaselt kuid põhikaardi tootmiseks lennatakse umbes üks neljandik Eestist korraga, nii kaetakse kogu eesti iga 4 aasta tagant. Antud töös ei sobinud kasutada suvel toimuvad metsanduslennud, sest maapinnani jõudvaid punkte on vähe tänu kõrgele lennukõrgusele, lehtedele ja alustaimestikule.
 
 Maa- ja Ruumiameti andmetöötlus sisaldab punktide sidumist asukohaga, punktide klassifitseerimist ning kvaliteedikontrolli, et punktipilvest saaks tekitada erinevaid tooteid. Antud töös kasutati eelkõige tihedamat madallendude andmestikku.
 
@@ -36,17 +36,17 @@ Metsanduslik lend & u 3100 m & 0,8 p/m$^2$ & Metsanduslik & Suvi \\
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.92\textwidth]{estonian/joonised/Aerolaserskaneerimise_alad300.png}
-\caption{Aerolaserskaneerimise alade jaotus 2017--2024 aastatel. Pildil on näha lennude asukohad ja punktitiheduse seos lennu kõrgusega (kõrgema lendudel madalam tihedus).}
+\caption{Aerolaserskaneerimise alade jaotus 2017--2024 aastatel. Pildil on näha lennude asukohad ja punktitiheduse seos lennu kõrgusega (kõrgematel lendudel madalam tihedus).}
 \label{fig:aerolasersk-alad}
 \end{figure}
 
 \subsection{Uuringuala ja valimi moodustamine}
 
-Uuringuala valik tehti mitmes etapis. Esmalt kasutati testimiseks Tartu linna lähedasi metsi, mis olid tänu tiheasustusala kaardistusele tihedama punktitihedusega. See oli vajalik, et arendada ja kontrollida, kas madala taimkatte kõrgusmudeli ja sildistamise töövoog toimib. Seejärel koostati valim üle Eesti nii, et hõlmatud oleksid erinevad metsatüübid, aastad ja  punktitihedusega kaardilehed. Eraldi valiti üks kaardileht segmenteerimiseks sobilik ala, mille juures lähtuti punkti tihedusest, metsa tüübist ja lamapuidu osakaalust.
+Uuringuala valik tehti mitmes etapis. Esmalt kasutati testimiseks Tartu linna lähedasi metsi, mis olid tänu tiheasustusala kaardistusele tihedama punktitihedusega. See oli vajalik, et arendada ja kontrollida, kas madala taimkatte kõrgusmudeli ja sildistamise töövoog toimib. Seejärel koostati valim üle Eesti nii, et hõlmatud oleksid erinevad metsatüübid, aastad ja  punktitihedusega kaardilehed. Segmenteerimiseks valiti eraldi üks sobilik kaardileht, mille juures lähtuti punkti tihedusest, metsa tüübide ning vanuse mitmekesisusest ja lamapuidu osakaalust.
 
 Uuringu lõplik ekspertvalim koosneb 29 asukohast (mõõtkavas 1:2000 kaardilehte), mille valimisel lähtuti eesmärgist tagada tulemuste üldistatavus kogu Eestile. Selle saavutamiseks kaasati valimisse erineva reljeefiga alasid ning esinduslik valik metsa- ja maastikutüüpe. Valimi moodustamisel kasutati Maa- ja Ruumiameti madallennu ülelende perioodist 2017–2024, mis on kogutud tihedama aerolaserskaneerimise (ALS) meetodiga.
 
-Nimetatud kriteeriumide alusel koostati andmestik, mille detailne statistiline ülevaade on esitatud tabelis \ref{tbl:laz_dataset_overview}. Kuigi valitud kaardilehed katavad unikaalselt 27 km$^2$ suuruse uuringuala, moodustab korduvülelendude summaarne pindala 117 km$^2$. Kokku hõlmab andmestik 4,45 miljardit laserpunkti, saavutades keskmise punktitiheduse 37,86 p/m$^2$ (vahemikus 11,81--81,32 p/m$^2$). Seejuures on valitud andmestiku punktitihedus märkimisväärselt kõrgem võrreldes Eesti tiheasustusalade lendude puhul tavapäraselt dokumenteeritud näitajatega (tabel \ref{tab:andmed-lennud}).
+Nimetatud kriteeriumide alusel koostati andmestik, mille detailne statistiline ülevaade on esitatud tabelis \ref{tbl:laz_dataset_overview}. Kuigi valitud kaardilehed katavad unikaalselt 27 km$^2$ suuruse uuringuala, moodustab korduvülelendude summaarne pindala 117 km$^2$. Kokku hõlmab andmestik 4,45 miljardit laserpunkti, saavutades keskmise punktitiheduse 37,86 p/m$^2$ (vahemikus 11,81--81,32 p/m$^2$). Seejuures on valitud andmestiku punktitihedus märkimisväärselt kõrgem võrreldes Eesti tiheasustusalade lendude puhul tavapäraselt dokumenteeritud näitajatega (Tabel \ref{tab:andmed-lennud}).
 
 
 Kuna käsitsi segmenteerimine on äärmiselt ajamahukas protsess, ei ole seda võimalik ega ka otstarbekas läbi viia üle-eestilises mastaabis. Seetõttu valiti lamapuidu tuvastamise metoodika ja mudelite treenimise toimivuse katsetamiseks eraldiseisvalt välja üks konkreetne kaardileht (tähisega \texttt{406455\_2021\_tava}), et luua usaldusväärne segmentatsiooni treeningandmestik. Valik langes osale Ruhnu saarest, kuna sealsed metsad on vanuse, kasvukohatüübi ja puuliikide osas mitmekesised ja sellel leidub suurel hulgal lamapuitu. Treeningandmete koostamisel on kriitilise tähtsusega objektide varjatus ja tihedus -- mida rohkem edukaid ja erinevates lagunemisastmetes lamatüvesid andmestikku kaasatakse, seda paremini suudab mudel õppida lamapuidule iseloomulikke jooni erinevates metsatingimustes.
@@ -84,4 +84,4 @@ Tiheduse vahemik & 11,81 – 81,32 p/m$^2$ & - \\
 \end{table}
 
 
-Kaardiruutude detailne koondtabel asub lisas \ref{lisa:kaardiruudud}.
+Kaardiruutude detailne koondtabel asub lisas 1.

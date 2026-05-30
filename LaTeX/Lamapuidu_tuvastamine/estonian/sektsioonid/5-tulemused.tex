@@ -9,7 +9,7 @@ Selles peatükis esitatakse lamapuidu klassifitseerimis- ja segmenteerimismudeli
 \subsubsection{Käsitsi paanimärgistus ja automaatne filtreerimine}
 \label{kasitsi-paanimargistus}
 
-Klassifitseerimise andmestiku ettevalmistamise käigus märgistati pilootfaasis esimesed paanid käsitsi. Täiendavalt kasutati andmestiku mahu tõhusaks suurendamiseks loogikat, millega visuaalselt tühjad ja ilma lamapuiduta (näiteks puhta noorendiku või lageda maaga) paanid sildistati automaatselt negatiivseks (\texttt{auto\_skip}). Pilootansambli hindamiseks saadi seeläbi kokku 21\,998 silti (sh 3\,380 lamapuiduga ja 18\,618 negatiivset paani). Neist 15\,850 kureeritud õppepaani suunati piloottreeningusse.
+Klassifitseerimise andmestiku ettevalmistamise käigus märgistati pilootfaasis esimesed paanid käsitsi. Täiendavalt kasutati andmestiku mahu tõhusaks suurendamiseks loogikat, millega visuaalselt tühjad ja ilma lamapuiduta (näiteks puhta noorendiku või lageda maaga) paanid sildistati automaatselt negatiivseks. Pilootansambli hindamiseks saadi seeläbi kokku 21\,998 silti (sh 3\,380 lamapuiduga ja 18\,618 negatiivset paani). Neist 15\,850 kureeritud õppepaani suunati piloottreeningusse.
 
 \subsubsection{Mudeliotsing ja arhitektuuride võrdlus}
 \label{mudeli-otsinguprotsess}
@@ -130,7 +130,7 @@ Lõplik (neljamudeline) ansambel treeniti 67\,290 lekkekontrolliga märgistusel.
 \label{fig:roc-pr-curve}
 \end{figure}
 
-\subsubsection{CHM variantide võrdlus klassifitseerimises ja segmenteerimises}
+\subsubsection{Taimkatte mudeli variantide võrdlus klassifitseerimises ja segmenteerimises}
 \label{chm-variantide-klassifitseerimise-tulemused}
 
 Treeningfaasi esialgsetes eksperimentides vaadeldi mitmeid CHM-i arvutusmudeleid (näiteks erineva kõrgusfiltriga rastersisendid ja mitmekanalilised komposiidid). Lõplikus arenduses ja andmete märgistamise töövoos rakendati 20 cm resolutsiooniga 0--1,31 m kõrguseid filtreerivat ülekünnise väärtuste eemaldamise meetodit.
@@ -160,27 +160,27 @@ Klassifitseerimiskatsetes rakendati sarnast loogika. Eksperimendid mitme kanalig
 \subsubsection{Klassifitseerimismudelis esinevate vigade analüüs}
 \label{klassifitseerimise-vigade-analüüs}
 
-Vaatamata kõrgele F1-skoorile esines mudeli ennustustes mõningaid iseloomulikke veamustreid, mille analüüsimine pakub olulist sisendit nii metsamajanduse praktikale kui ka edasistele uurimissuundadele. Vead saab valdavalt kategoriseerida lamapuiduga sarnase kujuga objektide väärtuvastamiseks (valepositiivsed) ning tugeva võrastiku/alusmetsa varju jäävate või tugevalt lagunenud lamapuude märkamata jätmiseks (valenegatiivsed).
+Vaatamata kõrgele F1-skoorile esines mudeli ennustustes mõningaid iseloomulikke veamustreid. Vead saab valdavalt kategoriseerida lamapuiduga sarnase kujuga objektide väärtuvastamiseks (valepositiivsed) ning tugeva võrastiku/alusmetsa varju jäävate või tugevalt lagunenud lamapuude märkamata jätmiseks (valenegatiivsed).
 
 \paragraph{Valepositiivsed (FP)} Mudel kaldus aeg-ajalt lamapuiduks klassifitseerima vanu kuivenduskraavide kaldavalle, piklikke kivimoodustisi (näiteks vanad aiavaremed) ning teatud juhtudel masinate rööpaid. Neid struktuure iseloomustab lokaalses kõrgusmudelis sirgjooneline anomaalia, mis 20 cm CHM-pikslite puhul võib sarnaneda tüvele.
 
-\paragraph{Valenegatiivsed (FN)} Valenegatiivseid ilmnes enamasti vanemates metsasälikutes, kus tüvi oli kattunud paksu samblaga ja vajunud tugevalt huumusesse. Sellised puud ei kerki 1,3 m CHM kihist selgelt esile ning 1--4 pts/m$^2$ LiDAR andmestik ei taga alati piisavat detailsust maapinnalähedase kuju säilitamiseks.
+\paragraph{Valenegatiivsed (FN)} Valenegatiivseid ilmnes enamasti raielankidel, kus tüvi oli hunnikus, pooleksmurdunud või vajunud tugevalt masse. Sellised puud ei kerki 1,3 m CHM kihist selgelt esile ningka  >18 pts/m$^2$ LiDAR andmestik ei taga alati piisavat detailsust maapinnalähedase kuju säilitamiseks.
 
 
 \paragraph{Käsitsi märgendatud andmestiku tehtud vead.}
 
-Käsitsi märgendatud valimile teostatud täiendav vigade analüüs paljastas, et vastupidiselt kõrgele keskmisele tulemile oli mudel võimeline tehiskavalust vigade tegema. Joonisel~\ref{fig:error-case-studies} on esitatud kaks ilustratiivset juhust: (i) \textbf{Valepostiivne} \textbf{(FP, usaldus 0,9889)} -- mudel arvas 128×128 paanil kuuluvat täielikult lamapuitu, kuigi sellel ei olnud peale struktureeritud müra ja madala taimestikku mingit signaali, mis näitab, et mudel võib konfundeerida lihtsa ruumilise korrapära kaunusega; (ii) \textbf{Valenegatiivsus (FN, ennustus 0,0249)} -- sama rasteris olev tegelik lamapuidupään jäi mudeli tähelepanu all täiesti märkamata, vihjates tugevale vastaste võimaluste osakaalule metsas kasvava võrastiku all. Esimene juhtum süstematiseerib meie jälgitut FP-riske (kraavid, rattarööpad jne.), teine aga selgitab FN-i loomust: andmete ebapiisav hajusus (1--4 pts/m² LiDAR) piisavalt hästi kirjeldab peent tüvedome kontuurit, mis on oluline tingimus, et mudel saaks õppida kindlakstegemiseks.
+Käsitsi märgendatud valimile teostatud täiendav vigade analüüs paljastas, et vastupidiselt kõrgele keskmisele tulemile oli mudel võimeline vigu tegema. Joonisel~\ref{fig:error-case-studies} on esitatud kaks ilustratiivset juhust: (i) Valepostiivne (FP, usaldus 0,9889) -- mudel arvas 128×128 paanil kuuluvat täielikult lamapuitu, kuigikuigi sellel oli ikkagi oli sirge tüvi nähtaval; (ii) Valenegatiivsus (FN, ennustus 0,0249) -- sama kaardilehel olev tegelik lamapuidupaan jäi mudeli tähelepanu all täiesti märkamata, vihjates tugevale vastaste võimaluste osakaalule metsas kasvava võrastiku all. Esimene juhtum süstematiseerib meie jälgitut FP-riske (kraavid, rattarööpad jne.), teine aga selgitab FN-i loomust: andmete ebapiisav hajusus (>18 pts/m² LiDAR) piisavalt hästi kirjeldab peent tüvedome kontuurit, mis on oluline tingimus, et mudel saaks õppida kindlakstegemiseks.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.95\linewidth]{estonian/joonised/error_cases_comparison.png}
-\caption{Klassifitseerimismudelite edenamatust juhtumid käsitsi märgendatud valimis: (vasakul) valepostiivne paan, kus mudel arvas kõrgete usaldusega (98,89\%) lamapuitu, kuid tegelikult oli paan tühi; (paremal) valenegatiivsus, kus tegelik lamapuu pandi mudelile peaaegu nähtamatuks (2,49\% ennustus). Mõlemad juhtumid paanis 465663\_2023\_madal\_chm\_max\_hag\_20cm.tif.}
+\caption{Klassifitseerimismudelite edenamatust juhtumid käsitsi märgendatud valimis: (vasakul) valepostiivne paan, kus mudel arvas kõrgete usaldusega (98,89\%) lamapuitu, kuid tegelikult oli paan tühi; (paremal) valenegatiivsus, kus tegelik lamapuu pandi mudelile peaaegu nähtamatuks (2,49\% ennustus). Mõlemad juhtumid kaardilehel 465663\_2023\_madal\_chm\_max\_hag\_20cm.tif.}
 \label{fig:error-case-studies}
 \end{figure}
 
 \paragraph{Aktiivõppiõppe kaksepoolne õppimisprotsess.}
 
-Analüüsitud vigade juhtumid (eriti valepostiivne kõrge usaldusega ja valenegatiivsus madala usaldusega) viitavad tõenäoliselt sellele, et need paanid märgistati käsitsi valesti -- õigepanesult märgendiks neid vastupidiselt. Selline olukord demonstreerib aktiivõppiõppe \textit{kaksepoolset õppimisprotsessi}: mudel ei õpi mitte ainult paranduste kaudu õigete ja valede ennustuste eristamisest, vaid töö autor omakorda \textit{õpib kiiremini ja süstemaatilisemalt} märgendama edaspidi samasuguseid struktuure. Järjepidevalt paanil 465663 esinevate vastastikuste vigade (kõrge FP ja madal FN samal rasteril) tõttu omandab annotaator selle konkreetse maastikutüübi märgendamise mustrid ning vältib edaspidi samade kutsete kordamist. Selline pöördteave mudelist annotatoorile on oluline osa aktiivõppega juhitud andmestiku koostamisel ning aitab lõppkokkuvõttes saavutada ühtlast ja kvaliteetset märgistusstandardi.
+Analüüsitud vigade juhtumid (eriti valepostiivne kõrge usaldusega ja valenegatiivsus madala usaldusega) viitavad tõenäoliselt sellele, et need paanid märgistati käsitsi valesti. Selline olukord demonstreerib aktiivõppet kahepoolselt õppimisprotsessi: mudel ei õpi mitte ainult paranduste kaudu õigete ja valede ennustuste eristamisest, vaid töö autor omakorda õpib kiiremini ja süstemaatilisemalt märgendama edaspidi samasuguseid struktuure. Järjepidevalt paanil 465663 esinevate vastastikuste vigade (kõrge FP ja madal FN samal rasteril) tõttu omandab selle konkreetse maastikutüübi märgendamise mustrid ning vältib edaspidi samade vigade kordamist. Selline pöördteave mudelist on oluline osa aktiivõppega juhitud andmestiku koostamisel ning aitab lõppkokkuvõttes saavutada ühtlast ja kvaliteetset tulemuse.
 
 \subsection{Segmenteerimise tulemused}
 \label{segmenteerimise-tulemused}
@@ -403,6 +403,13 @@ Lisaks näitab komponentide arv testis (674 vs 222 tõelist objekti ka parima mu
 \centering
 \includegraphics[width=0.95\linewidth]{estonian/joonised/seg_generaliseerimise_kitsaskohad.png}
 \caption{Generaliseerimise kitsaskohad eraldiseisvatel testplokkidel.}
+\label{fig:seg-error-panel}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{estonian/joonised/Ruhnu_Prob_tõene.png}
+\caption{Segmenteerimise tõenäosus jaotus koos tõeste aladega  (lilla)}
 \label{fig:seg-error-panel}
 \end{figure}
 \newpage
